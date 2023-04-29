@@ -1,0 +1,31 @@
+# byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# tests and coverage
+*.pytest_cache
+.coverage
+
+# database & logs
+*.db
+*.sqlite3
+*db.sqlite3
+*.log
+
+# venv
+env
+venv
+test
+
+# other
+.DS_Store
+
+# javascript
+package-lock.json
+
+staticfiles/*
+!staticfiles/.gitkeep 
+
+# Ignore Django migration files
+*.pyc
+**/migrations/
