@@ -1,30 +1,36 @@
 
-from django.shortcuts import render
-from django.http import JsonResponse, HttpResponse
-from django.template import loader
-from django import template
 from datetime import date
+
 import pandas as pd
-from .models import ListedStock
 import yfinance as yf
+from django import template
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render
+from django.template import loader
+
+from .models import ListedStock
+
 
 # @login_required(login_url="/login/")
 def index(request):
     symbol = request.GET.get('symbol')
     start_date = request.GET.get('startDt')
     end_date = request.GET.get('endDt')
-    period = '1mo'
-    if symbol:
-        stock = yf.Ticker(symbol)
-    else:
-        stock = yf.Ticker("INFY")
+    period = '3mo'
+    if not symbol:
+        symbol = "INFY"
+    stock_obj = ListedStock.objects.filter(symbol=symbol).first()
+    symbol = symbol + ".NS"
+    stock = yf.Ticker(symbol)
     if start_date and end_date:
         data = stock.history(start=start_date, end=end_date)
     else:
-        data = stock.history(period=period)
+        data = stock.history(period='5y',interval='3mo')
+    print(data)
     prices = data['Close'].tolist()
     dates = data.index.strftime('%Y-%m-%d').tolist()
-    context = {'prices': prices,"dates":dates}
+    context = {'prices': prices,"dates":dates,"stock_name": stock_obj.name, "stock_symbol": symbol}
+    print(context)
     return render(request, "index.html", context)
 
 # @login_required(login_url="/login/")
@@ -70,3 +76,4 @@ def search_items(request):
     return JsonResponse(data, safe=False)
 
 
+# def get_historical_price(request):
