@@ -7,7 +7,7 @@
 
 {% block content %}
 
-<div class="main-content-container container-fluid px-4">
+
     <!-- Page Header -->
     <div class="page-header row no-gutters py-4">
       <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
@@ -82,37 +82,6 @@
           </div>
         </div>
       </div>
-      <div class="col-lg col-md-4 col-sm-6 mb-4">
-        <div class="stats-small stats-small--1 card card-small">
-          <div class="card-body p-0 d-flex">
-            <div class="d-flex flex-column m-auto">
-              <div class="stats-small__data text-center">
-                <span class="stats-small__label text-uppercase">Bank Nifty</span>
-                <h6 class="stats-small__value count my-3">42002</h6>
-              </div>
-              <div class="stats-small__data">
-                <span class="stats-small__percentage stats-small__percentage--increase">4.4%</span>
-              </div>
-            </div>
-            <!-- <canvas height="120" class="blog-overview-stats-small-4"></canvas> -->
-          </div>
-        </div>
-      </div>
-      <div class="col-lg col-md-4 col-sm-12 mb-4">
-        <div class="stats-small stats-small--1 card card-small">
-          <div class="card-body p-0 d-flex">
-            <div class="d-flex flex-column m-auto">
-              <div class="stats-small__data text-center">
-                <span class="stats-small__label text-uppercase">Fin Nifty</span>
-                <h6 class="stats-small__value count my-3">19010</h6>
-              </div>
-              <div class="stats-small__data">
-                <span class="stats-small__percentage stats-small__percentage--increase">3.4%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
     
     <!-- End Small Stats Blocks -->
@@ -130,48 +99,37 @@
                 </div>
                 <input class="navbar-search form-control"type="text" name="q" id="search-input" value="{{ keyword }}" placeholder="Search for something..." aria-label="Search"> </div>
             </form>
-            <div id="search-results" style="max-height: 100px; overflow: auto;"></div>
+            <div id="search-results" style="overflow: auto; z-index: 1; position: absolute; background: white;"></div>
           </div>
           <div class="card-body pt-0">
             <div class="row border-bottom py-2 bg-light">
             
               <div class="input-daterange input-group" id="datepicker">
 
-                <input type="text" class="input-sm form-control ml-3" id="start-date" name="start" placeholder="Start date">
-                <input type="text" class="input-sm form-control" id="end-date" name="end" placeholder="End date">
-              
-
-              <div class="col-sm-3">
-              <div class="dropdown">
-                <button class="btn btn-md btn-white dropdown-toggle ml-auto mr-auto ml-sm-auto" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Interval
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <h5 class="dropdown-header">Minutes</h5>
-                  <a class="dropdown-item" href="#">1 min</a>
-                  <a class="dropdown-item" href="#">5 min</a>
-                  <a class="dropdown-item" href="#">30 min</a>
-                  <h6 class="dropdown-header">Hour</h6>
-                  <a class="dropdown-item" href="#">1 hour</a>
-                  <h5 class="dropdown-header">Days</h5>
-                  <a class="dropdown-item" href="#">1 day</a>
-                  <a class="dropdown-item" href="#">5 day</a>
-                  <a class="dropdown-item" href="#">1 week</a>
-                  <a class="dropdown-item" href="#">1 month</a>
-                  <a class="dropdown-item" href="#">3 month</a>
+                <input type="date" class="input-sm form-control ml-3" id="historical-start-date" name="start" placeholder="Start date">
+                <input type="date" class="input-sm form-control" id="historical-end-date" name="end" placeholder="End date">
+  
+                <div class="col-sm-3">
+                  <select class="form-control" id="interval" placeholder="Interval">
+                    <option value="">Select an interval</option>
+                    <option value="1m">1 min</option>
+                    <option value="5m">5 min</option>
+                    <option value="15m">15 min</option>
+                    <option value="30m">30 min</option>
+                    <option value="1h">1 hour</option>
+                    <option value="1d">1 day</option>
+                    <option value="1wk">1 week</option>
+                    <option value="1mo">1 month</option>
+                    <option value="3mo">3 month</option>
+                  </select>
                 </div>
-              </div>
-              </div>
              </div>
             </div>
-            
-           
-              <canvas height="130" style="max-width: 100% !important;" class="blog-overview-users" id="blog-overview-users"></canvas>
-         
-
+              <canvas height="130" style="max-width: 100% !important;" class="historical-data-graph" id="historical-data-graph"></canvas>
           </div>
         </div>
       </div>
+    
       <!-- End Users Stats -->
       <!-- Users By Device Stats -->
       <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
@@ -257,7 +215,7 @@
                   <button type="button" class="btn btn-sm btn-white ml-auto mr-auto ml-sm-auto mr-sm-0 mt-3 mt-sm-0">View Full Report &rarr;</button>
                 </div>
               </div>
-              <canvas height="130" style="max-width: 100% !important;" class="blog-overview-users1"></canvas>
+              <canvas height="130" style="max-width: 100% !important;" class="historical-data-graph1"></canvas>
             </div>
           </div>
         </div>
@@ -266,8 +224,7 @@
       
       <!-- End Top Referrals Component -->
     </div>
- </div>
-  
+
 
 
 {% endblock content %}
@@ -290,7 +247,7 @@
                       const items = JSON.parse(xhr.responseText);
                       let html = '';
                       if (items.length > 0) {
-                          html += '<p>';
+                          html += '<p style="margin-bottom:auto;">';
                           for (const item of items) {
                               html += `<a href="?symbol=${item.symbol}" class="search-result">${item.name}</a></br>`;
                           }
@@ -320,71 +277,158 @@
 </script>
 
 <script>
+    let today = new Date().toISOString().split('T')[0];
+    document.getElementById("historical-start-date").setAttribute("max", today);
+    document.getElementById("historical-end-date").setAttribute("max", today);
+ 
+    function fetchValue(startDate, endDate, interval) {
+
+    // Validate that the start date is less than the end date
+    if (startDate && endDate && startDate >= endDate) {
+      alert('The start date must be less than the end date.');
+      return;
+      // your API call logic here
+    }
+
+    const newStartDate = new Date(startDate);
+    const newEndDate = new Date(endDate);
+    const diffDays = (newEndDate - newStartDate) / (1000 * 60 * 60 * 24);
+    if (!interval) {
+      if (diffDays <= 1) {
+        interval = "5m";
+      } else if (diffDays > 1 && diffDays <= 5) {
+        interval = "30m";
+      } else if (diffDays > 5 && diffDays <= 20) {
+        interval = "1h";
+      } else if (diffDays > 20 && diffDays <= 90) {
+        interval = "1d";
+      } else if (diffDays > 90 && diffDays <= 730) {
+        interval = "1wk";
+      } else if (diffDays > 730 && diffDays < 3650) {
+        interval = "1mo";
+      } else {
+        interval = "3mo";
+      }
+    }
+    var stock_symbol = "{{stock_symbol}}";
+    let url = "{% url 'historical-data' %}?";
+    url += `symbol=${stock_symbol}`;
+
+    if (startDate && endDate) {
+      url += `&start_date=${startDate}&end_date=${endDate}`;
+    }
+    if (interval) {
+      url += `&interval=${interval}`;
+    }
+  
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        updateChartData(data);
+        updateChart();
+        updateHTML(data);
+      })
+      .catch(error => console.error(error));
+
+}
+
   $(document).ready(function() {
       // Initialize datepicker library on start and end date input fields
-      $("#start-date").datepicker({
-          dateFormat: "yy-mm-dd",
-          onSelect: function() {
-              // When a start date is selected, set the minDate option of the end date datepicker
-              var startDate = $(this).datepicker("getDate");
-              $("#end-date").datepicker("option", "minDate", startDate);
-          }
-      });
-      $("#end-date").datepicker({
-          dateFormat: "yy-mm-dd",
-          onSelect: function() {
-              // When an end date is selected, set the maxDate option of the start date datepicker
-              var endDate = $(this).datepicker("getDate");
-              $("#start-date").datepicker("option", "maxDate", endDate);
-          }
+      var startDateInput = document.getElementById('historical-start-date');
+      var endDateInput = document.getElementById('historical-end-date');
+      var intervalSelect = document.getElementById('interval');
+
+      startDateInput.addEventListener('change', function() {
+        var startDate = startDateInput.value;
+        var endDate = endDateInput.value;
+        var interval = intervalSelect.value;
+
+        // call the fetchValue function with updated values
+        fetchValue(startDate, endDate, interval);
       });
 
-      // Add click handler to start and end date input fields to show the datepicker calendar
-      $("#start-date, #end-date").on("click", function() {
-          $(this).datepicker("show");
+      endDateInput.addEventListener('change', function() {
+        var startDate = startDateInput.value;
+        var endDate = endDateInput.value;
+        var interval = intervalSelect.value;
+
+        // call the fetchValue function with updated values
+        fetchValue(startDate, endDate, interval);
+      });
+
+      intervalSelect.addEventListener('change', function() {
+        var startDate = startDateInput.value;
+        var endDate = endDateInput.value;
+        var interval = intervalSelect.value;
+
+        // call the fetchValue function with updated values
+        fetchValue(startDate, endDate, interval);
       });
   });
 
-</script>
-<!-- <script src="/static/assets/js/app/app-blog-overview.1.1.0.js"></script> -->
-
   
-  <script>
     // Retrieve data from context variable 
     const labels= {{ dates|safe }};
-    const values = {{ prices|safe }};
+    const prices = {{ prices|safe }};
     var name = "{{stock_name}}";
-    console.log(name);
 
     // const labels = dateList.map(date => date.toDateString());
-    // Extract x and y values from data
-    // const labels = data.map(item => item.x);
-    // const values = data.map(item => item.y);
+
 
     // Create chart using Chart.js
-    const ctx = document.getElementById('blog-overview-users').getContext('2d');
-    const chart = new Chart(ctx, {
-      type: 'line',
-      data: {
+    var chart = null;
+    var chartData = {
         labels: labels,
         datasets: [{
           label: name,
-          data: values,
+          data: prices,
           backgroundColor: 'rgba(255, 99, 132, 0.2)',
           borderColor: 'rgba(255, 99, 132, 1)',
           borderWidth: 1
         }]
-      },
-      options: {
-        scales: {
-          yAxes: [{
-            ticks: {
-              beginAtZero: true
-            }
-          }]
+      };
+
+    // Update the chart data with new prices and dates
+    function updateChartData(data) {
+        chartData.labels = data.dates;
+        chartData.datasets[0].data = data.prices;
+    }
+
+    const ctx = document.getElementById('historical-data-graph').getContext('2d');
+
+    updateChart()
+    // Update the chart with new data
+    function updateChart() {
+        if (!chart) {
+            // Create a new chart if it doesn't exist
+            var ctx = document.getElementById('historical-data-graph').getContext('2d');
+            
+            chart = new Chart(ctx, {
+              type: 'line',
+              data: chartData,
+              options: {
+                scales: {
+                  yAxes: [{
+                    ticks: {
+                      beginAtZero: true
+                    }
+                  }]
+                }
+              }
+            });
+        } else {
+            // Update the existing chart with new data
+            chart.data = chartData;
+            chart.update();
         }
-      }
-    });
+    }
+
+    // Update the HTML elements with new start and end dates and interval
+    function updateHTML(startDate, endDate, interval) {
+        $('#historical-start-date').text(startDate);
+        $('#historical-end-date').text(endDate);
+        $('#interval').text(interval);
+    }
   </script>
 
 
