@@ -1,5 +1,5 @@
-
-from datetime import date
+import pandas_ta as ta
+from plotly.offline import plot
 
 import pandas as pd
 import yfinance as yf
@@ -8,7 +8,9 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.template import loader
 
+from .utils import get_current_status
 from .models import ListedStock
+from .constant import indian_index
 
 
 # @login_required(login_url="/login/")
@@ -18,7 +20,7 @@ def index(request):
     end_date = request.GET.get('end_date')
     period = '3mo'
     if not symbol:
-        symbol = "INFY"
+        symbol = "TATAMOTORS"
     stock_obj = ListedStock.objects.filter(symbol=symbol).first()
     new_symbol = symbol + ".NS"
     stock = yf.Ticker(new_symbol)
@@ -28,7 +30,68 @@ def index(request):
         data = stock.history(period=period)
     prices = data['Close'].tolist()
     dates = data.index.strftime('%Y-%m-%d').tolist()
-    context = {'prices': prices,"dates":dates,"stock_name": stock_obj.name, "stock_symbol": symbol}
+
+    # Calculate Supertrend and MACD indicators
+    data = stock.history(period="1d", interval='5m')
+    data.ta.supertrend(length=20, multiplier=2, append=True)
+
+    # Create buy/sell signals based on MACD and Supertrend
+
+    data.drop(['SUPERTl_20_2.0','SUPERTs_20_2.0'],axis=1,inplace=True)
+    data = data[data['SUPERT_20_2.0']!=0]
+    data.dropna(inplace=True)
+
+    # Create x and y data for plot
+    x_data = data.index
+    y_data = data['Close']
+
+    # Create trace for candlestick chart
+    candlestick_trace = {
+        'x': x_data,
+        'open': data['Open'],
+        'high': data['High'],
+        'low': data['Low'],
+        'close': y_data,
+        'type': 'candlestick',
+        'name': symbol,
+        'showlegend': False
+    }
+
+
+    # Create trace for Supertrend
+    supertrend_trace = {
+        'x': x_data,
+        'y': data['SUPERT_20_2.0'],
+        'type': 'scatter',
+        'mode': 'lines',
+        'line': {
+            'width': 2,
+            'color': 'green'
+        },
+        'name': 'Trend'
+    }
+
+    # Create layout for plot
+    layout = {
+        'title': {
+        'text': stock_obj.name,
+        'x': 0.5,
+        'xanchor': 'center'
+        },
+        'xaxis': {
+        'rangeslider': {
+        'visible': False
+        }
+        }
+        }
+
+    # Create figure and plot data
+    graph_data = [candlestick_trace, supertrend_trace]
+    
+    chart = plot({'data': graph_data, 'layout': layout}, output_type='div')
+    context = {'prices': prices, "dates":dates, "stock_name": stock_obj.name, "stock_symbol": symbol,
+                'chart': chart}
+    # print(context)
     return render(request, "index.html", context)
 
 # @login_required(login_url="/login/")
@@ -99,5 +162,7 @@ def historical_data(request):
 
     return JsonResponse(context, safe=False)
 
+def get_indian_index_status(request):
+    context = {name:get_current_status(ticker) for name,ticker in indian_index.items()}
+    return JsonResponse(context, safe=False)
 
-# def get_historical_price(request):

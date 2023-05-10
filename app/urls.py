@@ -17,4 +17,6 @@ urlpatterns = [
     path("stocks/update", views.add_stocks_into_db),
     path('search/', views.search_items, name='search'),
     path('historical-data/', views.historical_data, name='historical-data'),
+    path('indian-index-status/', views.get_indian_index_status, name='indian-index-status'),
+    
 ]

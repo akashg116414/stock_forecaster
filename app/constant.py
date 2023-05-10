@@ -1,0 +1,1 @@
+indian_index = {"Nifty 50":"^NSEI", "Bank Nifty": "^NSEBANK", "Sensex": "^BSESN", "India VIX": "^INDIAVIX"}

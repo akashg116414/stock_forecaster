@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 
-{% block title %} Dashboard {% endblock %} 
+{% block title %} Dashboard {% endblock %}
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}{% endblock stylesheets %}
@@ -8,222 +8,203 @@
 {% block content %}
 
 
-    <!-- Page Header -->
-    <div class="page-header row no-gutters py-4">
-      <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
-        <span class="text-uppercase page-subtitle">Dashboard</span>
-        <h3 class="page-title">Stock Analytic Dashboard</h3>
-      </div>
-    </div>
-    <!-- End Page Header -->
-    <!-- Small Stats Blocks -->
-    <div class="row">
-      <div class="col-lg col-md-6 col-sm-6 mb-4">
-        <div class="stats-small stats-small--1 card card-small">
-          <div class="card-body p-0 d-flex">
-            <div class="d-flex flex-column m-auto">
-              <div class="stats-small__data text-center">
-                <span class="stats-small__label text-uppercase">Nifty 50</span>
-                <h6 class="stats-small__value count my-3">18010</h6>
-              </div>
-              <div class="stats-small__data">
-                <span class="stats-small__percentage stats-small__percentage--increase">3.4%</span>
-              </div>
-            </div>
-            <!-- <canvas height="120" class="blog-overview-stats-small-1"></canvas> -->
+<!-- Page Header -->
+<div class="page-header row no-gutters py-4">
+  <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+    <span class="text-uppercase page-subtitle">Dashboard</span>
+    <h3 class="page-title">Stock Analytic Dashboard</h3>
+  </div>
+</div>
+<!-- End Page Header -->
+<!-- Small Stats Blocks -->
+<div class="row">
+  <div class="col-lg col-md-6 col-sm-6 mb-4">
+    <div class="stats-small stats-small--1 card card-small">
+      <div class="card-body p-0 d-flex">
+        <div class="d-flex flex-column m-auto">
+          <div class="stats-small__data text-center">
+            <span class="stats-small__label text-uppercase">Nifty 50</span>
+            <h6 class="stats-small__value count my-3">
+              <span id="nifty-price">
+                <div class="loader"></div>
+              </span>
+            </h6>
           </div>
-        </div>
-      </div>
-      <div class="col-lg col-md-6 col-sm-6 mb-4">
-        <div class="stats-small stats-small--1 card card-small">
-          <div class="card-body p-0 d-flex">
-            <div class="d-flex flex-column m-auto">
-              <div class="stats-small__data text-center">
-                <span class="stats-small__label text-uppercase">Sensex</span>
-                <h6 class="stats-small__value count my-3">65003</h6>
-              </div>
-              <div class="stats-small__data">
-                <span class="stats-small__percentage stats-small__percentage--increase">2.4%</span>
-              </div>
-            </div>
-            <!-- <canvas height="120" class="blog-overview-stats-small-2"></canvas> -->
-          </div>
-        </div>
-      </div>
-      <div class="col-lg col-md-4 col-sm-6 mb-4">
-        <div class="stats-small stats-small--1 card card-small">
-          <div class="card-body p-0 d-flex">
-            <div class="d-flex flex-column m-auto">
-              <div class="stats-small__data text-center">
-                <span class="stats-small__label text-uppercase">India Vix</span>
-                <h6 class="stats-small__value count my-3">15.6</h6>
-              </div>
-              <div class="stats-small__data">
-                <span class="stats-small__percentage stats-small__percentage--decrease">1.8%</span>
-              </div>
-            </div>
-            <!-- <canvas height="120" class="blog-overview-stats-small-3"></canvas> -->
-          </div>
-        </div>
-      </div>
-      <div class="col-lg col-md-4 col-sm-6 mb-4">
-        <div class="stats-small stats-small--1 card card-small">
-          <div class="card-body p-0 d-flex">
-            <div class="d-flex flex-column m-auto">
-              <div class="stats-small__data text-center">
-                <span class="stats-small__label text-uppercase">Bank Nifty</span>
-                <h6 class="stats-small__value count my-3">42002</h6>
-              </div>
-              <div class="stats-small__data">
-                <span class="stats-small__percentage stats-small__percentage--increase">4.4%</span>
-              </div>
-            </div>
-            <!-- <canvas height="120" class="blog-overview-stats-small-4"></canvas> -->
+          <div class="stats-small__data">
+            <span class="stats-small__percentage" id="nifty-percentage">
+            </span>
           </div>
         </div>
       </div>
     </div>
-    
-    <!-- End Small Stats Blocks -->
-    <div class="row">
-      <!-- Users Stats -->
-      <div class="col-lg-8 col-md-12 col-sm-12 mb-4">
-        <div class="card card-small">
-          <div class="card-header border-bottom">
-            <form method="get" action="{% url 'search' %}" class="main-navbar__search w-100 d-none d-md-flex d-lg-flex">
-              <div class="input-group input-group-seamless ml-3">
-                <div class="input-group-prepend">
-                  <div class="input-group-text">
-                    <i class="fas fa-search"></i>
-                  </div>
-                </div>
-                <input class="navbar-search form-control"type="text" name="q" id="search-input" value="{{ keyword }}" placeholder="Search for something..." aria-label="Search"> </div>
-            </form>
-            <div id="search-results" style="overflow: auto; z-index: 1; position: absolute; background: white;"></div>
+  </div>
+  <div class="col-lg col-md-6 col-sm-6 mb-4">
+    <div class="stats-small stats-small--1 card card-small">
+      <div class="card-body p-0 d-flex">
+        <div class="d-flex flex-column m-auto">
+          <div class="stats-small__data text-center">
+            <span class="stats-small__label text-uppercase">Sensex</span>
+            <h6 class="stats-small__value count my-3">
+              <span id="sensex-price">
+                <div class="loader"></div>
+              </span>
+            </h6>
           </div>
-          <div class="card-body pt-0">
-            <div class="row border-bottom py-2 bg-light">
-            
-              <div class="input-daterange input-group" id="datepicker">
-
-                <input type="date" class="input-sm form-control ml-3" id="historical-start-date" name="start" placeholder="Start date">
-                <input type="date" class="input-sm form-control" id="historical-end-date" name="end" placeholder="End date">
-  
-                <div class="col-sm-3">
-                  <select class="form-control" id="interval" placeholder="Interval">
-                    <option value="">Select an interval</option>
-                    <option value="1m">1 min</option>
-                    <option value="5m">5 min</option>
-                    <option value="15m">15 min</option>
-                    <option value="30m">30 min</option>
-                    <option value="1h">1 hour</option>
-                    <option value="1d">1 day</option>
-                    <option value="1wk">1 week</option>
-                    <option value="1mo">1 month</option>
-                    <option value="3mo">3 month</option>
-                  </select>
-                </div>
-             </div>
-            </div>
-              <canvas height="130" style="max-width: 100% !important;" class="historical-data-graph" id="historical-data-graph"></canvas>
+          <div class="stats-small__data">
+            <span class="stats-small__percentage" id="sensex-percentage">
+            </span>
           </div>
         </div>
       </div>
-    
-      <!-- End Users Stats -->
-      <!-- Users By Device Stats -->
-      <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-        <div class="card card-small h-100">
-          <div class="card-header border-bottom">
-            <h6 class="m-0">Global Indicators</h6>
-          </div>
-          <div class="card-body d-flex py-0">
-              <div class="stats-small__data text">
-                <span class="stats-small__label text-uppercase">Dollar</span>
-                <h6 class="stats-small__value count my-3">84</h6>
-              </div>
-              <div class="stats-small__data">
-                <span class="stats-small__percentage stats-small__percentage--increase">1.4%</span>
-              </div>
-            </div>
-            <div class="card-body d-flex py-0">
-              <div class="stats-small__data text">
-                <span class="stats-small__label text-uppercase">Gold</span>
-                <h6 class="stats-small__value count my-3">64021</h6>
-              </div>
-              <div class="stats-small__data">
-                <span class="stats-small__percentage stats-small__percentage--increase">3.3%</span>
-              </div>
-          </div>
-          <div class="card-body d-flex py-0">
-            <div class="stats-small__data text">
-              <span class="stats-small__label text-uppercase">Silver</span>
-              <h6 class="stats-small__value count my-3">76041</h6>
-            </div>
-            <div class="stats-small__data">
-              <span class="stats-small__percentage stats-small__percentage--increase">1.2%</span>
-            </div>
-        </div>
-          <!-- <div class="card-footer border-top">
-            <div class="row">
-              <div class="col">
-                <select class="custom-select custom-select-sm" style="max-width: 130px;">
-                  <option selected>Last Week</option>
-                  <option value="1">Today</option>
-                  <option value="2">Last Month</option>
-                  <option value="3">Last Year</option>
-                </select>
-              </div>
-              <div class="col text-right view-report">
-                <a href="#">Full report &rarr;</a>
-              </div>
-            </div>
-          </div> -->
-        </div>
-      </div>
-      </div>
-
-      <div class="row">
-        <!-- Users Stats -->
-        <div class="col-lg-8 col-md-12 col-sm-12 mb-4">
-          <div class="card card-small">
-            <div class="card-header border-bottom">
-              <form action="#" class="main-navbar__search w-100 d-none d-md-flex d-lg-flex">
-                <div class="input-group input-group-seamless ml-3">
-                  <div class="input-group-prepend">
-                    <div class="input-group-text">
-                      <i class="fas fa-search"></i>
-                    </div>
-                  </div>
-                  <input class="navbar-search form-control" type="text" placeholder="Search for something..." aria-label="Search"> </div>
-              </form>
-            </div>
-            <div class="card-body pt-0">
-              <div class="row border-bottom py-2 bg-light">
-                <div class="col-12 col-sm-6">
-                  <div id="blog-overview-date-range" class="input-daterange input-group input-group-sm my-auto ml-auto mr-auto ml-sm-auto mr-sm-0" style="max-width: 350px;">
-                    <input type="text" class="input-sm form-control" name="start" placeholder="Start Date" id="blog-overview-date-range-1">
-                    <input type="text" class="input-sm form-control" name="end" placeholder="End Date" id="blog-overview-date-range-2">
-                    <span class="input-group-append">
-                      <span class="input-group-text">
-                        <i class="material-icons"></i>
-                      </span>
-                    </span>
-                  </div>
-                </div>
-                <div class="col-12 col-sm-6 d-flex mb-2 mb-sm-0">
-                  <button type="button" class="btn btn-sm btn-white ml-auto mr-auto ml-sm-auto mr-sm-0 mt-3 mt-sm-0">View Full Report &rarr;</button>
-                </div>
-              </div>
-              <canvas height="130" style="max-width: 100% !important;" class="historical-data-graph1"></canvas>
-            </div>
-          </div>
-        </div>
-        </div>
-
-      
-      <!-- End Top Referrals Component -->
     </div>
+  </div>
+  <div class="col-lg col-md-4 col-sm-6 mb-4">
+    <div class="stats-small stats-small--1 card card-small">
+      <div class="card-body p-0 d-flex">
+        <div class="d-flex flex-column m-auto">
+          <div class="stats-small__data text-center">
+            <span class="stats-small__label text-uppercase">India Vix</span>
+            <h6 class="stats-small__value count my-3">
+              <span id="vix-price">
+                <div class="loader"></div>
+              </span>
+            </h6>
+          </div>
+          <div class="stats-small__data">
+            <span class="stats-small__percentage" id="vix-percentage">
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg col-md-4 col-sm-6 mb-4">
+    <div class="stats-small stats-small--1 card card-small">
+      <div class="card-body p-0 d-flex">
+        <div class="d-flex flex-column m-auto">
+          <div class="stats-small__data text-center">
+            <span class="stats-small__label text-uppercase">Bank Nifty</span>
+            <h3 class="stats-small__value count my-3">
+              <span id="bank-nifty-price">
+                <div class="loader"></div>
+              </span>
+            </h3>
+          </div>
+          <div class="stats-small__data">
+            <span class="stats-small__percentage" id="bank-nifty-percentage">
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- End Small Stats Blocks -->
+<div class="row">
+  <!-- Users Stats -->
+  <div class="col-lg-8 col-md-12 col-sm-12 mb-4">
+    <div class="card card-small">
+      <div class="card-header border-bottom">
+        <form method="get" action="{% url 'search' %}" class="main-navbar__search w-100 d-none d-md-flex d-lg-flex">
+          <div class="input-group input-group-seamless ml-3">
+            <div class="input-group-prepend">
+              <div class="input-group-text">
+                <i class="fas fa-search"></i>
+              </div>
+            </div>
+            <input class="navbar-search form-control" type="text" name="q" id="search-input" value="{{ keyword }}"
+              placeholder="Search for something..." aria-label="Search">
+          </div>
+        </form>
+        <div id="search-results" style="overflow: auto; z-index: 1; position: absolute; background: white;"></div>
+      </div>
+      <div class="card-body pt-0">
+        <div class="row border-bottom py-2 bg-light">
+
+          <div class="input-daterange input-group" id="datepicker">
+
+            <input type="date" class="input-sm form-control ml-3" id="historical-start-date" name="start"
+              placeholder="Start date">
+            <input type="date" class="input-sm form-control" id="historical-end-date" name="end" placeholder="End date">
+
+            <div class="col-sm-3">
+              <select class="form-control" id="interval" placeholder="Interval">
+                <option value="">Select an interval</option>
+                <option value="1m">1 min</option>
+                <option value="5m">5 min</option>
+                <option value="15m">15 min</option>
+                <option value="30m">30 min</option>
+                <option value="1h">1 hour</option>
+                <option value="1d">1 day</option>
+                <option value="1wk">1 week</option>
+                <option value="1mo">1 month</option>
+                <option value="3mo">3 month</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <canvas height="130" style="max-width: 100% !important;" class="historical-data-graph"
+          id="historical-data-graph"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- End Users Stats -->
+  <!-- Users By Device Stats -->
+  <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+    <div class="card card-small h-100">
+      <div class="card-header border-bottom">
+        <h6 class="m-0">Global Indicators</h6>
+      </div>
+      <div class="card-body d-flex py-0">
+        <div class="stats-small__data text">
+          <span class="stats-small__label text-uppercase">Dollar</span>
+          <h6 class="stats-small__value count my-3">84</h6>
+        </div>
+        <div class="stats-small__data">
+          <span class="stats-small__percentage stats-small__percentage--increase">1.4%</span>
+        </div>
+      </div>
+      <div class="card-body d-flex py-0">
+        <div class="stats-small__data text">
+          <span class="stats-small__label text-uppercase">Gold</span>
+          <h6 class="stats-small__value count my-3">64021</h6>
+        </div>
+        <div class="stats-small__data">
+          <span class="stats-small__percentage stats-small__percentage--increase">3.3%</span>
+        </div>
+      </div>
+      <div class="card-body d-flex py-0">
+        <div class="stats-small__data text">
+          <span class="stats-small__label text-uppercase">Silver</span>
+          <h6 class="stats-small__value count my-3">76041</h6>
+        </div>
+        <div class="stats-small__data">
+          <span class="stats-small__percentage stats-small__percentage--increase">1.2%</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <!-- Users Stats -->
+  <div class="col-lg-8 col-md-12 col-sm-12 mb-4">
+    <div class="card card-small">
+      <div class="card-body pt-0">
+
+        {{ chart|safe }}
+      </div>
+    </div>
+  </div>
+
+
+  <!-- End Top Referrals Component -->
+</div>
 
 
 
@@ -232,56 +213,110 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 
+
 <script>
+  
   const searchInput = document.getElementById('search-input');
   const searchResults = document.getElementById('search-results');
 
   searchInput.addEventListener('input', (event) => {
-      const keyword = event.target.value;
-      if (keyword) {
-          const xhr = new XMLHttpRequest();
-          xhr.open('GET', `/search/?q=${keyword}`);
-          xhr.onreadystatechange = () => {
-              if (xhr.readyState === XMLHttpRequest.DONE) {
-                  if (xhr.status === 200) {
-                      const items = JSON.parse(xhr.responseText);
-                      let html = '';
-                      if (items.length > 0) {
-                          html += '<p style="margin-bottom:auto;">';
-                          for (const item of items) {
-                              html += `<a href="?symbol=${item.symbol}" class="search-result">${item.name}</a></br>`;
-                          }
-                          html += '</p>';
-                      }
-                      else {
-                          html += '<p>No Stocks found.</p>';
-                      }
-                      searchResults.innerHTML = html;
-                  } else {
-                      searchResults.innerHTML = 'Error';
-                  }
+    const keyword = event.target.value;
+    if (keyword) {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', `/search/?q=${keyword}`);
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          if (xhr.status === 200) {
+            const items = JSON.parse(xhr.responseText);
+            let html = '';
+            if (items.length > 0) {
+              html += '<p style="margin-bottom:auto;">';
+              for (const item of items) {
+                html += `<a href="?symbol=${item.symbol}" class="search-result">${item.name}</a></br>`;
               }
-          };
-          xhr.send();
-      } else {
-          searchResults.innerHTML = '';
-      }
+              html += '</p>';
+            }
+            else {
+              html += '<p>No Stocks found.</p>';
+            }
+            searchResults.innerHTML = html;
+          } else {
+            searchResults.innerHTML = 'Error';
+          }
+        }
+      };
+      xhr.send();
+    } else {
+      searchResults.innerHTML = '';
+    }
   });
   searchResults.addEventListener('click', (event) => {
-      if (event.target.classList.contains('search-result')) {
-          event.preventDefault();
-          const href = event.target.getAttribute('href');
-          window.location.href = href;
-      }
+    if (event.target.classList.contains('search-result')) {
+      event.preventDefault();
+      const href = event.target.getAttribute('href');
+      window.location.href = href;
+    }
   }); 
 </script>
 
 <script>
-    let today = new Date().toISOString().split('T')[0];
-    document.getElementById("historical-start-date").setAttribute("max", today);
-    document.getElementById("historical-end-date").setAttribute("max", today);
- 
-    function fetchValue(startDate, endDate, interval) {
+  let indian_index_url = "{% url 'indian-index-status' %}";
+  function updateData() {
+    $.ajax({
+      type: 'GET',
+      url: indian_index_url,
+      success: function (response) {
+        console.log(response)
+        var nifty50 = response["Nifty 50"];
+        var sensex = response["Sensex"];
+        var indiaVIX = response["India VIX"];
+        var bankNifty = response["Bank Nifty"];
+
+        $("#nifty-price").text(nifty50.current_price.toFixed(2));
+        $("#nifty-percentage").text(nifty50.price_change_percentage.toFixed(2));
+        if (nifty50.price_change_percentage < 0) {
+          $("#nifty-percentage").addClass("stats-small__percentage--decrease");
+        } else {
+          $("#nifty-percentage").addClass("stats-small__percentage--increase");
+        }
+
+        $("#sensex-price").text(sensex.current_price.toFixed(2));
+        $("#sensex-percentage").text(sensex.price_change_percentage.toFixed(2));
+        if (sensex.price_change_percentage < 0) {
+          $("#sensex-percentage").addClass("stats-small__percentage--decrease");
+        } else {
+          $("#sensex-percentage").addClass("stats-small__percentage--increase");
+        }
+
+        $("#vix-price").text(indiaVIX.current_price.toFixed(2));
+        $("#vix-percentage").text(indiaVIX.price_change_percentage.toFixed(2));
+        if (indiaVIX.price_change_percentage < 0) {
+          $("#vix-percentage").addClass("stats-small__percentage--decrease");
+        } else {
+          $("#vix-percentage").addClass("stats-small__percentage--increase");
+        }
+
+        $("#bank-nifty-price").text(bankNifty.current_price.toFixed(2));
+        $("#bank-nifty-percentage").text(bankNifty.price_change_percentage.toFixed(2));
+        if (bankNifty.price_change_percentage < 0) {
+          $("#bank-nifty-percentage").addClass("stats-small__percentage--decrease");
+        } else {
+          $("#bank-nifty-percentage").addClass("stats-small__percentage--increase");
+        }
+      }
+    });
+  }
+  updateData()
+  $(document).ready(function () {
+    setInterval(updateData, 8000); //update data every 5 seconds
+  });
+
+
+  let today = new Date().toISOString().split('T')[0];
+  document.getElementById("historical-start-date").setAttribute("max", today);
+  document.getElementById("historical-end-date").setAttribute("max", today);
+
+  function fetchValue(startDate, endDate, interval) {
 
     // Validate that the start date is less than the end date
     if (startDate && endDate && startDate >= endDate) {
@@ -320,7 +355,7 @@
     if (interval) {
       url += `&interval=${interval}`;
     }
-  
+
     fetch(url)
       .then(response => response.json())
       .then(data => {
@@ -330,118 +365,142 @@
       })
       .catch(error => console.error(error));
 
-}
+  }
 
-  $(document).ready(function() {
-      // Initialize datepicker library on start and end date input fields
-      var startDateInput = document.getElementById('historical-start-date');
-      var endDateInput = document.getElementById('historical-end-date');
-      var intervalSelect = document.getElementById('interval');
+  $(document).ready(function () {
+    // Initialize datepicker library on start and end date input fields
+    var startDateInput = document.getElementById('historical-start-date');
+    var endDateInput = document.getElementById('historical-end-date');
+    var intervalSelect = document.getElementById('interval');
 
-      startDateInput.addEventListener('change', function() {
-        var startDate = startDateInput.value;
-        var endDate = endDateInput.value;
-        var interval = intervalSelect.value;
+    startDateInput.addEventListener('change', function () {
+      var startDate = startDateInput.value;
+      var endDate = endDateInput.value;
+      var interval = intervalSelect.value;
 
-        // call the fetchValue function with updated values
-        fetchValue(startDate, endDate, interval);
-      });
+      // call the fetchValue function with updated values
+      fetchValue(startDate, endDate, interval);
+    });
 
-      endDateInput.addEventListener('change', function() {
-        var startDate = startDateInput.value;
-        var endDate = endDateInput.value;
-        var interval = intervalSelect.value;
+    endDateInput.addEventListener('change', function () {
+      var startDate = startDateInput.value;
+      var endDate = endDateInput.value;
+      var interval = intervalSelect.value;
 
-        // call the fetchValue function with updated values
-        fetchValue(startDate, endDate, interval);
-      });
+      // call the fetchValue function with updated values
+      fetchValue(startDate, endDate, interval);
+    });
 
-      intervalSelect.addEventListener('change', function() {
-        var startDate = startDateInput.value;
-        var endDate = endDateInput.value;
-        var interval = intervalSelect.value;
+    intervalSelect.addEventListener('change', function () {
+      var startDate = startDateInput.value;
+      var endDate = endDateInput.value;
+      var interval = intervalSelect.value;
 
-        // call the fetchValue function with updated values
-        fetchValue(startDate, endDate, interval);
-      });
+      // call the fetchValue function with updated values
+      fetchValue(startDate, endDate, interval);
+    });
   });
 
-  
-    // Retrieve data from context variable 
-    const labels= {{ dates|safe }};
-    const prices = {{ prices|safe }};
-    var name = "{{stock_name}}";
 
-    // const labels = dateList.map(date => date.toDateString());
+  // Retrieve data from context variable 
+  const labels = {{ dates| safe }};
+  const prices = {{ prices| safe }};
+  var name = "{{stock_name}}";
+
+  // const labels = dateList.map(date => date.toDateString());
 
 
-    // Create chart using Chart.js
-    var chart = null;
-    var chartData = {
-        labels: labels,
-        datasets: [{
-          label: name,
-          data: prices,
-          backgroundColor: 'rgba(255, 99, 132, 0.2)',
-          borderColor: 'rgba(255, 99, 132, 1)',
-          borderWidth: 1
-        }]
-      };
+  // Create chart using Chart.js
+  var chart = null;
+  var chartData = {
+    labels: labels,
+    datasets: [{
+      label: name,
+      data: prices,
+      backgroundColor: 'rgba(255, 99, 132, 0.2)',
+      borderColor: 'rgba(255, 99, 132, 1)',
+      borderWidth: 1
+    }]
+  };
 
-    // Update the chart data with new prices and dates
-    function updateChartData(data) {
-        chartData.labels = data.dates;
-        chartData.datasets[0].data = data.prices;
-    }
+  // Update the chart data with new prices and dates
+  function updateChartData(data) {
+    chartData.labels = data.dates;
+    chartData.datasets[0].data = data.prices;
+  }
 
-    const ctx = document.getElementById('historical-data-graph').getContext('2d');
+  const ctx = document.getElementById('historical-data-graph').getContext('2d');
 
-    updateChart()
-    // Update the chart with new data
-    function updateChart() {
-        if (!chart) {
-            // Create a new chart if it doesn't exist
-            var ctx = document.getElementById('historical-data-graph').getContext('2d');
-            
-            chart = new Chart(ctx, {
-              type: 'line',
-              data: chartData,
-              options: {
-                scales: {
-                  yAxes: [{
-                    ticks: {
-                      beginAtZero: true
-                    }
-                  }]
-                }
+  updateChart()
+  // Update the chart with new data
+  function updateChart() {
+    if (!chart) {
+      // Create a new chart if it doesn't exist
+      var ctx = document.getElementById('historical-data-graph').getContext('2d');
+
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true
               }
-            });
-        } else {
-            // Update the existing chart with new data
-            chart.data = chartData;
-            chart.update();
+            }]
+          }
         }
+      });
+    } else {
+      // Update the existing chart with new data
+      chart.data = chartData;
+      chart.update();
     }
+  }
 
-    // Update the HTML elements with new start and end dates and interval
-    function updateHTML(startDate, endDate, interval) {
-        $('#historical-start-date').text(startDate);
-        $('#historical-end-date').text(endDate);
-        $('#interval').text(interval);
-    }
-  </script>
+  // Update the HTML elements with new start and end dates and interval
+  function updateHTML(startDate, endDate, interval) {
+    $('#historical-start-date').text(startDate);
+    $('#historical-end-date').text(endDate);
+    $('#interval').text(interval);
+  }
+
+</script>
 
 
 
 <style>
   .search-result {
-      color: rgb(9, 9, 9);
-      text-decoration: none;
-      cursor: pointer;
+    color: rgb(9, 9, 9);
+    text-decoration: none;
+    cursor: pointer;
   }
 
   .search-result:hover {
-      text-decoration: underline;
+    text-decoration: underline;
+  }
+
+  .loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    position: absolute;
+    top: 50%;
+    left: 45%;
+    transform: translate(-50%, -50%);
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
   }
 </style>
 
