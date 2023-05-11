@@ -81,7 +81,7 @@ def index(request):
             'size': 15,
             'color': 'green'
         },
-        'name': 'Buy',
+        'name': 'Sell',
         'showlegend': True
     }
 
@@ -95,23 +95,23 @@ def index(request):
             'size': 15,
             'color': 'red'
         },
-        'name': 'Sell',
+        'name': 'Buy',
         'showlegend': True
     }
 
     for i in range(1, len(data)):
         if data['SUPERT_20_2.0'][i] > y_data[i] and data['SUPERT_20_2.0'][i-1] <= y_data[i-1]:
             # Buy signal
-            buy_signals_trace['x'].append(x_data[i])
-            buy_signals_trace['y'].append(y_data[i])
-            buy_signals_trace['marker']['symbol'] = 'triangle-up'
-            buy_signals_trace['marker']['color'] = 'green'
-        elif data['SUPERT_20_2.0'][i] < y_data[i] and data['SUPERT_20_2.0'][i-1] >= y_data[i-1]:
-            # Sell signal
             sell_signals_trace['x'].append(x_data[i])
             sell_signals_trace['y'].append(y_data[i])
-            sell_signals_trace['marker']['symbol'] = 'triangle-down'
-            sell_signals_trace['marker']['color'] = 'red'
+            sell_signals_trace['marker']['symbol'] = 'triangle-up'
+            sell_signals_trace['marker']['color'] = 'green'
+        elif data['SUPERT_20_2.0'][i] < y_data[i] and data['SUPERT_20_2.0'][i-1] >= y_data[i-1]:
+            # Sell signal
+            buy_signals_trace['x'].append(x_data[i])
+            buy_signals_trace['y'].append(y_data[i])
+            buy_signals_trace['marker']['symbol'] = 'triangle-down'
+            buy_signals_trace['marker']['color'] = 'red'
 
 
     # Create layout for plot
@@ -124,16 +124,16 @@ def index(request):
         'xaxis': {
         'rangeslider': {
         'visible': False
-        }
-        }
+                }
+            }
         }
 
     # Create figure and plot data
-    graph_data = [candlestick_trace, supertrend_trace, buy_signals_trace, sell_signals_trace]
+    graph_data = [candlestick_trace, supertrend_trace, sell_signals_trace, buy_signals_trace]
     
     chart = plot({'data': graph_data, 'layout': layout}, output_type='div')
     context = {'prices': prices, "dates":dates, "stock_name": stock_obj.name, "stock_symbol": symbol,
-                'chart': chart}
+                'chart': chart, 'pred_chart': chart}
     # print(context)
     return render(request, "index.html", context)
 
@@ -264,7 +264,7 @@ def signal_data_graph(request):
             'size': 15,
             'color': 'green'
         },
-        'name': 'Buy',
+        'name': 'Sell',
         'showlegend': True
     }
 
@@ -278,23 +278,23 @@ def signal_data_graph(request):
             'size': 15,
             'color': 'red'
         },
-        'name': 'Sell',
+        'name': 'Buy',
         'showlegend': True
     }
 
     for i in range(1, len(signal_data)):
         if signal_data['SUPERT_20_2.0'][i] > y_data[i] and signal_data['SUPERT_20_2.0'][i-1] <= y_data[i-1]:
             # Buy signal
-            buy_signals_trace['x'].append(x_data[i])
-            buy_signals_trace['y'].append(y_data[i])
-            buy_signals_trace['marker']['symbol'] = 'triangle-up'
-            buy_signals_trace['marker']['color'] = 'green'
-        elif signal_data['SUPERT_20_2.0'][i] < y_data[i] and signal_data['SUPERT_20_2.0'][i-1] >= y_data[i-1]:
-            # Sell signal
             sell_signals_trace['x'].append(x_data[i])
             sell_signals_trace['y'].append(y_data[i])
-            sell_signals_trace['marker']['symbol'] = 'triangle-down'
-            sell_signals_trace['marker']['color'] = 'red'
+            sell_signals_trace['marker']['symbol'] = 'triangle-up'
+            sell_signals_trace['marker']['color'] = 'green'
+        elif signal_data['SUPERT_20_2.0'][i] < y_data[i] and signal_data['SUPERT_20_2.0'][i-1] >= y_data[i-1]:
+            # Sell signal
+            buy_signals_trace['x'].append(x_data[i])
+            buy_signals_trace['y'].append(y_data[i])
+            buy_signals_trace['marker']['symbol'] = 'triangle-down'
+            buy_signals_trace['marker']['color'] = 'red'
 
 
     # Create layout for plot
@@ -312,7 +312,7 @@ def signal_data_graph(request):
         }
 
     # Create figure and plot data
-    graph_data = [candlestick_trace, supertrend_trace, buy_signals_trace, sell_signals_trace]
+    graph_data = [candlestick_trace, supertrend_trace, sell_signals_trace, buy_signals_trace]
     
     chart = plot({'data': graph_data, 'layout': layout}, output_type='div')
     context = {'chart': chart}

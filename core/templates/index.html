@@ -156,9 +156,17 @@
     <div class="card card-small mt-4">
       <div class="card-body pt-0", id="signal-graph-1">
         <div class="row border-bottom py-2 bg-light">
-          <h6 class="m-0 mx-auto">Predictions Data</h6>
+          <div class="input-daterange input-group">
+            <input type="number" class="input-sm form-control ml-3" id="price" name="price" min="100" required placeholder="Enter The Price">
+            <div class="col-lg-6">
+            <label for="duration">Duration (months): <span id="duration-value">1</span></label>
+            <input placeholder="Duration (months): 1" type="range" class="input-sm form-control-range" id="duration" name="duration" min="1" max="60" value="1" oninput="updateDurationValue(this.value)">
+          </div>
         </div>
-        <!-- {{ chart|safe }} -->
+        </div>
+        <canvas height="130" style="max-width: 100% !important;" class="pred-data-graph"
+          id="pred-data-graph"></canvas>
+        <!-- {{ pred_chart|safe }} -->
       </div>
     </div>
     <!-- Signals Data -->
@@ -312,6 +320,9 @@
 </script>
 
 <script>
+  function updateDurationValue(value) {
+    document.getElementById("duration-value").innerHTML = value;
+  }
   let indian_index_url = "{% url 'indian-index-status' %}";
   function updateData() {
     $.ajax({
@@ -508,6 +519,7 @@
   }
 
   const ctx = document.getElementById('historical-data-graph').getContext('2d');
+  const pred_ctx = document.getElementById('pred-data-graph').getContext('2d');
 
   updateChart()
   // Update the chart with new data
@@ -528,6 +540,22 @@
             }]
           }
         }
+        
+      });
+
+      pred_chart = new Chart(pred_ctx, {
+        type: 'line',
+        data: chartData,
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true
+              }
+            }]
+          }
+        }
+        
       });
     } else {
       // Update the existing chart with new data
