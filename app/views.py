@@ -38,7 +38,7 @@ def index(request):
     # Create buy/sell signals based on MACD and Supertrend
 
     data.drop(['SUPERTl_20_2.0','SUPERTs_20_2.0'],axis=1,inplace=True)
-    data = data[data['SUPERT_20_2.0']!=0]
+    data = data.loc[data['SUPERT_20_2.0'] != 0].copy()
     data.dropna(inplace=True)
 
     # Create x and y data for plot
@@ -209,3 +209,112 @@ def get_indian_index_status(request):
     context = {name:get_current_status(ticker) for name,ticker in indian_index.items()}
     return JsonResponse(context, safe=False)
 
+def signal_data_graph(request):
+    symbol = request.GET.get('symbol')
+    if not symbol:
+        symbol = "INFY"
+    stock_obj = ListedStock.objects.filter(symbol=symbol).first()
+    symbol = symbol + ".NS"
+    stock = yf.Ticker(symbol)
+
+    signal_data = stock.history(period="1d", interval='5m')
+    signal_data.ta.supertrend(length=20, multiplier=2, append=True)
+
+    signal_data.drop(['SUPERTl_20_2.0','SUPERTs_20_2.0'],axis=1,inplace=True)
+    signal_data = signal_data.loc[signal_data['SUPERT_20_2.0'] != 0].copy()
+    signal_data.dropna(inplace=True)
+
+    # Create x and y data for plot
+    x_data = signal_data.index
+    y_data = signal_data['Close']
+
+    # Create trace for candlestick chart
+    candlestick_trace = {
+        'x': x_data,
+        'open': signal_data['Open'],
+        'high': signal_data['High'],
+        'low': signal_data['Low'],
+        'close': y_data,
+        'type': 'candlestick',
+        'name': symbol,
+        'showlegend': False
+    }
+
+
+    # Create trace for Supertrend
+    supertrend_trace = {
+        'x': x_data,
+        'y': signal_data['SUPERT_20_2.0'],
+        'type': 'scatter',
+        'mode': 'lines',
+        'line': {
+            'width': 2,
+            'color': 'green'
+        },
+        'name': 'Trend'
+    }
+
+    # Add buy/sell signals
+    buy_signals_trace = {
+        'x': [],
+        'y': [],
+        'mode': 'markers',
+        'marker': {
+            'symbol': 'triangle-up',
+            'size': 15,
+            'color': 'green'
+        },
+        'name': 'Buy',
+        'showlegend': True
+    }
+
+    # Add buy/sell signals
+    sell_signals_trace = {
+        'x': [],
+        'y': [],
+        'mode': 'markers',
+        'marker': {
+            'symbol': 'triangle-down',
+            'size': 15,
+            'color': 'red'
+        },
+        'name': 'Sell',
+        'showlegend': True
+    }
+
+    for i in range(1, len(signal_data)):
+        if signal_data['SUPERT_20_2.0'][i] > y_data[i] and signal_data['SUPERT_20_2.0'][i-1] <= y_data[i-1]:
+            # Buy signal
+            buy_signals_trace['x'].append(x_data[i])
+            buy_signals_trace['y'].append(y_data[i])
+            buy_signals_trace['marker']['symbol'] = 'triangle-up'
+            buy_signals_trace['marker']['color'] = 'green'
+        elif signal_data['SUPERT_20_2.0'][i] < y_data[i] and signal_data['SUPERT_20_2.0'][i-1] >= y_data[i-1]:
+            # Sell signal
+            sell_signals_trace['x'].append(x_data[i])
+            sell_signals_trace['y'].append(y_data[i])
+            sell_signals_trace['marker']['symbol'] = 'triangle-down'
+            sell_signals_trace['marker']['color'] = 'red'
+
+
+    # Create layout for plot
+    layout = {
+        'title': {
+        'text': stock_obj.name,
+        'x': 0.5,
+        'xanchor': 'center'
+        },
+        'xaxis': {
+        'rangeslider': {
+        'visible': False
+        }
+        }
+        }
+
+    # Create figure and plot data
+    graph_data = [candlestick_trace, supertrend_trace, buy_signals_trace, sell_signals_trace]
+    
+    chart = plot({'data': graph_data, 'layout': layout}, output_type='div')
+    context = {'chart': chart}
+
+    return JsonResponse(context, safe=False)

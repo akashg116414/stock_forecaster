@@ -103,9 +103,10 @@
 
 
 <!-- End Small Stats Blocks -->
-<div class="row">
-  <!-- Users Stats -->
+<div class="row" id="historical-div-main">
+  <!-- First Column -->
   <div class="col-lg-8 col-md-12 col-sm-12 mb-4">
+    <!-- Historical Data -->
     <div class="card card-small">
       <div class="card-header border-bottom">
         <form method="get" action="{% url 'search' %}" class="main-navbar__search w-100 d-none d-md-flex d-lg-flex">
@@ -150,10 +151,26 @@
           id="historical-data-graph"></canvas>
       </div>
     </div>
-  </div>
 
-  <!-- End Users Stats -->
-  <!-- Users By Device Stats -->
+    <!-- Predictions Data -->
+    <div class="card card-small mt-4">
+      <div class="card-body pt-0", id="signal-graph-1">
+        <div class="row border-bottom py-2 bg-light">
+          <h6 class="m-0 mx-auto">Predictions Data</h6>
+        </div>
+        <!-- {{ chart|safe }} -->
+      </div>
+    </div>
+    <!-- Signals Data -->
+    <div class="card card-small mt-4">
+      <div class="card-body pt-0", id="signal-graph">
+        {{ chart|safe }}
+      </div>
+    </div>
+
+    
+  </div>
+  <!-- Second Column -->
   <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
     <div class="card card-small h-100">
       <div class="card-header border-bottom">
@@ -186,27 +203,63 @@
           <span class="stats-small__percentage stats-small__percentage--increase">1.2%</span>
         </div>
       </div>
-
-    </div>
-  </div>
-</div>
-
-<div class="row">
-  <!-- Users Stats -->
-  <div class="col-lg-8 col-md-12 col-sm-12 mb-4">
-    <div class="card card-small">
-      <div class="card-body pt-0">
-
-        {{ chart|safe }}
+      <div class="card-body d-flex py-0">
+        <div class="stats-small__data text">
+          <span class="stats-small__label text-uppercase">Dollar</span>
+          <h6 class="stats-small__value count my-3">84</h6>
+        </div>
+        <div class="stats-small__data">
+          <span class="stats-small__percentage stats-small__percentage--increase">1.4%</span>
+        </div>
+      </div>
+      <div class="card-body d-flex py-0">
+        <div class="stats-small__data text">
+          <span class="stats-small__label text-uppercase">Gold</span>
+          <h6 class="stats-small__value count my-3">64021</h6>
+        </div>
+        <div class="stats-small__data">
+          <span class="stats-small__percentage stats-small__percentage--increase">3.3%</span>
+        </div>
+      </div>
+      <div class="card-body d-flex py-0">
+        <div class="stats-small__data text">
+          <span class="stats-small__label text-uppercase">Silver</span>
+          <h6 class="stats-small__value count my-3">76041</h6>
+        </div>
+        <div class="stats-small__data">
+          <span class="stats-small__percentage stats-small__percentage--increase">1.2%</span>
+        </div>
+      </div>
+      <div class="card-body d-flex py-0">
+        <div class="stats-small__data text">
+          <span class="stats-small__label text-uppercase">Dollar</span>
+          <h6 class="stats-small__value count my-3">84</h6>
+        </div>
+        <div class="stats-small__data">
+          <span class="stats-small__percentage stats-small__percentage--increase">1.4%</span>
+        </div>
+      </div>
+      <div class="card-body d-flex py-0">
+        <div class="stats-small__data text">
+          <span class="stats-small__label text-uppercase">Gold</span>
+          <h6 class="stats-small__value count my-3">64021</h6>
+        </div>
+        <div class="stats-small__data">
+          <span class="stats-small__percentage stats-small__percentage--increase">3.3%</span>
+        </div>
+      </div>
+      <div class="card-body d-flex py-0">
+        <div class="stats-small__data text">
+          <span class="stats-small__label text-uppercase">Silver</span>
+          <h6 class="stats-small__value count my-3">76041</h6>
+        </div>
+        <div class="stats-small__data">
+          <span class="stats-small__percentage stats-small__percentage--increase">1.2%</span>
+        </div>
       </div>
     </div>
   </div>
-
-
-  <!-- End Top Referrals Component -->
 </div>
-
-
 
 {% endblock content %}
 
@@ -215,7 +268,6 @@
 
 
 <script>
-  
   const searchInput = document.getElementById('search-input');
   const searchResults = document.getElementById('search-results');
 
@@ -315,6 +367,7 @@
   let today = new Date().toISOString().split('T')[0];
   document.getElementById("historical-start-date").setAttribute("max", today);
   document.getElementById("historical-end-date").setAttribute("max", today);
+  var stock_symbol = "{{stock_symbol}}";
 
   function fetchValue(startDate, endDate, interval) {
 
@@ -345,7 +398,6 @@
         interval = "3mo";
       }
     }
-    var stock_symbol = "{{stock_symbol}}";
     let url = "{% url 'historical-data' %}?";
     url += `symbol=${stock_symbol}`;
 
@@ -366,6 +418,32 @@
       .catch(error => console.error(error));
 
   }
+
+  function updatesignalChart() {
+      let signal_url = "{% url 'signal-data-graph' %}?";
+      signal_url += `symbol=${stock_symbol}`;
+      const now = new Date();
+      const hours = now.getUTCHours() + 5.5; // Add 5.5 hours for IST timezone offset
+      const minutes = now.getUTCMinutes();
+      const currentTime = hours * 60 + minutes;
+      console.log(currentTime)
+
+      // Check if the current time is between 9:15 am and 4:00 pm IST
+      if (currentTime >= 555 && currentTime <= 960) {
+      // Send AJAX request to server to get updated chart data
+      $.ajax({
+        url: signal_url,
+        type: 'GET',
+        success: function(data) {
+          // Replace chart HTML with updated data
+          $('#signal-graph').html(data.chart);
+        }
+      });
+    }
+  }
+
+  // Call updateChart function every 5 seconds
+  setInterval(updatesignalChart, 5000);
 
   $(document).ready(function () {
     // Initialize datepicker library on start and end date input fields

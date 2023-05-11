@@ -18,5 +18,7 @@ urlpatterns = [
     path('search/', views.search_items, name='search'),
     path('historical-data/', views.historical_data, name='historical-data'),
     path('indian-index-status/', views.get_indian_index_status, name='indian-index-status'),
+    path('signal-data-graph', views.signal_data_graph, name='signal-data-graph'),
+    
     
 ]
