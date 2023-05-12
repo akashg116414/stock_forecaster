@@ -11,6 +11,9 @@ from django.template import loader
 from .utils import get_current_status
 from .models import ListedStock
 from .constant import indian_index
+import datetime
+
+
 
 
 # @login_required(login_url="/login/")
@@ -32,11 +35,14 @@ def index(request):
     dates = data.index.strftime('%Y-%m-%d').tolist()
 
     # Calculate Supertrend and MACD indicators
-    data = stock.history(period="1d", interval='5m')
+    data = stock.history(period="5d", interval='5m')
     data.ta.supertrend(length=20, multiplier=2, append=True)
 
-    # Create buy/sell signals based on MACD and Supertrend
+    today = datetime.datetime.now().strftime('%Y-%m-%d')
+    start_time = pd.Timestamp(today + ' 09:15:00+05:30')
+    data = data.loc[start_time:]
 
+    # Create buy/sell signals based on MACD and Supertrend
     data.drop(['SUPERTl_20_2.0','SUPERTs_20_2.0'],axis=1,inplace=True)
     data = data.loc[data['SUPERT_20_2.0'] != 0].copy()
     data.dropna(inplace=True)
@@ -217,12 +223,18 @@ def signal_data_graph(request):
     symbol = symbol + ".NS"
     stock = yf.Ticker(symbol)
 
-    signal_data = stock.history(period="1d", interval='5m')
+    signal_data = stock.history(period="5d", interval='5m')
     signal_data.ta.supertrend(length=20, multiplier=2, append=True)
 
+    
     signal_data.drop(['SUPERTl_20_2.0','SUPERTs_20_2.0'],axis=1,inplace=True)
+    
     signal_data = signal_data.loc[signal_data['SUPERT_20_2.0'] != 0].copy()
     signal_data.dropna(inplace=True)
+
+    today = datetime.datetime.now().strftime('%Y-%m-%d')
+    start_time = pd.Timestamp(today + ' 09:15:00+05:30')
+    signal_data = signal_data.loc[start_time:]
 
     # Create x and y data for plot
     x_data = signal_data.index

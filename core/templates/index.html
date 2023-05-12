@@ -180,7 +180,7 @@
   </div>
   <!-- Second Column -->
   <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-    <div class="card card-small h-100">
+    <div class="card card-small">
       <div class="card-header border-bottom">
         <h6 class="m-0">Global Indicators</h6>
       </div>
@@ -263,6 +263,38 @@
         </div>
         <div class="stats-small__data">
           <span class="stats-small__percentage stats-small__percentage--increase">1.2%</span>
+        </div>
+      </div>
+    </div>
+    <div class="card card-small mt-4">
+      <div class="card-header border-bottom">
+        <h6 class="m-0">Trending Stocks</h6>
+      </div>
+      <div class="card-body d-flex py-0">
+        <div class="stats-small__data text">
+          <span class="stats-medium__label text-uppercase">Reliance</span>
+        </div>
+        <div class="stats-small__data">
+          <span class="stats-small__value count my-1 text-right">2675</span>
+          <span class="stats-small__percentage stats-small__percentage--increase">1.4%</span>
+        </div>
+      </div>
+      <div class="card-body d-flex py-0">
+        <div class="stats-small__data text">
+          <span class="stats-medium__label text-uppercase">HDFC BANK</span>
+        </div>
+        <div class="stats-small__data">
+          <span class="stats-small__value count my-1 text-right">1654</span>
+          <span class="stats-small__percentage stats-small__percentage--decrease">4.4%</span>
+        </div>
+      </div>
+      <div class="card-body d-flex py-0">
+        <div class="stats-small__data text">
+          <span class="stats-medium__label text-uppercase">Tata Motors</span>
+        </div>
+        <div class="stats-small__data">
+          <span class="stats-small__value count my-1 text-right">235</span>
+          <span class="stats-small__percentage stats-small__percentage--increase mb-3">2.4%</span>
         </div>
       </div>
     </div>
@@ -453,8 +485,8 @@
     }
   }
 
-  // Call updateChart function every 5 seconds
-  setInterval(updatesignalChart, 5000);
+  // Call updateChart function every 5 min
+  setInterval(updatesignalChart, 1500000);
 
   $(document).ready(function () {
     // Initialize datepicker library on start and end date input fields
@@ -539,14 +571,20 @@
               }
             }]
           }
-        }
-        
+        } 
       });
 
       pred_chart = new Chart(pred_ctx, {
         type: 'line',
         data: chartData,
         options: {
+          title: {
+          display: true,
+          text: '10000 Rs will be 12321rs in 12 months',
+          fontSize: 18,
+          fontWeight: 'bold',
+          fontFamily: 'Roboto, sans-serif'
+          },
           scales: {
             yAxes: [{
               ticks: {
