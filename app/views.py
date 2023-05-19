@@ -8,9 +8,9 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.template import loader
 
-from .utils import get_current_status
+from .utils import get_current_status, get_crypto_status
 from .models import ListedStock
-from .constant import indian_index
+from .constant import indian_index, global_indicators,crypto_currency
 import datetime
 
 
@@ -217,6 +217,12 @@ def historical_data(request):
 def get_indian_index_status(request):
     context = {name:get_current_status(ticker) for name,ticker in indian_index.items()}
     return JsonResponse(context, safe=False)
+
+def get_global_indicator_status(request):
+    context = {name:get_current_status(ticker) for name,ticker in global_indicators.items()}
+    context_crypto = {name:get_crypto_status(ticker) for name,ticker in crypto_currency.items()}
+    final_context = dict(context, **context_crypto)
+    return JsonResponse(final_context, safe=False)
 
 def signal_data_graph(request):
     symbol = request.GET.get('symbol')
