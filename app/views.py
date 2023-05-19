@@ -37,8 +37,11 @@ def index(request):
     # Calculate Supertrend and MACD indicators
     data = stock.history(period="5d", interval='5m')
     data.ta.supertrend(length=20, multiplier=2, append=True)
-
-    today = datetime.datetime.now().strftime('%Y-%m-%d')
+    today = datetime.date.today()
+    if today.weekday() >= 5:
+        days_to_subtract = today.weekday() - 4
+        today -= datetime.timedelta(days=days_to_subtract)
+    today = today.strftime('%Y-%m-%d')
     start_time = pd.Timestamp(today + ' 09:15:00+05:30')
     data = data.loc[start_time:]
 
