@@ -17,7 +17,7 @@ urlpatterns = [
     path('historical-data/', views.historical_data, name='historical-data'),
     path('indian-index-status/', views.get_indian_index_status, name='indian-index-status'),
     path('global-index-status/', views.get_global_indicator_status, name='global-index-status'),
+    path('global-crypto-status/', views.get_global_crypto_status, name='global-crypto-status'),
     path('signal-data-graph', views.signal_data_graph, name='signal-data-graph'),
-    
     
 ]

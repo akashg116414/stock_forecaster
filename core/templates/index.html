@@ -184,88 +184,82 @@
       <div class="card-header border-bottom">
         <h6 class="m-0">Global Indicators</h6>
       </div>
+
+      <div class="card-body d-flex py-0">
+        <div class="stats-small__data text">
+          <span class="stats-small__label text-uppercase">s&p 500</span>
+          <h6 class="stats-small__value count my-3" id="sp-price"></h6>
+        </div>
+
+        <div class="stats-small__data">
+          <span class="stats-small__percentage" id="sp500-percentage-change"></span>
+        </div>
+      </div>
+
+      <div class="card-body d-flex py-0">
+        <div class="stats-small__data text">
+          <span class="stats-small__label text-uppercase">Nasdaq</span>
+          <h6 class="stats-small__value count my-3"  id="nasdaq-price"></h6>
+        </div>
+
+        <div class="stats-small__data">
+          <span class="stats-small__percentage" id="nasdaq-percentage-change"></span>
+        </div>
+      </div>
+
+      <div class="card-body d-flex py-0">
+        <div class="stats-small__data text">
+          <span class="stats-small__label text-uppercase">Don Jones</span>
+          <h6 class="stats-small__value count my-3"  id="don_jones-price"></h6>
+        </div>
+        <div class="stats-small__data">
+          <span class="stats-small__percentage" id = "don_jones-percentage-change"></span>
+        </div>
+      </div>
+
       <div class="card-body d-flex py-0">
         <div class="stats-small__data text">
           <span class="stats-small__label text-uppercase">Dollar</span>
-          <h6 class="stats-small__value count my-3">84</h6>
+          <h6 class="stats-small__value count my-3"  id="dollar-price"></h6>
         </div>
         <div class="stats-small__data">
-          <span class="stats-small__percentage stats-small__percentage--increase">1.4%</span>
+          <span class="stats-small__percentage" id = "dollar-percentage-change"></span>
         </div>
       </div>
+
       <div class="card-body d-flex py-0">
         <div class="stats-small__data text">
-          <span class="stats-small__label text-uppercase">Gold</span>
-          <h6 class="stats-small__value count my-3">64021</h6>
+          <span class="stats-small__label text-uppercase">Euro</span>
+          <h6 class="stats-small__value count my-3"  id="euro-price"></h6>
         </div>
         <div class="stats-small__data">
-          <span class="stats-small__percentage stats-small__percentage--increase">3.3%</span>
+          <span class="stats-small__percentage" id = "euro-percentage-change"></span>
         </div>
       </div>
+
       <div class="card-body d-flex py-0">
         <div class="stats-small__data text">
-          <span class="stats-small__label text-uppercase">Silver</span>
-          <h6 class="stats-small__value count my-3">76041</h6>
+          <span class="stats-small__label text-uppercase">Bitcoin</span>
+          <h6 class="stats-small__value count my-3"  id="bitcoin-price"></h6>
         </div>
         <div class="stats-small__data">
-          <span class="stats-small__percentage stats-small__percentage--increase">1.2%</span>
+          <span class="stats-small__percentage" id = "bitcoin-percentage-change"></span>
         </div>
       </div>
+
       <div class="card-body d-flex py-0">
         <div class="stats-small__data text">
-          <span class="stats-small__label text-uppercase">Dollar</span>
-          <h6 class="stats-small__value count my-3">84</h6>
+          <span class="stats-small__label text-uppercase">Ethereum</span>
+          <h6 class="stats-small__value count my-3"  id="ethereum-price"></h6>
         </div>
         <div class="stats-small__data">
-          <span class="stats-small__percentage stats-small__percentage--increase">1.4%</span>
+          <span class="stats-small__percentage" id = "ethereum-percentage-change"></span>
         </div>
       </div>
-      <div class="card-body d-flex py-0">
-        <div class="stats-small__data text">
-          <span class="stats-small__label text-uppercase">Gold</span>
-          <h6 class="stats-small__value count my-3">64021</h6>
-        </div>
-        <div class="stats-small__data">
-          <span class="stats-small__percentage stats-small__percentage--increase">3.3%</span>
-        </div>
-      </div>
-      <div class="card-body d-flex py-0">
-        <div class="stats-small__data text">
-          <span class="stats-small__label text-uppercase">Silver</span>
-          <h6 class="stats-small__value count my-3">76041</h6>
-        </div>
-        <div class="stats-small__data">
-          <span class="stats-small__percentage stats-small__percentage--increase">1.2%</span>
-        </div>
-      </div>
-      <div class="card-body d-flex py-0">
-        <div class="stats-small__data text">
-          <span class="stats-small__label text-uppercase">Dollar</span>
-          <h6 class="stats-small__value count my-3">84</h6>
-        </div>
-        <div class="stats-small__data">
-          <span class="stats-small__percentage stats-small__percentage--increase">1.4%</span>
-        </div>
-      </div>
-      <div class="card-body d-flex py-0">
-        <div class="stats-small__data text">
-          <span class="stats-small__label text-uppercase">Gold</span>
-          <h6 class="stats-small__value count my-3">64021</h6>
-        </div>
-        <div class="stats-small__data">
-          <span class="stats-small__percentage stats-small__percentage--increase">3.3%</span>
-        </div>
-      </div>
-      <div class="card-body d-flex py-0">
-        <div class="stats-small__data text">
-          <span class="stats-small__label text-uppercase">Silver</span>
-          <h6 class="stats-small__value count my-3">76041</h6>
-        </div>
-        <div class="stats-small__data">
-          <span class="stats-small__percentage stats-small__percentage--increase">1.2%</span>
-        </div>
-      </div>
+
+      
     </div>
+<!--     
     <div class="card card-small mt-4">
       <div class="card-header border-bottom">
         <h6 class="m-0">Trending Stocks</h6>
@@ -296,7 +290,7 @@
           <span class="stats-small__value count my-1 text-right">235</span>
           <span class="stats-small__percentage stats-small__percentage--increase mb-3">2.4%</span>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </div>
@@ -609,6 +603,105 @@
     $('#interval').text(interval);
   }
 
+  // for global indicators
+  let global_index_url = "{% url 'global-index-status' %}";
+  function updateGlobalData() {
+    $.ajax({
+      type: 'GET',
+      url: global_index_url,
+      success: function (response) {
+        console.log(response)
+        var sp_500 = response["s&p 500"];
+        var nasdaq = response["nasdaq"];
+        var don_jones = response["don_jones"];
+        var dollar = response["Dollar"];
+        var euro = response["Euro"];
+
+        $("#sp-price").text(sp_500.current_price.toFixed(2));
+        $("#sp500-percentage-change").text(sp_500.price_change_percentage.toFixed(2));
+        if (sp_500.price_change_percentage < 0) {
+          $("#sp500-percentage-change").addClass("stats-small__percentage--decrease");
+        } else {
+          $("#sp500-percentage-change").addClass("stats-small__percentage--increase");
+        }
+
+        $("#nasdaq-price").text(nasdaq.current_price.toFixed(2));
+        $("#nasdaq-percentage-change").text(nasdaq.price_change_percentage.toFixed(2));
+        if (nasdaq.price_change_percentage < 0) {
+          $("#nasdaq-percentage-change").addClass("stats-small__percentage--decrease");
+        } else {
+          $("#nasdaq-percentage-change").addClass("stats-small__percentage--increase");
+        }
+
+        $("#don_jones-price").text(don_jones.current_price.toFixed(2));
+        $("#don_jones-percentage-change").text(don_jones.price_change_percentage.toFixed(2));
+        if (don_jones.price_change_percentage < 0) {
+          $("#don_jones-percentage-change").addClass("stats-small__percentage--decrease");
+        } else {
+          $("#don_jones-percentage-change").addClass("stats-small__percentage--increase");
+        }
+
+        $("#dollar-price").text(dollar.current_price.toFixed(2));
+        $("#dollar-percentage-change").text(dollar.price_change_percentage.toFixed(2));
+        if (dollar.price_change_percentage < 0) {
+          $("#dollar-percentage-change").addClass("stats-small__percentage--decrease");
+        } else {
+          $("#dollar-percentage-change").addClass("stats-small__percentage--increase");
+        }
+
+        $("#euro-price").text(euro.current_price.toFixed(2));
+        $("#euro-percentage-change").text(euro.price_change_percentage.toFixed(2));
+        if (euro.price_change_percentage < 0) {
+          $("#euro-percentage-change").addClass("stats-small__percentage--decrease");
+        } else {
+          $("#euro-percentage-change").addClass("stats-small__percentage--increase");
+        }
+
+      }
+    });
+  }
+  updateGlobalData()
+  $(document).ready(function () {
+    setInterval(updateData, 8000); //update data every 5 seconds
+  });
+  
+
+  // for global indicators crypto
+  let global_crypto_url = "{% url 'global-crypto-status' %}";
+  function updateGlobalCryptoData() {
+    $.ajax({
+      type: 'GET',
+      url: global_crypto_url,
+      success: function (response) {
+        console.log(response)
+        var bitcoin = response["Bitcoin"];
+        var ethereum = response["Ethereum"];
+       
+
+        $("#bitcoin-price").text(bitcoin.current_price.toFixed(2));
+        $("#bitcoin-percentage-change").text(bitcoin.price_change_percentage.toFixed(2));
+        if (bitcoin.price_change_percentage < 0) {
+          $("#bitcoin-percentage-change").addClass("stats-small__percentage--decrease");
+        } else {
+          $("#bitcoin-percentage-change").addClass("stats-small__percentage--increase");
+        }
+
+        $("#ethereum-price").text(ethereum.current_price.toFixed(2));
+        $("#ethereum-percentage-change").text(ethereum.price_change_percentage.toFixed(2));
+        if (ethereum.price_change_percentage < 0) {
+          $("#ethereum-percentage-change").addClass("stats-small__percentage--decrease");
+        } else {
+          $("#ethereum-percentage-change").addClass("stats-small__percentage--increase");
+        }
+
+      }
+    });
+  }
+  updateGlobalCryptoData()
+  $(document).ready(function () {
+    setInterval(updateData, 8000); //update data every 5 seconds
+  });
+  
 </script>
 
 

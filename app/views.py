@@ -220,9 +220,11 @@ def get_indian_index_status(request):
 
 def get_global_indicator_status(request):
     context = {name:get_current_status(ticker) for name,ticker in global_indicators.items()}
+    return JsonResponse(context, safe=False)
+
+def get_global_crypto_status(request):
     context_crypto = {name:get_crypto_status(ticker) for name,ticker in crypto_currency.items()}
-    final_context = dict(context, **context_crypto)
-    return JsonResponse(final_context, safe=False)
+    return JsonResponse(context_crypto, safe=False)
 
 def signal_data_graph(request):
     symbol = request.GET.get('symbol')
