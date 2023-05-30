@@ -111,16 +111,16 @@ def index(request):
     for i in range(1, len(data)):
         if data['SUPERT_20_2.0'][i] > y_data[i] and data['SUPERT_20_2.0'][i-1] <= y_data[i-1]:
             # Buy signal
-            sell_signals_trace['x'].append(x_data[i])
-            sell_signals_trace['y'].append(y_data[i])
-            sell_signals_trace['marker']['symbol'] = 'triangle-up'
-            sell_signals_trace['marker']['color'] = 'green'
-        elif data['SUPERT_20_2.0'][i] < y_data[i] and data['SUPERT_20_2.0'][i-1] >= y_data[i-1]:
-            # Sell signal
             buy_signals_trace['x'].append(x_data[i])
             buy_signals_trace['y'].append(y_data[i])
-            buy_signals_trace['marker']['symbol'] = 'triangle-down'
-            buy_signals_trace['marker']['color'] = 'red'
+            buy_signals_trace['marker']['symbol'] = 'triangle-up'
+            buy_signals_trace['marker']['color'] = 'green'
+        elif data['SUPERT_20_2.0'][i] < y_data[i] and data['SUPERT_20_2.0'][i-1] >= y_data[i-1]:
+            # Sell signal
+            sell_signals_trace['x'].append(x_data[i])
+            sell_signals_trace['y'].append(y_data[i])
+            sell_signals_trace['marker']['symbol'] = 'triangle-down'
+            sell_signals_trace['marker']['color'] = 'red'
 
 
     # Create layout for plot
@@ -306,16 +306,16 @@ def signal_data_graph(request):
     for i in range(1, len(signal_data)):
         if signal_data['SUPERT_20_2.0'][i] > y_data[i] and signal_data['SUPERT_20_2.0'][i-1] <= y_data[i-1]:
             # Buy signal
-            sell_signals_trace['x'].append(x_data[i])
-            sell_signals_trace['y'].append(y_data[i])
-            sell_signals_trace['marker']['symbol'] = 'triangle-up'
-            sell_signals_trace['marker']['color'] = 'green'
-        elif signal_data['SUPERT_20_2.0'][i] < y_data[i] and signal_data['SUPERT_20_2.0'][i-1] >= y_data[i-1]:
-            # Sell signal
             buy_signals_trace['x'].append(x_data[i])
             buy_signals_trace['y'].append(y_data[i])
-            buy_signals_trace['marker']['symbol'] = 'triangle-down'
-            buy_signals_trace['marker']['color'] = 'red'
+            buy_signals_trace['marker']['symbol'] = 'triangle-up'
+            buy_signals_trace['marker']['color'] = 'green'
+        elif signal_data['SUPERT_20_2.0'][i] < y_data[i] and signal_data['SUPERT_20_2.0'][i-1] >= y_data[i-1]:
+            # Sell signal
+            sell_signals_trace['x'].append(x_data[i])
+            sell_signals_trace['y'].append(y_data[i])
+            sell_signals_trace['marker']['symbol'] = 'triangle-down'
+            sell_signals_trace['marker']['color'] = 'red'
 
 
     # Create layout for plot
