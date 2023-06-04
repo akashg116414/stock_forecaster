@@ -1,5 +1,7 @@
-import requests
 import pandas as pd
+import pandas_ta as ta
+import requests
+from requests_html import HTMLSession
 
 base_url = "https://query1.finance.yahoo.com/v8/finance/chart/"
 
@@ -73,3 +75,63 @@ def get_crypto_status(ticker, headers = {'User-agent': 'Mozilla/5.0'}):
     price_change_percentage = (price_change/float(previous_close))*100
     response = {"current_price":current_price,"price_change":price_change,"price_change_percentage":price_change_percentage}
     return response
+
+def _raw_get_daily_info(site):
+    session = HTMLSession()
+    resp = session.get(site)
+    tables = pd.read_html(resp.html.raw_html)
+    df = tables[0].copy()
+    df.columns = tables[0].columns
+    del df["52 Week Range"]
+    df["Price"] = df["Price (Intraday)"]
+    df["PercentageChange"] = df["% Change"].map(lambda x: float(x.strip("%+").replace(",", "")))
+    fields_to_change = [x for x in df.columns.tolist() if "Vol" in x \
+                        or x == "Market Cap"]
+    for field in fields_to_change: 
+        if type(df[field][0]) == str:
+            df[field] = df[field].map(_convert_to_numeric)
+    session.close()
+    return df
+    
+def get_day_most_active(count: int = 100):
+    return _raw_get_daily_info(f"https://finance.yahoo.com/most-active?offset=0&count={count}")
+
+def get_day_gainers(count: int = 100):
+    return _raw_get_daily_info(f"https://finance.yahoo.com/gainers?offset=0&count={count}")
+
+def get_day_losers(count: int = 100):
+    return _raw_get_daily_info(f"https://finance.yahoo.com/losers?offset=0&count={count}")
+
+def get_top_crypto():
+    '''Gets the top 100 Cryptocurrencies by Market Cap'''      
+    session = HTMLSession()
+    resp = session.get("https://finance.yahoo.com/cryptocurrencies?offset=0&count=100")
+    tables = pd.read_html(resp.html.raw_html)
+    df = tables[0].copy()
+    df["Price"] = df["Price (Intraday)"]
+    df["PercentageChange"] = df["% Change"].map(lambda x: float(str(x).strip("%").\
+                                                               strip("+").\
+                                                               replace(",", "")))
+    del df["52 Week Range"]
+    fields_to_change = [x for x in df.columns.tolist() if "Volume" in x \
+                        or x == "Market Cap" or x == "Circulating Supply"]
+    for field in fields_to_change:
+        if type(df[field][0]) == str:
+            df[field] = df[field].map(lambda x: _convert_to_numeric(str(x)))     
+    session.close()             
+    return df
+
+def _convert_to_numeric(s):
+    if "M" in s:
+        s = s.strip("M")
+        return force_float(s) * 1_000_000
+    if "B" in s:
+        s = s.strip("B")
+        return force_float(s) * 1_000_000_000
+    return force_float(s)
+
+def force_float(elt):
+    try:
+        return float(elt)
+    except:
+        return elt
