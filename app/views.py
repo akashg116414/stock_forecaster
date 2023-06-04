@@ -8,7 +8,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.template import loader
 
-from .utils import get_current_status, get_crypto_status
+from .utils import get_current_status, get_crypto_status, get_day_gainers, get_day_losers,get_top_crypto
 from .models import ListedStock
 from .constant import indian_index, global_indicators,crypto_currency
 import datetime
@@ -146,6 +146,17 @@ def index(request):
     # print(context)
     return render(request, "index.html", context)
 
+def gainers_losers_status(request):
+    top_gainers_df = get_day_gainers()
+    top_losers_df = get_day_losers()
+    top_crypto_df = get_top_crypto()
+    columns_to_include = ['Symbol', 'Name', 'Price', 'Change', "PercentageChange"]
+    gainers_dict = top_gainers_df.head(5)[columns_to_include].to_dict('records')
+    losers_dict = top_losers_df.head(5)[columns_to_include].to_dict('records')
+    crypto_dict = top_crypto_df.head(5)[columns_to_include].to_dict('records')
+    context = {"gainers": gainers_dict,"losers": losers_dict,"crypto": crypto_dict}
+    return JsonResponse(context, safe=False)
+    
 # @login_required(login_url="/login/")
 def pages(request):
     context = {}
