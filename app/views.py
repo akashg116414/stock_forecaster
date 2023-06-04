@@ -90,7 +90,7 @@ def index(request):
             'size': 15,
             'color': 'green'
         },
-        'name': 'Sell',
+        'name': 'Buy',
         'showlegend': True
     }
 
@@ -104,23 +104,23 @@ def index(request):
             'size': 15,
             'color': 'red'
         },
-        'name': 'Buy',
+        'name': 'Sell',
         'showlegend': True
     }
 
     for i in range(1, len(data)):
         if data['SUPERT_20_2.0'][i] > y_data[i] and data['SUPERT_20_2.0'][i-1] <= y_data[i-1]:
             # Buy signal
-            buy_signals_trace['x'].append(x_data[i])
-            buy_signals_trace['y'].append(y_data[i])
-            buy_signals_trace['marker']['symbol'] = 'triangle-up'
-            buy_signals_trace['marker']['color'] = 'green'
-        elif data['SUPERT_20_2.0'][i] < y_data[i] and data['SUPERT_20_2.0'][i-1] >= y_data[i-1]:
-            # Sell signal
             sell_signals_trace['x'].append(x_data[i])
             sell_signals_trace['y'].append(y_data[i])
             sell_signals_trace['marker']['symbol'] = 'triangle-down'
             sell_signals_trace['marker']['color'] = 'red'
+        elif data['SUPERT_20_2.0'][i] < y_data[i] and data['SUPERT_20_2.0'][i-1] >= y_data[i-1]:
+            # Sell signal
+            buy_signals_trace['x'].append(x_data[i])
+            buy_signals_trace['y'].append(y_data[i])
+            buy_signals_trace['marker']['symbol'] = 'triangle-up'
+            buy_signals_trace['marker']['color'] = 'green'
 
 
     # Create layout for plot
@@ -151,9 +151,9 @@ def gainers_losers_status(request):
     top_losers_df = get_day_losers()
     top_crypto_df = get_top_crypto()
     columns_to_include = ['Symbol', 'Name', 'Price', 'Change', "PercentageChange"]
-    gainers_dict = top_gainers_df.head(5)[columns_to_include].to_dict('records')
-    losers_dict = top_losers_df.head(5)[columns_to_include].to_dict('records')
-    crypto_dict = top_crypto_df.head(5)[columns_to_include].to_dict('records')
+    gainers_dict = top_gainers_df.head(4)[columns_to_include].to_dict('records')
+    losers_dict = top_losers_df.head(4)[columns_to_include].to_dict('records')
+    crypto_dict = top_crypto_df.head(3)[columns_to_include].to_dict('records')
     context = {"gainers": gainers_dict,"losers": losers_dict,"crypto": crypto_dict}
     return JsonResponse(context, safe=False)
     
@@ -298,7 +298,7 @@ def signal_data_graph(request):
             'size': 15,
             'color': 'green'
         },
-        'name': 'Sell',
+        'name': 'buy',
         'showlegend': True
     }
 
@@ -312,23 +312,23 @@ def signal_data_graph(request):
             'size': 15,
             'color': 'red'
         },
-        'name': 'Buy',
+        'name': 'Sell',
         'showlegend': True
     }
 
     for i in range(1, len(signal_data)):
         if signal_data['SUPERT_20_2.0'][i] > y_data[i] and signal_data['SUPERT_20_2.0'][i-1] <= y_data[i-1]:
             # Buy signal
-            buy_signals_trace['x'].append(x_data[i])
-            buy_signals_trace['y'].append(y_data[i])
-            buy_signals_trace['marker']['symbol'] = 'triangle-up'
-            buy_signals_trace['marker']['color'] = 'green'
-        elif signal_data['SUPERT_20_2.0'][i] < y_data[i] and signal_data['SUPERT_20_2.0'][i-1] >= y_data[i-1]:
-            # Sell signal
             sell_signals_trace['x'].append(x_data[i])
             sell_signals_trace['y'].append(y_data[i])
             sell_signals_trace['marker']['symbol'] = 'triangle-down'
             sell_signals_trace['marker']['color'] = 'red'
+        elif signal_data['SUPERT_20_2.0'][i] < y_data[i] and signal_data['SUPERT_20_2.0'][i-1] >= y_data[i-1]:
+            # Sell signal
+            buy_signals_trace['x'].append(x_data[i])
+            buy_signals_trace['y'].append(y_data[i])
+            buy_signals_trace['marker']['symbol'] = 'triangle-up'
+            buy_signals_trace['marker']['color'] = 'green'
 
 
     # Create layout for plot
