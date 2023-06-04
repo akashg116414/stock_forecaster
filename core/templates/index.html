@@ -700,14 +700,15 @@
 
         // Function to generate HTML code for each item in the API response
         function generateHTML(item) {
+          let percentageClass = item.PercentageChange > 0 ? "stats-small__percentage stats-small__percentage--increase" : "stats-small__percentage stats-small__percentage--decrease";
           return `
           <div class="card-body d-flex py-0">
         <div class="stats-small__data text">
           <span class="stats-medium__label text">${item.Name}</span>
         </div>
         <div class="stats-small__data">
-          <span class="stats-small__value count my-1 text-right">${item.Price}</span>
-          <span class="stats-small__percentage stats-small__percentage--increase">${item.PercentageChange}</span>
+          <span class="stats-small__value count my-1 text-right">${item.Price}$</span>
+          <span class="${percentageClass}">${item.PercentageChange}</span>
         </div>
       </div>
           `;
@@ -738,8 +739,6 @@
         var cryptocontainer = document.getElementById('top-crypto');
         cryptocontainer.innerHTML = cryptohtmlCode;
         cryptocontainer.style.height = 'auto';
-  
-
       }
     });
   }
