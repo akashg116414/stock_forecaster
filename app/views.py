@@ -151,8 +151,8 @@ def gainers_losers_status(request):
     top_losers_df = get_day_losers()
     top_crypto_df = get_top_crypto()
     columns_to_include = ['Symbol', 'Name', 'Price', 'Change', "PercentageChange"]
-    gainers_dict = top_gainers_df.head(4)[columns_to_include].to_dict('records')
-    losers_dict = top_losers_df.head(4)[columns_to_include].to_dict('records')
+    gainers_dict = top_gainers_df.head(3)[columns_to_include].to_dict('records')
+    losers_dict = top_losers_df.head(3)[columns_to_include].to_dict('records')
     crypto_dict = top_crypto_df.head(3)[columns_to_include].to_dict('records')
     context = {"gainers": gainers_dict,"losers": losers_dict,"crypto": crypto_dict}
     return JsonResponse(context, safe=False)

@@ -11,8 +11,8 @@
 <!-- Page Header -->
 <div class="page-header row no-gutters py-4">
   <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
-    <span class="text-uppercase page-subtitle">Dashboard</span>
-    <h3 class="page-title">Stock Analytic Dashboard</h3>
+    <!-- <span class="text-uppercase page-subtitle">Dashboard</span> -->
+    <h2 >Invest<span>in</span>gly</h2>
   </div>
 </div>
 <!-- End Page Header -->
@@ -280,7 +280,6 @@
       type: 'GET',
       url: indian_index_url,
       success: function (response) {
-        console.log(response)
         var nifty50 = response["Nifty 50"];
         var sensex = response["Sensex"];
         var indiaVIX = response["India VIX"];
@@ -388,7 +387,6 @@
       const hours = now.getUTCHours() + 5.5; // Add 5.5 hours for IST timezone offset
       const minutes = now.getUTCMinutes();
       const currentTime = hours * 60 + minutes;
-      console.log(currentTime)
 
       // Check if the current time is between 9:15 am and 4:00 pm IST
       if (currentTime >= 555 && currentTime <= 960) {
@@ -535,16 +533,15 @@
       type: 'GET',
       url: global_index_url,
       success: function (response) {
-        console.log(response)
         var top_gainers = response;
        
 
         // Function to generate HTML code for the entire API response
         function generateHTMLList(response) {
           var html = '';
+          let sign = false;
           for (var i = 0; i < response.length; i++) {
-            console.log(response[i])
-            html += generateHTML(response[i]);
+            html += generateHTML(response[i],sign);
           }
           return html;
         }
@@ -561,20 +558,21 @@
   }
   updateGlobalData()
   $(document).ready(function () {
-    setInterval(updateGlobalData, 8000); //update data every 5 seconds
+    setInterval(updateGlobalData, 20000); //update data every 20 seconds
   });
   
   // for top gainers losers stocks
   // Function to generate HTML code for each item in the API response
-  function generateHTML(item) {
+  function generateHTML(item,sign) {
           let percentageClass = item.PercentageChange > 0 ? "stats-small__percentage stats-small__percentage--increase" : "stats-small__percentage stats-small__percentage--decrease";
+          let currency_sign = (sign === true) ? '$' : '';
           return `
           <div class="card-body d-flex py-0">
         <div class="stats-small__data text">
           <span class="stats-medium__label text">${item.Name}</span>
         </div>
         <div class="stats-small__data">
-          <span class="stats-small__value count my-1 text-right">${item.Price}$</span>
+          <span class="stats-small__value count my-1 text-right">${item.Price} ${currency_sign}</span>
           <span class="${percentageClass}">${item.PercentageChange}</span>
         </div>
       </div>
@@ -586,7 +584,6 @@
       type: 'GET',
       url: gainers_losers_url,
       success: function (response) {
-        console.log(response)
         var top_gainers = response["gainers"];
         var top_losers = response["losers"];
         var top_crypto = response["crypto"];
@@ -595,9 +592,9 @@
         // Function to generate HTML code for the entire API response
         function generateHTMLList(response) {
           var html = '';
+          let sign = true;
           for (var i = 0; i < response.length; i++) {
-            console.log(response[i])
-            html += generateHTML(response[i]);
+            html += generateHTML(response[i],sign);
           }
           return html;
         }
@@ -622,13 +619,25 @@
   }
   updateGainersLosersData()
   $(document).ready(function () {
-    setInterval(updateGainersLosersData, 3600000); //update data every 5 seconds
+    setInterval(updateGainersLosersData, 3600000); //update data every 1 hour
   });
 </script>
 
 
 
 <style>
+  h2 {
+  font-family: "Inter";
+  font-size: 70px;
+  font-weight: 600;
+  margin: 0px;
+  color: Black;
+  user-select: none;
+  z-index: 0;
+  }
+  h2 span {
+  color: #03c988;
+  }
   .top-gainer {
     min-height: 250px;
   }

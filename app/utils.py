@@ -60,7 +60,7 @@ def get_current_status(name, ticker , headers = {'User-agent': 'Mozilla/5.0'}):
         current_price = tables[1]['Previous Close']
     price_change = (current_price - tables[1]['Previous Close'])
     price_change_percentage = (price_change/tables[1]['Previous Close'])*100
-    status = {"Name":name, "Symbol":ticker,"Price":current_price,"Change":price_change,"PercentageChange":price_change_percentage}
+    status = {"Name":name, "Symbol":ticker,"Price":round(current_price, 2),"Change":price_change,"PercentageChange":round(price_change_percentage,2)}
     return status
 
 def get_crypto_status(name, ticker, headers = {'User-agent': 'Mozilla/5.0'}): 
@@ -73,7 +73,7 @@ def get_crypto_status(name, ticker, headers = {'User-agent': 'Mozilla/5.0'}):
     #price change
     price_change = current_price - float(previous_close)
     price_change_percentage = (price_change/float(previous_close))*100
-    response = {"Name":name, "Symbol":ticker,"Price":current_price,"Change":price_change,"PercentageChange":price_change_percentage}
+    response =  {"Name":name, "Symbol":ticker,"Price":round(current_price, 2),"Change":price_change,"PercentageChange":round(price_change_percentage,2)}
     return response
 
 def _raw_get_daily_info(site):
