@@ -48,7 +48,7 @@ def get_live_price(ticker):
     return frame.close.iloc[-1]
     
 
-def get_current_status(ticker , headers = {'User-agent': 'Mozilla/5.0'}): 
+def get_current_status(name, ticker , headers = {'User-agent': 'Mozilla/5.0'}): 
     site = "https://finance.yahoo.com/quote/" + ticker + "?p=" + ticker
     
     tables = pd.read_html(requests.get(site, headers=headers).text)
@@ -60,10 +60,10 @@ def get_current_status(ticker , headers = {'User-agent': 'Mozilla/5.0'}):
         current_price = tables[1]['Previous Close']
     price_change = (current_price - tables[1]['Previous Close'])
     price_change_percentage = (price_change/tables[1]['Previous Close'])*100
-    status = {"current_price" : current_price, "price_change" : price_change, "price_change_percentage": price_change_percentage}
+    status = {"Name":name, "Symbol":ticker,"Price":current_price,"Change":price_change,"PercentageChange":price_change_percentage}
     return status
 
-def get_crypto_status(ticker, headers = {'User-agent': 'Mozilla/5.0'}): 
+def get_crypto_status(name, ticker, headers = {'User-agent': 'Mozilla/5.0'}): 
     site = "https://finance.yahoo.com/quote/" + ticker + "?p=" + ticker
     tables = pd.read_html(requests.get(site, headers=headers).text)
     tables = tables[0]
@@ -73,7 +73,7 @@ def get_crypto_status(ticker, headers = {'User-agent': 'Mozilla/5.0'}):
     #price change
     price_change = current_price - float(previous_close)
     price_change_percentage = (price_change/float(previous_close))*100
-    response = {"current_price":current_price,"price_change":price_change,"price_change_percentage":price_change_percentage}
+    response = {"Name":name, "Symbol":ticker,"Price":current_price,"Change":price_change,"PercentageChange":price_change_percentage}
     return response
 
 def _raw_get_daily_info(site):

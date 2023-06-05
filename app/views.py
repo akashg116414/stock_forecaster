@@ -226,15 +226,17 @@ def historical_data(request):
     return JsonResponse(context, safe=False)
 
 def get_indian_index_status(request):
-    context = {name:get_current_status(ticker) for name,ticker in indian_index.items()}
+    context = {name:get_current_status(name, ticker) for name,ticker in indian_index.items()}
     return JsonResponse(context, safe=False)
 
 def get_global_indicator_status(request):
-    context = {name:get_current_status(ticker) for name,ticker in global_indicators.items()}
+    context = [get_current_status(name, ticker) for name,ticker in global_indicators.items()]
+    context_crypto = [get_crypto_status(name,ticker) for name,ticker in crypto_currency.items()]
+    context.extend(context_crypto)
     return JsonResponse(context, safe=False)
 
 def get_global_crypto_status(request):
-    context_crypto = {name:get_crypto_status(ticker) for name,ticker in crypto_currency.items()}
+    context_crypto = {name:get_crypto_status(name,ticker) for name,ticker in crypto_currency.items()}
     return JsonResponse(context_crypto, safe=False)
 
 def signal_data_graph(request):
