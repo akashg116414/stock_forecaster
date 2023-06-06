@@ -14,9 +14,6 @@ from .constant import indian_index, global_indicators,crypto_currency
 import datetime
 
 
-
-
-# @login_required(login_url="/login/")
 def index(request):
     symbol = request.GET.get('symbol')
     start_date = request.GET.get('start_date')
@@ -33,117 +30,7 @@ def index(request):
         data = stock.history(period=period)
     prices = data['Close'].tolist()
     dates = data.index.strftime('%Y-%m-%d').tolist()
-
-    # Calculate Supertrend and MACD indicators
-    data = stock.history(period="5d", interval='5m')
-    data.ta.supertrend(length=20, multiplier=2, append=True)
-    today = datetime.date.today()
-    if today.weekday() >= 5:
-        days_to_subtract = today.weekday() - 4
-        today -= datetime.timedelta(days=days_to_subtract)
-    today = today.strftime('%Y-%m-%d')
-    start_time = pd.Timestamp(today + ' 09:15:00+05:30')
-    data = data.loc[start_time:]
-
-    # Create buy/sell signals based on MACD and Supertrend
-    data.drop(['SUPERTl_20_2.0','SUPERTs_20_2.0'],axis=1,inplace=True)
-    data = data.loc[data['SUPERT_20_2.0'] != 0].copy()
-    data.dropna(inplace=True)
-
-    # Create x and y data for plot
-    x_data = data.index
-    y_data = data['Close']
-
-    # Create trace for candlestick chart
-    candlestick_trace = {
-        'x': x_data,
-        'open': data['Open'],
-        'high': data['High'],
-        'low': data['Low'],
-        'close': y_data,
-        'type': 'candlestick',
-        'name': symbol,
-        'showlegend': False
-    }
-
-
-    # Create trace for Supertrend
-    supertrend_trace = {
-        'x': x_data,
-        'y': data['SUPERT_20_2.0'],
-        'type': 'scatter',
-        'mode': 'lines',
-        'line': {
-            'width': 2,
-            'color': 'green'
-        },
-        'name': 'Trend'
-    }
-
-    # Add buy/sell signals
-    buy_signals_trace = {
-        'x': [],
-        'y': [],
-        'mode': 'markers',
-        'marker': {
-            'symbol': 'triangle-up',
-            'size': 15,
-            'color': 'green'
-        },
-        'name': 'Buy',
-        'showlegend': True
-    }
-
-    # Add buy/sell signals
-    sell_signals_trace = {
-        'x': [],
-        'y': [],
-        'mode': 'markers',
-        'marker': {
-            'symbol': 'triangle-down',
-            'size': 15,
-            'color': 'red'
-        },
-        'name': 'Sell',
-        'showlegend': True
-    }
-
-    for i in range(1, len(data)):
-        if data['SUPERT_20_2.0'][i] > y_data[i] and data['SUPERT_20_2.0'][i-1] <= y_data[i-1]:
-            # Buy signal
-            sell_signals_trace['x'].append(x_data[i])
-            sell_signals_trace['y'].append(y_data[i])
-            sell_signals_trace['marker']['symbol'] = 'triangle-down'
-            sell_signals_trace['marker']['color'] = 'red'
-        elif data['SUPERT_20_2.0'][i] < y_data[i] and data['SUPERT_20_2.0'][i-1] >= y_data[i-1]:
-            # Sell signal
-            buy_signals_trace['x'].append(x_data[i])
-            buy_signals_trace['y'].append(y_data[i])
-            buy_signals_trace['marker']['symbol'] = 'triangle-up'
-            buy_signals_trace['marker']['color'] = 'green'
-
-
-    # Create layout for plot
-    layout = {
-        'title': {
-        'text': stock_obj.name,
-        'x': 0.5,
-        'xanchor': 'center'
-        },
-        'xaxis': {
-        'rangeslider': {
-        'visible': False
-                }
-            }
-        }
-
-    # Create figure and plot data
-    graph_data = [candlestick_trace, supertrend_trace, sell_signals_trace, buy_signals_trace]
-    
-    chart = plot({'data': graph_data, 'layout': layout}, output_type='div')
-    context = {'prices': prices, "dates":dates, "stock_name": stock_obj.name, "stock_symbol": symbol,
-                'chart': chart, 'pred_chart': chart}
-    # print(context)
+    context = {'prices': prices, "dates":dates, "stock_name": stock_obj.name, "stock_symbol": symbol}
     return render(request, "index.html", context)
 
 def gainers_losers_status(request):
@@ -157,7 +44,7 @@ def gainers_losers_status(request):
     context = {"gainers": gainers_dict,"losers": losers_dict,"crypto": crypto_dict}
     return JsonResponse(context, safe=False)
     
-# @login_required(login_url="/login/")
+
 def pages(request):
     context = {}
     # All resource paths end in .html.

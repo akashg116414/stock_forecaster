@@ -1,5 +1,4 @@
 import pandas as pd
-import pandas_ta as ta
 import requests
 from requests_html import HTMLSession
 
@@ -93,19 +92,19 @@ def _raw_get_daily_info(site):
     session.close()
     return df
     
-def get_day_most_active(count: int = 100):
+def get_day_most_active(count: int = 5):
     return _raw_get_daily_info(f"https://finance.yahoo.com/most-active?offset=0&count={count}")
 
-def get_day_gainers(count: int = 100):
+def get_day_gainers(count: int = 5):
     return _raw_get_daily_info(f"https://finance.yahoo.com/gainers?offset=0&count={count}")
 
-def get_day_losers(count: int = 100):
+def get_day_losers(count: int = 5):
     return _raw_get_daily_info(f"https://finance.yahoo.com/losers?offset=0&count={count}")
 
 def get_top_crypto():
     '''Gets the top 100 Cryptocurrencies by Market Cap'''      
     session = HTMLSession()
-    resp = session.get("https://finance.yahoo.com/cryptocurrencies?offset=0&count=100")
+    resp = session.get("https://finance.yahoo.com/cryptocurrencies?offset=0&count=5")
     tables = pd.read_html(resp.html.raw_html)
     df = tables[0].copy()
     df["Price"] = df["Price (Intraday)"]
@@ -122,13 +121,16 @@ def get_top_crypto():
     return df
 
 def _convert_to_numeric(s):
-    if "M" in s:
-        s = s.strip("M")
-        return force_float(s) * 1_000_000
-    if "B" in s:
-        s = s.strip("B")
-        return force_float(s) * 1_000_000_000
-    return force_float(s)
+    try:
+        if "M" in s:
+            s = s.strip("M")
+            return force_float(s) * 1_000_000
+        if "B" in s:
+            s = s.strip("B")
+            return force_float(s) * 1_000_000_000
+        return force_float(s)
+    except:
+        return s
 
 def force_float(elt):
     try:
