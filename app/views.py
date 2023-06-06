@@ -258,7 +258,10 @@ def forecast_data(request):
     df = df.rename(columns={'Date': 'ds', 'Close': 'y'})
 
     # Initialize and fit the Prophet model
-    model = Prophet()
+    best_params = {'changepoint_prior_scale': 0.5,
+                    'holidays_prior_scale': 0.01,
+                    'seasonality_prior_scale': 0.01}
+    model = Prophet(**best_params)
     model.fit(df)
 
     # Forecast future prices
@@ -266,13 +269,10 @@ def forecast_data(request):
     forecast = model.predict(future)
     result = forecast[['ds', 'yhat']].tail(70)
     prices = result['yhat'].tolist()
-    dates = result['ds'].tolist()
+    dates = pd.to_datetime(result['ds']).dt.strftime('%Y-%m').tolist()
     percentage = (prices[-1] - data['Close'][-1])/data['Close'][-1]
     forecast_price = price + price * percentage
     chart_string = "{}₹ will be {:.2f}₹ in {} Month".format(price, forecast_price, duration)
-    
-    prices = data['Close'].tolist()
-    dates = data.index.strftime('%Y-%m-%d').tolist()
     context = {'prices': prices,"dates":dates, "chart_string": chart_string}
 
     return JsonResponse(context, safe=False)
