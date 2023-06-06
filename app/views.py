@@ -1,5 +1,6 @@
 import pandas_ta as ta
 from plotly.offline import plot
+from prophet import Prophet
 
 import pandas as pd
 import yfinance as yf
@@ -239,5 +240,39 @@ def signal_data_graph(request):
     
     chart = plot({'data': graph_data, 'layout': layout}, output_type='div')
     context = {'chart': chart}
+
+    return JsonResponse(context, safe=False)
+
+def forecast_data(request):
+    symbol = request.GET.get('symbol')
+    price = int(request.GET.get('price', 1000))
+    duration = int(request.GET.get('duration', 1))
+    print(price, duration)
+    symbol = symbol + ".NS"
+
+    # Download the historical stock data from Yahoo Finance
+    data = yf.download(symbol, period="5y", interval='1mo')
+
+    # Prepare the data for Prophet
+    df = data[['Close']].reset_index()
+    df = df.rename(columns={'Date': 'ds', 'Close': 'y'})
+
+    # Initialize and fit the Prophet model
+    model = Prophet()
+    model.fit(df)
+
+    # Forecast future prices
+    future = model.make_future_dataframe(periods=duration, freq='M')
+    forecast = model.predict(future)
+    result = forecast[['ds', 'yhat']].tail(70)
+    prices = result['yhat'].tolist()
+    dates = result['ds'].tolist()
+    percentage = (prices[-1] - data['Close'][-1])/data['Close'][-1]
+    forecast_price = price + price * percentage
+    chart_string = "{}₹ will be {:.2f}₹ in {} Month".format(price, forecast_price, duration)
+    
+    prices = data['Close'].tolist()
+    dates = data.index.strftime('%Y-%m-%d').tolist()
+    context = {'prices': prices,"dates":dates, "chart_string": chart_string}
 
     return JsonResponse(context, safe=False)

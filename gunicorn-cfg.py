@@ -1,7 +1,7 @@
 
-bind = '0.0.0.0:5005'
-workers = 1
+bind = '0.0.0.0:8080'
+workers = 7
 accesslog = '-'
-loglevel = 'debug'
+loglevel = 'info'
 capture_output = True
 enable_stdio_inheritance = True

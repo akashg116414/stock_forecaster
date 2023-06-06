@@ -152,19 +152,20 @@
     </div>
 
     <!-- Predictions Data -->
-    <div class="card card-small mt-4">
+    <div class="card card-small mt-4" style="min-height: 350px">
       <div class="card-body pt-0", id="signal-graph-1">
         <div class="row border-bottom py-2 bg-light">
           <div class="input-daterange input-group">
-            <input type="number" class="input-sm form-control ml-3" id="price" name="price" min="100" required placeholder="Enter The Price">
+            <input type="number" class="input-sm form-control ml-3" id="price" name="price" min="100" required placeholder="Enter The Price" value="1000">
             <div class="col-lg-6">
             <label for="duration">Duration (months): <span id="duration-value">1</span></label>
             <input placeholder="Duration (months): 1" type="range" class="input-sm form-control-range" id="duration" name="duration" min="1" max="60" value="1" oninput="updateDurationValue(this.value)">
           </div>
         </div>
         </div>
-        <canvas height="130" style="max-width: 100% !important;" class="pred-data-graph"
-          id="pred-data-graph"></canvas>
+        <div id="pred-chart-div">
+          <div class="loader" style="display: flex; align-items: center; justify-content: center;"></div>
+        </div>
         <!-- {{ pred_chart|safe }} -->
       </div>
     </div>
@@ -379,6 +380,42 @@
 
   }
 
+  predCavasHtml = `<canvas height="130" style="max-width: 100% !important;" class="pred-data-graph"
+          id="pred-data-graph"></canvas>`
+  function forecastValue(price, duration) {
+
+  // Validate that the start date is less than the end date
+    if (price < 100) {
+      alert('Please Enter Price Greater than 100');
+      return;
+      // your API call logic here
+    }
+
+    
+    let url = "{% url 'forecast-data' %}?";
+    url += `symbol=${stock_symbol}`;
+
+    if (price) {
+      url += `&price=${price}`;
+    }
+    if (duration) {
+      url += `&duration=${duration}`;
+    }
+        
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        var predcontainer = document.getElementById('pred-chart-div');
+        predcontainer.innerHTML = predCavasHtml;
+        predcontainer.style.height = 'auto';
+        updateChartDataForecast(data);
+        updateChartForecast(data.chart_string);
+        updateHTMLPriceAndDuration(price, duration);
+      })
+      .catch(error => console.error(error));
+
+    }
+
   function updatesignalChart() {
       let signal_url = "{% url 'signal-data-graph' %}?";
       signal_url += `symbol=${stock_symbol}`;
@@ -400,7 +437,23 @@
       });
     }
   }
-  updatesignalChart()
+
+  function updatesignalChartStart() {
+      let signal_url = "{% url 'signal-data-graph' %}?";
+      signal_url += `symbol=${stock_symbol}`;
+    
+      // Send AJAX request to server to get updated chart data
+      $.ajax({
+        url: signal_url,
+        type: 'GET',
+        success: function(data) {
+          // Replace chart HTML with updated data
+          $('#signal-graph').html(data.chart);
+        }
+      });
+    }
+
+  updatesignalChartStart()
   // Call updateChart function every 5 min
   setInterval(updatesignalChart, 1500000);
 
@@ -409,6 +462,26 @@
     var startDateInput = document.getElementById('historical-start-date');
     var endDateInput = document.getElementById('historical-end-date');
     var intervalSelect = document.getElementById('interval');
+    var price = document.getElementById('price');
+    var duration = document.getElementById('duration');
+
+    var price_val = price.value;
+    var duration_val = duration.value;
+    forecastValue(price_val, duration_val);
+
+    price.addEventListener('change', function () {
+      var price_val = price.value;
+      var duration_val = duration.value;
+      forecastValue(price_val, duration_val);
+
+    });
+
+    duration.addEventListener('change', function () {
+      var price_val = price.value;
+      var duration_val = duration.value;
+      forecastValue(price_val, duration_val);
+
+    });
 
     startDateInput.addEventListener('change', function () {
       var startDate = startDateInput.value;
@@ -467,7 +540,6 @@
   }
 
   const ctx = document.getElementById('historical-data-graph').getContext('2d');
-  const pred_ctx = document.getElementById('pred-data-graph').getContext('2d');
 
   updateChart()
   // Update the chart with new data
@@ -489,14 +561,51 @@
           }
         } 
       });
+    } else {
+      // Update the existing chart with new data
+      chart.data = chartData;
+      chart.update();
+    }
+  }
+
+  // Update the HTML elements with new start and end dates and interval
+  function updateHTML(startDate, endDate, interval) {
+    $('#historical-start-date').text(startDate);
+    $('#historical-end-date').text(endDate);
+    $('#interval').text(interval);
+  }
+
+
+  var chartForecast = null;
+  var chartDataForecast = {
+    labels: labels,
+    datasets: [{
+      label: name,
+      data: prices,
+      backgroundColor: 'rgba(255, 99, 132, 0.2)',
+      borderColor: 'rgba(255, 99, 132, 1)',
+      borderWidth: 1
+    }]
+  };
+
+  function updateChartDataForecast(data) {
+    chartDataForecast.labels = data.dates;
+    chartDataForecast.datasets[0].data = data.prices;
+  }
+
+  // Update the chart with new data
+  function updateChartForecast(data_label) {
+    if (!chartForecast) {
+      // Create a new chart if it doesn't exist
+      var pred_ctx = document.getElementById('pred-data-graph').getContext('2d');
 
       pred_chart = new Chart(pred_ctx, {
         type: 'line',
-        data: chartData,
+        data: chartDataForecast,
         options: {
           title: {
           display: true,
-          text: '10000 Rs will be 12321rs in 12 months',
+          text: data_label,
           fontSize: 18,
           fontWeight: 'bold',
           fontFamily: 'Roboto, sans-serif'
@@ -513,16 +622,15 @@
       });
     } else {
       // Update the existing chart with new data
-      chart.data = chartData;
-      chart.update();
+      chartForecast.data = chartDataForecast;
+      chartForecast.update();
     }
   }
 
   // Update the HTML elements with new start and end dates and interval
-  function updateHTML(startDate, endDate, interval) {
-    $('#historical-start-date').text(startDate);
-    $('#historical-end-date').text(endDate);
-    $('#interval').text(interval);
+  function updateHTMLPriceAndDuration(price, duration) {
+    $('#price').text(price);
+    $('#duration').text(duration);
   }
 
   // for global indicators
