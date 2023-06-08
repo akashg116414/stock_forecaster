@@ -29,6 +29,7 @@ def index(request):
         data = stock.history(start=start_date, end=end_date)
     else:
         data = stock.history(period=period)
+    print(data)
     prices = data['Close'].tolist()
     dates = data.index.strftime('%Y-%m-%d').tolist()
     context = {'prices': prices, "dates":dates, "stock_name": stock_obj.name, "stock_symbol": symbol}
@@ -96,6 +97,7 @@ def historical_data(request):
     period = '3mo'
     if not symbol:
         symbol = "INFY"
+    stock_obj = ListedStock.objects.filter(symbol=symbol).first()
     symbol = symbol + ".NS"
     stock = yf.Ticker(symbol)
     if start_date and end_date and not interval:
@@ -107,9 +109,10 @@ def historical_data(request):
         data = stock.history(period=period,interval=interval)
     else:
         data = stock.history(period=period)
+    
     prices = data['Close'].tolist()
     dates = data.index.strftime('%Y-%m-%d').tolist()
-    context = {'prices': prices,"dates":dates}
+    context = {'prices': prices,"dates":dates, "stock_name": stock_obj.name}
 
     return JsonResponse(context, safe=False)
 
@@ -248,6 +251,7 @@ def forecast_data(request):
     price = int(request.GET.get('price', 1000))
     duration = int(request.GET.get('duration', 1))
     print(price, duration)
+    stock_obj = ListedStock.objects.filter(symbol=symbol).first()
     symbol = symbol + ".NS"
 
     # Download the historical stock data from Yahoo Finance
@@ -273,6 +277,6 @@ def forecast_data(request):
     percentage = (prices[-1] - data['Close'][-1])/data['Close'][-1]
     forecast_price = price + price * percentage
     chart_string = "{}₹ will be {:.2f}₹ in {} Month".format(price, forecast_price, duration)
-    context = {'prices': prices,"dates":dates, "chart_string": chart_string}
+    context = {'prices': prices,"dates":dates, "chart_string": chart_string, "stock_name": stock_obj.name}
 
     return JsonResponse(context, safe=False)

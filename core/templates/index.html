@@ -242,9 +242,9 @@
             let html = '';
             if (items.length > 0) {
               html += '<p style="margin-bottom:auto;">';
-              for (const item of items) {
-                html += `<a href="?symbol=${item.symbol}" class="search-result">${item.name}</a></br>`;
-              }
+                for (const item of items) {
+                  html += `<a href="#" onclick="changeAllGraph('${encodeURIComponent(item.symbol)}')" class="search-result">${item.name}</a><br>`;
+                }
               html += '</p>';
             }
             else {
@@ -261,6 +261,20 @@
       searchResults.innerHTML = '';
     }
   });
+  function changeAllGraph(symbol) {
+    // Your JavaScript code goes here
+    console.log(symbol)
+    fetchValue(symbol);
+    stock_symbol = symbol
+    var searchInput = document.getElementById('search-input');
+
+    // Set the value of the input field to an empty string
+    searchInput.value = '';
+    searchResults.innerHTML = '';
+    forecastValue(1000, 1);
+    updatesignalChartStart();
+      // alert(symbol);
+  }
   searchResults.addEventListener('click', (event) => {
     if (event.target.classList.contains('search-result')) {
       event.preventDefault();
@@ -330,7 +344,7 @@
   document.getElementById("historical-end-date").setAttribute("max", today);
   var stock_symbol = "{{stock_symbol}}";
 
-  function fetchValue(startDate, endDate, interval) {
+  function fetchValue(symbol, startDate, endDate, interval) {
 
     // Validate that the start date is less than the end date
     if (startDate && endDate && startDate >= endDate) {
@@ -360,7 +374,7 @@
       }
     }
     let url = "{% url 'historical-data' %}?";
-    url += `symbol=${stock_symbol}`;
+    url += `symbol=${encodeURIComponent(symbol)}`;
 
     if (startDate && endDate) {
       url += `&start_date=${startDate}&end_date=${endDate}`;
@@ -393,7 +407,7 @@
 
     
     let url = "{% url 'forecast-data' %}?";
-    url += `symbol=${stock_symbol}`;
+    url += `symbol=${encodeURIComponent(stock_symbol)}`;
 
     if (price) {
       url += `&price=${price}`;
@@ -418,7 +432,7 @@
 
   function updatesignalChart() {
       let signal_url = "{% url 'signal-data-graph' %}?";
-      signal_url += `symbol=${stock_symbol}`;
+      signal_url += `symbol=${encodeURIComponent(stock_symbol)}`;
       const now = new Date();
       const hours = now.getUTCHours() + 5.5; // Add 5.5 hours for IST timezone offset
       const minutes = now.getUTCMinutes();
@@ -440,7 +454,7 @@
 
   function updatesignalChartStart() {
       let signal_url = "{% url 'signal-data-graph' %}?";
-      signal_url += `symbol=${stock_symbol}`;
+      signal_url += `symbol=${encodeURIComponent(stock_symbol)}`;
     
       // Send AJAX request to server to get updated chart data
       $.ajax({
@@ -489,7 +503,7 @@
       var interval = intervalSelect.value;
 
       // call the fetchValue function with updated values
-      fetchValue(startDate, endDate, interval);
+      fetchValue(symbol, startDate, endDate, interval);
     });
 
     endDateInput.addEventListener('change', function () {
@@ -498,7 +512,7 @@
       var interval = intervalSelect.value;
 
       // call the fetchValue function with updated values
-      fetchValue(startDate, endDate, interval);
+      fetchValue(symbol, startDate, endDate, interval);
     });
 
     intervalSelect.addEventListener('change', function () {
@@ -507,7 +521,7 @@
       var interval = intervalSelect.value;
 
       // call the fetchValue function with updated values
-      fetchValue(startDate, endDate, interval);
+      fetchValue(symbol, startDate, endDate, interval);
     });
   });
 
@@ -537,6 +551,7 @@
   function updateChartData(data) {
     chartData.labels = data.dates;
     chartData.datasets[0].data = data.prices;
+    chartData.datasets[0].label = data.stock_name;
   }
 
   const ctx = document.getElementById('historical-data-graph').getContext('2d');
@@ -591,6 +606,7 @@
   function updateChartDataForecast(data) {
     chartDataForecast.labels = data.dates;
     chartDataForecast.datasets[0].data = data.prices;
+    chartDataForecast.datasets[0].label = data.stock_name;
   }
 
   // Update the chart with new data
@@ -685,6 +701,15 @@
       </div>
           `;
         }
+        function generateHTMLList(response) {
+          var html = '';
+          let sign = true;
+          for (var i = 0; i < response.length; i++) {
+            html += generateHTML(response[i],sign);
+          }
+          return html;
+        }
+  
   let gainers_losers_url = "{% url 'gainers-losers-status' %}";
   function updateGainersLosersData() {
     $.ajax({
@@ -697,14 +722,7 @@
        
 
         // Function to generate HTML code for the entire API response
-        function generateHTMLList(response) {
-          var html = '';
-          let sign = true;
-          for (var i = 0; i < response.length; i++) {
-            html += generateHTML(response[i],sign);
-          }
-          return html;
-        }
+        
 
         // Generate HTML code for the API response
         var gainerhtmlCode = generateHTMLList(top_gainers);
