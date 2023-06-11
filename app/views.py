@@ -10,7 +10,7 @@ from django.shortcuts import render
 from django.template import loader
 
 from .utils import get_current_status, get_crypto_status, get_day_gainers, get_day_losers,get_top_crypto
-from .models import ListedStock
+from .models import ListedStock, Indicator
 from .constant import indian_index, global_indicators,crypto_currency
 import datetime
 
@@ -46,6 +46,13 @@ def gainers_losers_status(request):
     context = {"gainers": gainers_dict,"losers": losers_dict,"crypto": crypto_dict}
     return JsonResponse(context, safe=False)
     
+    
+def test_gainers_losers_status(request):
+    top_gainers = Indicator.objects.filter(indicator_type = "TOPGAINER")[:3]
+    top_loosers = Indicator.objects.filter(indicator_type = "TOPLOSER")[:3]
+    top_crypto = Indicator.objects.filter(indicator_type = "TOPCRYPTO")[:3]
+    context = {"gainers": top_gainers,"losers": top_loosers,"crypto":top_crypto}
+    return JsonResponse(context, safe=False)
 
 def pages(request):
     context = {}
@@ -120,10 +127,22 @@ def get_indian_index_status(request):
     context = {name:get_current_status(name, ticker) for name,ticker in indian_index.items()}
     return JsonResponse(context, safe=False)
 
+def test_get_indian_index_status(request):
+    indian_indicators = Indicator.objects.filter(indicator_type = "INDIAN")
+    context = [indicator for indicator in indian_indicators if indicator.name in indian_index.keys()]
+    return JsonResponse(context, safe=False)
+
 def get_global_indicator_status(request):
     context = [get_current_status(name, ticker) for name,ticker in global_indicators.items()]
     context_crypto = [get_crypto_status(name,ticker) for name,ticker in crypto_currency.items()]
     context.extend(context_crypto)
+    return JsonResponse(context, safe=False)
+    
+def test_get_global_indicator_status(request):
+    context = {}
+    all_indicators = Indicator.objects.filter(indicator_type = "GLOBAL")
+    context.update({indicator.name: indicator for indicator in all_indicators if indicator.name in global_indicators})
+    context.update({indicator.name: indicator for indicator in all_indicators if indicator.name in crypto_currency})
     return JsonResponse(context, safe=False)
 
 def get_global_crypto_status(request):
