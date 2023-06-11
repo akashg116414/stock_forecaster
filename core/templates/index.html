@@ -299,33 +299,33 @@
         var indiaVIX = response["India VIX"];
         var bankNifty = response["Bank Nifty"];
 
-        $("#nifty-price").text(nifty50.Price.toFixed(2));
-        $("#nifty-percentage").text(nifty50.PercentageChange.toFixed(2));
-        if (nifty50.PercentageChange < 0) {
+        $("#nifty-price").text(nifty50.price);
+        $("#nifty-percentage").text(nifty50.percentage_change);
+        if (nifty50.percentage_change < 0) {
           $("#nifty-percentage").addClass("stats-small__percentage--decrease");
         } else {
           $("#nifty-percentage").addClass("stats-small__percentage--increase");
         }
 
-        $("#sensex-price").text(sensex.Price.toFixed(2));
-        $("#sensex-percentage").text(sensex.PercentageChange.toFixed(2));
-        if (sensex.PercentageChange < 0) {
+        $("#sensex-price").text(sensex.price);
+        $("#sensex-percentage").text(sensex.percentage_change);
+        if (sensex.percentage_change < 0) {
           $("#sensex-percentage").addClass("stats-small__percentage--decrease");
         } else {
           $("#sensex-percentage").addClass("stats-small__percentage--increase");
         }
 
-        $("#vix-price").text(indiaVIX.Price.toFixed(2));
-        $("#vix-percentage").text(indiaVIX.PercentageChange.toFixed(2));
-        if (indiaVIX.PercentageChange < 0) {
+        $("#vix-price").text(indiaVIX.price);
+        $("#vix-percentage").text(indiaVIX.percentage_change);
+        if (indiaVIX.percentage_change < 0) {
           $("#vix-percentage").addClass("stats-small__percentage--decrease");
         } else {
           $("#vix-percentage").addClass("stats-small__percentage--increase");
         }
 
-        $("#bank-nifty-price").text(bankNifty.Price.toFixed(2));
-        $("#bank-nifty-percentage").text(bankNifty.PercentageChange.toFixed(2));
-        if (bankNifty.PercentageChange < 0) {
+        $("#bank-nifty-price").text(bankNifty.price);
+        $("#bank-nifty-percentage").text(bankNifty.percentage_change);
+        if (bankNifty.percentage_change < 0) {
           $("#bank-nifty-percentage").addClass("stats-small__percentage--decrease");
         } else {
           $("#bank-nifty-percentage").addClass("stats-small__percentage--increase");
@@ -687,28 +687,28 @@
   // for top gainers losers stocks
   // Function to generate HTML code for each item in the API response
   function generateHTML(item,sign) {
-          let percentageClass = item.PercentageChange > 0 ? "stats-small__percentage stats-small__percentage--increase" : "stats-small__percentage stats-small__percentage--decrease";
+          let percentageClass = item.percentage_change > 0 ? "stats-small__percentage stats-small__percentage--increase" : "stats-small__percentage stats-small__percentage--decrease";
           let currency_sign = (sign === true) ? '$' : '';
           return `
           <div class="card-body d-flex py-0">
         <div class="stats-small__data text">
-          <span class="stats-medium__label text">${item.Name}</span>
+          <span class="stats-medium__label text">${item.name}</span>
         </div>
         <div class="stats-small__data">
-          <span class="stats-small__value count my-1 text-right">${item.Price} ${currency_sign}</span>
-          <span class="${percentageClass}">${item.PercentageChange}</span>
+          <span class="stats-small__value count my-1 text-right">${item.price} ${currency_sign}</span>
+          <span class="${percentageClass}">${item.percentage_change}</span>
         </div>
       </div>
           `;
         }
-        function generateHTMLList(response) {
-          var html = '';
-          let sign = true;
-          for (var i = 0; i < response.length; i++) {
-            html += generateHTML(response[i],sign);
-          }
-          return html;
-        }
+  function generateHTMLList(response) {
+    var html = '';
+    let sign = true;
+    for (var i = 0; i < response.length; i++) {
+      html += generateHTML(response[i],sign);
+    }
+    return html;
+  }
   
   let gainers_losers_url = "{% url 'gainers-losers-status' %}";
   function updateGainersLosersData() {
