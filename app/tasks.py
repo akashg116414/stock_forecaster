@@ -51,6 +51,8 @@ def update_indicator(value, indicator_type):
         indicator.percentage_change = value['PercentageChange']
         indicator.save()
     else:
+        if indicator_type in ['TOPGAINER', 'TOPLOSER', 'TOPCRYPTO']:
+            check_and_remove(indicator_type)
         Indicator.objects.create(
             name=value['Name'],
             symbol=value['Symbol'],
@@ -59,3 +61,9 @@ def update_indicator(value, indicator_type):
             percentage_change=value['PercentageChange'],
             indicator_type = indicator_type
         )
+
+def check_and_remove(indicator_type):
+    count = Indicator.objects.filter(indicator_type=indicator_type).count()
+    if count >=3:
+        first_object = Indicator.objects.filter(indicator_type=indicator_type).first()
+        first_object.delete()

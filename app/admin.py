@@ -10,4 +10,4 @@ class ListedStockAdmin(admin.ModelAdmin):
 
 @admin.register(Indicator)
 class IndicatorAdmin(admin.ModelAdmin):
-    list_display = ('name', 'symbol', 'price', 'change', 'percentage_change', 'indicator_type', 'created_at')
+    list_display = ('name', 'symbol', 'price', 'change', 'percentage_change', 'indicator_type', 'created_at', 'updated_at')
