@@ -29,7 +29,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app'  # Enable the inner app 
+    'app.app.AppConfig',  # Enable the inner app 
+    'django_apscheduler'
 ]
 
 MIDDLEWARE = [
@@ -42,6 +43,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 
 ROOT_URLCONF = 'core.urls'
 LOGIN_REDIRECT_URL = "home"   # Route defined in app/urls.py
@@ -124,3 +128,25 @@ STATICFILES_DIRS = (
 )
 #############################################################
 #############################################################
+
+# See https://docs.djangoproject.com/en/dev/ref/settings/#datetime-format for format string
+# syntax details.
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+
+# Maximum run time allowed for jobs that are triggered manually via the Django admin site, which
+# prevents admin site HTTP requests from timing out.
+# 
+# Longer running jobs should probably be handed over to a background task processing library
+# that supports multiple background worker processes instead (e.g. Dramatiq, Celery, Django-RQ,
+# etc. See: https://djangopackages.org/grids/g/workers-queues-tasks/ for popular options).
+APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
+
+SCHEDULER_CONFIG = {
+    "apscheduler.jobstores.default": {
+        "class": "django_apscheduler.jobstores:DjangoJobStore"
+    },
+    'apscheduler.executors.processpool': {
+        "type": "threadpool"
+    },
+}
+SCHEDULER_AUTOSTART = True

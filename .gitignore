@@ -28,4 +28,4 @@ staticfiles/*
 
 # Ignore Django migration files
 *.pyc
-**/migrations/
+**/migrations/00*

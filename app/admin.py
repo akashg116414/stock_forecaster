@@ -2,20 +2,12 @@
 
 from django.contrib import admin
 
-from .models import GlobalIndex, IndianIndex, ListedStock
+from .models import ListedStock, Indicator
 
-
+@admin.register(ListedStock)
 class ListedStockAdmin(admin.ModelAdmin):
     list_display = ('name', 'symbol','category')
 
-class GlobalIndexAdmin(admin.ModelAdmin):
-    list_display = ("name", "symbol", 'category', "flag")
-
-class IndianIndexAdmin(admin.ModelAdmin):
-    list_display = ("name","symbol",'category',"flag")
-# Register your models here.
-
-
-admin.site.register(ListedStock, ListedStockAdmin)
-admin.site.register(GlobalIndex, GlobalIndexAdmin)
-admin.site.register(IndianIndex, IndianIndexAdmin)
+@admin.register(Indicator)
+class IndicatorAdmin(admin.ModelAdmin):
+    list_display = ('name', 'symbol', 'price', 'change', 'percentage_change', 'indicator_type', 'created_at')
