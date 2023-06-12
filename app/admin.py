@@ -6,7 +6,7 @@ from .models import ListedStock, Indicator
 
 @admin.register(ListedStock)
 class ListedStockAdmin(admin.ModelAdmin):
-    list_display = ('name', 'symbol','category')
+    list_display = ('name', 'symbol','category', 'ticker', 'exchange')
 
 @admin.register(Indicator)
 class IndicatorAdmin(admin.ModelAdmin):

@@ -2,8 +2,8 @@ from .models import Indicator
 from .utils import (
     get_current_status, 
     get_crypto_status, 
-    get_day_gainers, 
-    get_day_losers, 
+    get_top_indian_gainer, 
+    get_top_indian_looser, 
     get_top_crypto
 )
 from .constant import indian_index, global_indicators, crypto_currency
@@ -19,13 +19,13 @@ def update_top_crypto():
 
 
 def update_day_losers():
-    day_losers_data = get_day_losers()
+    day_losers_data = get_top_indian_looser()
     losers_dict = day_losers_data.head(3)[columns_to_include].to_dict('records')
     for row in losers_dict:
         update_indicator(row, 'TOPLOSER')
 
 def update_day_gainers():
-    day_gainers_data = get_day_gainers()
+    day_gainers_data = get_top_indian_gainer()
     gainers_dict = day_gainers_data.head(3)[columns_to_include].to_dict('records')
     for row in gainers_dict:
         update_indicator(row, 'TOPGAINER')

@@ -11,6 +11,7 @@ from django.template import loader
 
 from .utils import get_current_status, get_crypto_status, get_day_gainers, get_day_losers,get_top_crypto
 from .models import ListedStock, Indicator
+from dateutil.relativedelta import relativedelta
 from .constant import indian_index, global_indicators,crypto_currency
 import datetime
 
@@ -73,9 +74,10 @@ def add_stocks_into_db(request):
     if request.method == 'GET':
         print("enter")
         # ListedStock.objects.all().delete() # to delete all
-        df = pd.read_csv("./EQUITY_L.csv")
+        df = pd.read_csv("./Indian_tickers_YFinance.csv")
         for index, row in df.iterrows():
-            stock = ListedStock(name=row['NAME OF COMPANY'],symbol=row['SYMBOL'],slug = "Equity",category= row[" SERIES"])
+            symbol = row['Ticker'].split(".")[0]
+            stock = ListedStock(name=row['Name'],symbol=symbol,slug=row['Name'].lower(),category=row["Category"],ticker=row['Ticker'],exchange=row["Exchange"])
             stock.save()
         return HttpResponse('Successfull added')
     
@@ -122,7 +124,6 @@ def get_indian_index_status(request):
     context = {indicator['name']: indicator for indicator in indian_indicators}
     return JsonResponse(context, safe=False)
 
-    
 def get_global_indicator_status(request):
     all_indicators = list(Indicator.objects.filter(indicator_type = "GLOBAL").values())
     return JsonResponse(all_indicators, safe=False)
@@ -259,24 +260,18 @@ def forecast_data(request):
     data = yf.download(symbol, period="5y", interval='1mo')
 
     # Prepare the data for Prophet
-    df = data[['Close']].reset_index()
-    df = df.rename(columns={'Date': 'ds', 'Close': 'y'})
-
-    # Initialize and fit the Prophet model
-    best_params = {'changepoint_prior_scale': 0.5,
-                    'holidays_prior_scale': 0.01,
-                    'seasonality_prior_scale': 0.01}
-    model = Prophet(**best_params)
-    model.fit(df)
-
-    # Forecast future prices
-    future = model.make_future_dataframe(periods=duration, freq='M')
-    forecast = model.predict(future)
-    result = forecast[['ds', 'yhat']].tail(70)
-    prices = result['yhat'].tolist()
-    dates = pd.to_datetime(result['ds']).dt.strftime('%Y-%m').tolist()
-    percentage = (prices[-1] - data['Close'][-1])/data['Close'][-1]
-    forecast_price = price + price * percentage
+    data['Date'] = data.index
+    last_date = data['Date'][-1]
+    percentage = (((data['Close'][-1] - data['Close'][0])/data['Close'][0])/60)
+    last_price = data['Close'][-1]
+    # for i in range(1, duration+1):
+    next_date = last_date + relativedelta(months=duration)
+    current = len(data)
+    data.loc[current+1, 'Date'] = next_date
+    data.loc[current+1, 'Close'] = last_price + last_price*percentage*duration
+    prices = data['Close'].tolist()
+    dates = pd.to_datetime(data['Date']).dt.strftime('%Y-%m').tolist()
+    forecast_price = price + price * percentage * duration
     chart_string = "{}₹ will be {:.2f}₹ in {} Month".format(price, forecast_price, duration)
     context = {'prices': prices,"dates":dates, "chart_string": chart_string, "stock_name": stock_obj.name}
 

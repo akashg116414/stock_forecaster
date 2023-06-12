@@ -701,9 +701,8 @@
       </div>
           `;
         }
-  function generateHTMLList(response) {
+  function generateHTMLList(response,sign) {
     var html = '';
-    let sign = true;
     for (var i = 0; i < response.length; i++) {
       html += generateHTML(response[i],sign);
     }
@@ -725,9 +724,11 @@
         
 
         // Generate HTML code for the API response
-        var gainerhtmlCode = generateHTMLList(top_gainers);
-        var looserhtmlCode = generateHTMLList(top_losers);
-        var cryptohtmlCode = generateHTMLList(top_crypto);
+        let sign = false;
+        var gainerhtmlCode = generateHTMLList(top_gainers, sign);
+        var looserhtmlCode = generateHTMLList(top_losers, sign);
+        sign = true;
+        var cryptohtmlCode = generateHTMLList(top_crypto,sign);
     
         // Append the HTML code to a specific element in your page
         var gainercontainer = document.getElementById('top-gainer');

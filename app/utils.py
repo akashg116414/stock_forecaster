@@ -1,6 +1,7 @@
 import pandas as pd
 import requests
 from requests_html import HTMLSession
+from .models import ListedStock
 
 base_url = "https://query1.finance.yahoo.com/v8/finance/chart/"
 
@@ -137,3 +138,59 @@ def force_float(elt):
         return float(elt)
     except:
         return elt
+    
+def get_top_indian_gainer():
+    headers = {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
+    }
+
+    # Get the top gainers
+    res_gainers = requests.get(
+        "https://www.nseindia.com/api/live-analysis-variations?index=gainers", headers=headers
+    )
+    gainers = res_gainers.json()["allSec"]["data"]
+
+    # Create a DataFrame of the top gainers
+    df_gainers = pd.DataFrame(gainers)
+    df_gainers_new = pd.DataFrame()
+    df_gainers_new["Symbol"] = df_gainers["symbol"].str.upper()
+    df_gainers_new["PercentageChange"] = df_gainers["perChange"].map("{:.2f}".format)
+    df_gainers_new["Price"] = df_gainers["ltp"]
+    df_gainers_new["Change"] = (df_gainers["ltp"] - df_gainers["open_price"]).map("{:.2f}".format)
+
+    # Fetch stock names from ListedStocks model and add them to DataFrame
+    listed_stocks = ListedStock.objects.all()  # Replace with your actual code to fetch the ListedStocks model
+    symbol_to_name = {stock.symbol: stock.name for stock in listed_stocks}
+
+    df_gainers_new["Name"] = df_gainers_new["Symbol"].map(symbol_to_name)
+    df_gainers_new.dropna(subset=["Name"], inplace=True)
+
+    return df_gainers_new
+
+def get_top_indian_looser():
+    headers = {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
+    }
+
+    # Get the top losers
+    res_losers = requests.get(
+        "https://www.nseindia.com/api/live-analysis-variations?index=loosers", headers=headers
+    )
+    losers = res_losers.json()["allSec"]["data"]
+
+    # Create a DataFrame of the top losers
+    df_losers = pd.DataFrame(losers)
+    df_losers_new = pd.DataFrame()
+    df_losers_new["Symbol"] = df_losers["symbol"].str.upper()
+    df_losers_new["PercentageChange"] = df_losers["perChange"].map("{:.2f}".format)
+    df_losers_new["Price"] = df_losers["ltp"]
+    df_losers_new["Change"] = (df_losers["ltp"] - df_losers["open_price"]).map("{:.2f}".format)
+
+    # Fetch stock names from ListedStocks model and add them to DataFrame
+    listed_stocks = ListedStock.objects.all()  # Replace with your actual code to fetch the ListedStocks model
+    symbol_to_name = {stock.symbol: stock.name for stock in listed_stocks}
+
+    df_losers_new["Name"] = df_losers_new["Symbol"].map(symbol_to_name)
+    df_losers_new.dropna(subset=["Name"], inplace=True)
+
+    return df_losers_new
