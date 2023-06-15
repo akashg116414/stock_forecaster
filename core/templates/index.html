@@ -30,7 +30,8 @@
             </h6>
           </div>
           <div class="stats-small__data">
-            <span class="stats-small__percentage" id="nifty-percentage">
+            <span class="stats-small__percentage" id="nifty-change"></span>
+            <span class="stats-small__percentage" id="nifty-percentage"></span>
             </span>
           </div>
         </div>
@@ -50,7 +51,8 @@
             </h6>
           </div>
           <div class="stats-small__data">
-            <span class="stats-small__percentage" id="sensex-percentage">
+            <span class="stats-small__percentage" id="sensex-change"></span>
+            <span class="stats-small__percentage" id="sensex-percentage"></span>
             </span>
           </div>
         </div>
@@ -70,7 +72,8 @@
             </h6>
           </div>
           <div class="stats-small__data">
-            <span class="stats-small__percentage" id="vix-percentage">
+            <span class="stats-small__percentage" id="vix-change"></span>
+            <span class="stats-small__percentage" id="vix-percentage"></span>
             </span>
           </div>
         </div>
@@ -90,7 +93,8 @@
             </h6>
           </div>
           <div class="stats-small__data">
-            <span class="stats-small__percentage" id="bank-nifty-percentage">
+            <span class="stats-small__percentage" id="bank-nifty-change"></span>
+            <span class="stats-small__percentage" id="bank-nifty-percentage"></span>
             </span>
           </div>
         </div>
@@ -300,7 +304,14 @@
         var bankNifty = response["Bank Nifty"];
 
         $("#nifty-price").text(nifty50.price);
-        $("#nifty-percentage").text(nifty50.percentage_change);
+        $("#nifty-percentage").text(nifty50.percentage_change + "%");
+        $("#nifty-change").text(nifty50.change);
+
+        if (nifty50.change < 0) {
+          $("#nifty-change").addClass("stats-small__percentage--decrease");
+        } else {
+          $("#nifty-change").addClass("stats-small__percentage--increase");
+        }
         if (nifty50.percentage_change < 0) {
           $("#nifty-percentage").addClass("stats-small__percentage--decrease");
         } else {
@@ -308,7 +319,14 @@
         }
 
         $("#sensex-price").text(sensex.price);
-        $("#sensex-percentage").text(sensex.percentage_change);
+        $("#sensex-percentage").text(sensex.percentage_change + "%");
+        $("#sensex-change").text(sensex.change);
+
+        if (sensex.change < 0) {
+          $("#sensex-change").addClass("stats-small__percentage--decrease");
+        } else {
+          $("#sensex-change").addClass("stats-small__percentage--increase");
+        }
         if (sensex.percentage_change < 0) {
           $("#sensex-percentage").addClass("stats-small__percentage--decrease");
         } else {
@@ -316,7 +334,15 @@
         }
 
         $("#vix-price").text(indiaVIX.price);
-        $("#vix-percentage").text(indiaVIX.percentage_change);
+        $("#vix-change").text(indiaVIX.change);
+        $("#vix-percentage").text(indiaVIX.percentage_change+ "%");
+
+        if (indiaVIX.change < 0) {
+          $("#vix-change").addClass("stats-small__percentage--decrease");
+        } else {
+          $("#vix-change").addClass("stats-small__percentage--increase");
+        }
+
         if (indiaVIX.percentage_change < 0) {
           $("#vix-percentage").addClass("stats-small__percentage--decrease");
         } else {
@@ -324,7 +350,14 @@
         }
 
         $("#bank-nifty-price").text(bankNifty.price);
-        $("#bank-nifty-percentage").text(bankNifty.percentage_change);
+        $("#bank-nifty-change").text(bankNifty.change);
+        $("#bank-nifty-percentage").text(bankNifty.percentage_change+ "%");
+
+        if (bankNifty.change < 0) {
+          $("#bank-nifty-change").addClass("stats-small__percentage--decrease");
+        } else {
+          $("#bank-nifty-change").addClass("stats-small__percentage--increase");
+        }
         if (bankNifty.percentage_change < 0) {
           $("#bank-nifty-percentage").addClass("stats-small__percentage--decrease");
         } else {
@@ -656,7 +689,7 @@
       type: 'GET',
       url: global_index_url,
       success: function (response) {
-        var top_gainers = response;
+        var global_index = response;
        
 
         // Function to generate HTML code for the entire API response
@@ -664,18 +697,35 @@
           var html = '';
           let sign = false;
           for (var i = 0; i < response.length; i++) {
-            html += generateHTML(response[i],sign);
+            html += generateHTMLG(response[i],sign);
           }
           return html;
         }
 
+        function generateHTMLG(item,sign) {
+          let percentageClass = item.percentage_change > 0 ? "stats-small__percentage stats-small__percentage--increase" : "stats-small__percentage stats-small__percentage--decrease";
+          let currency_sign = (["S&P 500", "Nasdaq", "Dow Jones"].includes(item.name)) ? '$' : '₹';
+          let price = (currency_sign === '$') ? `${item.price}$` : `₹${item.price}`;
+          return `
+          <div class="card-body d-flex py-0">
+        <div class="stats-small__data text">
+          <span class="stats-medium__label text">${item.name}</span>
+        </div>
+        <div class="stats-small__data">
+          <span class="stats-small__value count my-1 text-right">${price}</span>
+          <span class="${percentageClass}">${item.percentage_change+ "%"}</span>
+        </div>
+      </div>
+          `;
+        }
+
         // Generate HTML code for the API response
-        var gainerhtmlCode = generateHTMLList(top_gainers);
+        var globalhtmlCode = generateHTMLList(global_index);
     
         // Append the HTML code to a specific element in your page
         var globalcontainer = document.getElementById('global-indicator');
-        globalcontainer.innerHTML = gainerhtmlCode;
-        globalcontainer.style.height = 'auto';
+        globalcontainer.innerHTML = globalhtmlCode;
+        globalcontainer.style.height = 'auto';  
       }
     });
   }
@@ -689,14 +739,15 @@
   function generateHTML(item,sign) {
           let percentageClass = item.percentage_change > 0 ? "stats-small__percentage stats-small__percentage--increase" : "stats-small__percentage stats-small__percentage--decrease";
           let currency_sign = (sign === true) ? '$' : '';
+          let price = sign ? item.price : `₹${item.price}`;
           return `
           <div class="card-body d-flex py-0">
         <div class="stats-small__data text">
           <span class="stats-medium__label text">${item.name}</span>
         </div>
         <div class="stats-small__data">
-          <span class="stats-small__value count my-1 text-right">${item.price} ${currency_sign}</span>
-          <span class="${percentageClass}">${item.percentage_change}</span>
+          <span class="stats-small__value count my-1 text-right">${price}${currency_sign}</span>
+          <span class="${percentageClass}">${item.percentage_change+ "%"}</span>
         </div>
       </div>
           `;
