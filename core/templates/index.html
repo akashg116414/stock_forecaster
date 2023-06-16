@@ -30,8 +30,7 @@
             </h6>
           </div>
           <div class="stats-small__data">
-            <span class="stats-small__percentage" id="nifty-change"></span>
-            <span class="stats-small__percentage" id="nifty-percentage"></span>
+            <span class="stats-small__percentage" id="nifty-details"></span>
             </span>
           </div>
         </div>
@@ -51,9 +50,7 @@
             </h6>
           </div>
           <div class="stats-small__data">
-            <span class="stats-small__percentage" id="sensex-change"></span>
-            <span class="stats-small__percentage" id="sensex-percentage"></span>
-            </span>
+            <span class="stats-small__percentage"  id="sensex-details"></span>
           </div>
         </div>
       </div>
@@ -72,8 +69,7 @@
             </h6>
           </div>
           <div class="stats-small__data">
-            <span class="stats-small__percentage" id="vix-change"></span>
-            <span class="stats-small__percentage" id="vix-percentage"></span>
+            <span class="stats-small__percentage" id="vix-details"></span>
             </span>
           </div>
         </div>
@@ -93,8 +89,7 @@
             </h6>
           </div>
           <div class="stats-small__data">
-            <span class="stats-small__percentage" id="bank-nifty-change"></span>
-            <span class="stats-small__percentage" id="bank-nifty-percentage"></span>
+            <span class="stats-small__percentage" id="bank-nifty-details"></span>
             </span>
           </div>
         </div>
@@ -303,65 +298,40 @@
         var indiaVIX = response["India VIX"];
         var bankNifty = response["Bank Nifty"];
 
+        $("#nifty-details").text(nifty50.change +" " +"(" + nifty50.percentage_change + "%)");
         $("#nifty-price").text(nifty50.price);
-        $("#nifty-percentage").text(nifty50.percentage_change + "%");
-        $("#nifty-change").text(nifty50.change);
 
         if (nifty50.change < 0) {
-          $("#nifty-change").addClass("stats-small__percentage--decrease");
+          $("#nifty-details").addClass("stats-small__percentage--decrease");
         } else {
-          $("#nifty-change").addClass("stats-small__percentage--increase");
-        }
-        if (nifty50.percentage_change < 0) {
-          $("#nifty-percentage").addClass("stats-small__percentage--decrease");
-        } else {
-          $("#nifty-percentage").addClass("stats-small__percentage--increase");
+          $("#nifty-details").addClass("stats-small__percentage--increase");
         }
 
+        $("#sensex-details").text(sensex.change +" " +"(" + sensex.percentage_change + "%)");
         $("#sensex-price").text(sensex.price);
-        $("#sensex-percentage").text(sensex.percentage_change + "%");
-        $("#sensex-change").text(sensex.change);
 
         if (sensex.change < 0) {
-          $("#sensex-change").addClass("stats-small__percentage--decrease");
+          $("#sensex-details").addClass("stats-small__percentage--decrease");
         } else {
-          $("#sensex-change").addClass("stats-small__percentage--increase");
-        }
-        if (sensex.percentage_change < 0) {
-          $("#sensex-percentage").addClass("stats-small__percentage--decrease");
-        } else {
-          $("#sensex-percentage").addClass("stats-small__percentage--increase");
+          $("#sensex-details").addClass("stats-small__percentage--increase");
         }
 
+        $("#vix-details").text(indiaVIX.change +" " +"(" + indiaVIX.percentage_change + "%)");
         $("#vix-price").text(indiaVIX.price);
-        $("#vix-change").text(indiaVIX.change);
-        $("#vix-percentage").text(indiaVIX.percentage_change+ "%");
 
         if (indiaVIX.change < 0) {
-          $("#vix-change").addClass("stats-small__percentage--decrease");
+          $("#vix-details").addClass("stats-small__percentage--decrease");
         } else {
-          $("#vix-change").addClass("stats-small__percentage--increase");
+          $("#vix-details").addClass("stats-small__percentage--increase");
         }
 
-        if (indiaVIX.percentage_change < 0) {
-          $("#vix-percentage").addClass("stats-small__percentage--decrease");
-        } else {
-          $("#vix-percentage").addClass("stats-small__percentage--increase");
-        }
-
+        $("#bank-nifty-details").text(bankNifty.change +" " +"(" + bankNifty.percentage_change + "%)");
         $("#bank-nifty-price").text(bankNifty.price);
-        $("#bank-nifty-change").text(bankNifty.change);
-        $("#bank-nifty-percentage").text(bankNifty.percentage_change+ "%");
 
         if (bankNifty.change < 0) {
-          $("#bank-nifty-change").addClass("stats-small__percentage--decrease");
+          $("#bank-nifty-details").addClass("stats-small__percentage--decrease");
         } else {
-          $("#bank-nifty-change").addClass("stats-small__percentage--increase");
-        }
-        if (bankNifty.percentage_change < 0) {
-          $("#bank-nifty-percentage").addClass("stats-small__percentage--decrease");
-        } else {
-          $("#bank-nifty-percentage").addClass("stats-small__percentage--increase");
+          $("#bank-nifty-details").addClass("stats-small__percentage--increase");
         }
       }
     });
@@ -472,7 +442,7 @@
       const currentTime = hours * 60 + minutes;
 
       // Check if the current time is between 9:15 am and 4:00 pm IST
-      if (currentTime >= 555 && currentTime <= 960) {
+      // if (currentTime >= 555 && currentTime <= 960) {
       // Send AJAX request to server to get updated chart data
       $.ajax({
         url: signal_url,
@@ -483,7 +453,7 @@
         }
       });
     }
-  }
+  
 
   function updatesignalChartStart() {
       let signal_url = "{% url 'signal-data-graph' %}?";
