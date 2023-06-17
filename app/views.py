@@ -17,23 +17,23 @@ import datetime
 
 
 def index(request):
-    symbol = request.GET.get('symbol')
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
+    stock_id = request.GET.get('stock_id', None)
+    stock_obj = ListedStock.objects.filter(id=stock_id).first()
     period = '3mo'
-    if not symbol:
+    if not stock_obj:
         symbol = "TATAMOTORS"
-    stock_obj = ListedStock.objects.filter(symbol=symbol).first()
-    new_symbol = symbol + ".NS"
-    stock = yf.Ticker(new_symbol)
+        stock_obj = ListedStock.objects.filter(symbol=symbol).first()
+    ticker = stock_obj.ticker
+    stock = yf.Ticker(ticker)
     if start_date and end_date:
         data = stock.history(start=start_date, end=end_date)
     else:
         data = stock.history(period=period)
-    print(data)
     prices = data['Close'].tolist()
     dates = data.index.strftime('%Y-%m-%d').tolist()
-    context = {'prices': prices, "dates":dates, "stock_name": stock_obj.name, "stock_symbol": symbol}
+    context = {'prices': prices, "dates":dates, "stock_name": stock_obj.name, "stock_symbol": stock_obj.symbol, 'stock_id': stock_obj.id}
     return render(request, "index.html", context)
 
 
@@ -74,10 +74,10 @@ def add_stocks_into_db(request):
     if request.method == 'GET':
         print("enter")
         # ListedStock.objects.all().delete() # to delete all
-        df = pd.read_csv("./Indian_tickers_YFinance.csv")
+        df = pd.read_csv("./EQUITY_L.csv")
         for index, row in df.iterrows():
-            symbol = row['Ticker'].split(".")[0]
-            stock = ListedStock(name=row['Name'],symbol=symbol,slug=row['Name'].lower(),category=row["Category"],ticker=row['Ticker'],exchange=row["Exchange"])
+            ticker = row['SYMBOL'] + '.NS'
+            stock = ListedStock(name=row['NAME OF COMPANY'],symbol=row['SYMBOL'],slug=row['NAME OF COMPANY'].lower(),ticker=ticker,exchange='NSI')
             stock.save()
         return HttpResponse('Successfull added')
     
@@ -86,23 +86,25 @@ def search_items(request):
     keyword = request.GET.get('q')
     if keyword:
         items = ListedStock.objects.filter(name__icontains=keyword)[:12]
-        data = [{'name': item.name,'symbol':item.symbol} for item in items]
+        data = [{'name': item.name,'symbol':item.symbol, 'stock_id': item.id} for item in items]
     else:
         data = []
     return JsonResponse(data, safe=False)
 
 def historical_data(request):
-    symbol = request.GET.get('symbol')
+    # symbol = request.GET.get('symbol')
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
     interval = request.GET.get('interval')
+    stock_id = request.GET.get('stock_id', None)
+    stock_obj = ListedStock.objects.filter(id=stock_id).first()
     interval_period = {"1m":"1d", "5m":"1d", "15m":"5d", "30m":"5d", "1h":"5d", "1d":"1mo", "1wk":"3mo", "1mo":"2y", "3mo":"5y"}
     period = '3mo'
-    if not symbol:
-        symbol = "INFY"
-    stock_obj = ListedStock.objects.filter(symbol=symbol).first()
-    symbol = symbol + ".NS"
-    stock = yf.Ticker(symbol)
+    if not stock_obj:
+        symbol = "TATAMOTORS"
+        stock_obj = ListedStock.objects.filter(symbol=symbol).first()
+    ticker = stock_obj.ticker
+    stock = yf.Ticker(ticker)
     if start_date and end_date and not interval:
         data = stock.history(start=start_date, end=end_date)
     elif start_date and end_date and interval:
@@ -115,7 +117,7 @@ def historical_data(request):
     
     prices = data['Close'].tolist()
     dates = data.index.strftime('%Y-%m-%d').tolist()
-    context = {'prices': prices,"dates":dates, "stock_name": stock_obj.name}
+    context = {'prices': prices,"dates":dates, "stock_name": stock_obj.name, 'stock_id': stock_obj.id}
 
     return JsonResponse(context, safe=False)
 
@@ -133,12 +135,14 @@ def get_global_crypto_status(request):
     return JsonResponse(context_crypto, safe=False)
 
 def signal_data_graph(request):
-    symbol = request.GET.get('symbol')
-    if not symbol:
-        symbol = "INFY"
-    stock_obj = ListedStock.objects.filter(symbol=symbol).first()
-    symbol = symbol + ".NS"
-    stock = yf.Ticker(symbol)
+
+    stock_id = request.GET.get('stock_id', None)
+    stock_obj = ListedStock.objects.filter(id=stock_id).first()
+    if not stock_obj:
+        symbol = "TATAMOTORS"
+        stock_obj = ListedStock.objects.filter(symbol=symbol).first()
+    ticker = stock_obj.ticker
+    stock = yf.Ticker(ticker)
 
     signal_data = stock.history(period="5d", interval='5m')
     signal_data.ta.supertrend(length=20, multiplier=2, append=True)
@@ -165,7 +169,7 @@ def signal_data_graph(request):
         'low': signal_data['Low'],
         'close': y_data,
         'type': 'candlestick',
-        'name': symbol,
+        'name': stock_obj.name,
         'showlegend': False
     }
 
@@ -249,15 +253,17 @@ def signal_data_graph(request):
     return JsonResponse(context, safe=False)
 
 def forecast_data(request):
-    symbol = request.GET.get('symbol')
     price = int(request.GET.get('price', 1000))
     duration = int(request.GET.get('duration', 1))
     print(price, duration)
-    stock_obj = ListedStock.objects.filter(symbol=symbol).first()
-    symbol = symbol + ".NS"
-
+    stock_id = request.GET.get('stock_id', None)
+    stock_obj = ListedStock.objects.filter(id=stock_id).first()
+    if not stock_obj:
+        symbol = "TATAMOTORS"
+        stock_obj = ListedStock.objects.filter(symbol=symbol).first()
+    ticker = stock_obj.ticker
     # Download the historical stock data from Yahoo Finance
-    data = yf.download(symbol, period="5y", interval='1mo')
+    data = yf.download(ticker, period="5y", interval='1mo')
 
     # Prepare the data for Prophet
     data['Date'] = data.index
@@ -272,7 +278,7 @@ def forecast_data(request):
     prices = data['Close'].tolist()
     dates = pd.to_datetime(data['Date']).dt.strftime('%Y-%m').tolist()
     forecast_price = price + price * percentage * duration
-    chart_string = "{}₹ will be {:.2f}₹ in {} Month".format(price, forecast_price, duration)
+    chart_string = "₹ {} will be ₹ {:.2f} in {} Month".format(price, forecast_price, duration)
     context = {'prices': prices,"dates":dates, "chart_string": chart_string, "stock_name": stock_obj.name}
 
     return JsonResponse(context, safe=False)

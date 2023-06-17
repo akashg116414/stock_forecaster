@@ -148,7 +148,10 @@ def get_top_indian_gainer():
     res_gainers = requests.get(
         "https://www.nseindia.com/api/live-analysis-variations?index=gainers", headers=headers
     )
-    gainers = res_gainers.json()["allSec"]["data"]
+    try:
+        gainers = res_gainers.json()["allSec"]["data"]
+    except:
+        gainers = {}
 
     # Create a DataFrame of the top gainers
     df_gainers = pd.DataFrame(gainers)
@@ -176,7 +179,10 @@ def get_top_indian_looser():
     res_losers = requests.get(
         "https://www.nseindia.com/api/live-analysis-variations?index=loosers", headers=headers
     )
-    losers = res_losers.json()["allSec"]["data"]
+    try:
+        losers = res_losers.json()["allSec"]["data"]
+    except:
+        losers = {}
 
     # Create a DataFrame of the top losers
     df_losers = pd.DataFrame(losers)

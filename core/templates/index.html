@@ -155,7 +155,11 @@
       <div class="card-body pt-0", id="signal-graph-1">
         <div class="row border-bottom py-2 bg-light">
           <div class="input-daterange input-group">
-            <input type="number" class="input-sm form-control ml-3" id="price" name="price" min="100" required placeholder="Enter The Price" value="1000">
+            <!-- <input type="number" class="input-sm form-control ml-3" id="price" name="price" min="100" required placeholder="Enter The Price" value="1000"> -->
+            <div class="col-lg-6">
+              <label for="duration">Investment: ₹  <span id="investment-value">1000</span></label>
+              <input placeholder="Investment: 1" type="range" class="input-sm form-control-range" id="price" name="price" min="1000" max="100000" value="1000" oninput="updatePriceValue(this.value)">
+            </div>
             <div class="col-lg-6">
             <label for="duration">Duration (months): <span id="duration-value">1</span></label>
             <input placeholder="Duration (months): 1" type="range" class="input-sm form-control-range" id="duration" name="duration" min="1" max="60" value="1" oninput="updateDurationValue(this.value)">
@@ -226,6 +230,15 @@
 
 
 <script>
+  function resetForm() {
+    document.getElementById("historical-start-date").value = "";
+    document.getElementById("historical-end-date").value = "";
+    document.getElementById("price").value = 1000;
+    document.getElementById("duration").value = 1;
+    updatePriceValue(1000);
+    updateDurationValue(1);
+    document.getElementById("interval").selectedIndex = 0;
+  }
   const searchInput = document.getElementById('search-input');
   const searchResults = document.getElementById('search-results');
 
@@ -242,7 +255,7 @@
             if (items.length > 0) {
               html += '<p style="margin-bottom:auto;">';
                 for (const item of items) {
-                  html += `<a href="#" onclick="changeAllGraph('${encodeURIComponent(item.symbol)}')" class="search-result">${item.name}</a><br>`;
+                  html += `<a href="#" onclick="changeAllGraph('${item.stock_id}')" class="search-result">${item.name}</a><br>`;
                 }
               html += '</p>';
             }
@@ -260,19 +273,20 @@
       searchResults.innerHTML = '';
     }
   });
-  function changeAllGraph(symbol) {
+  function changeAllGraph(id) {
     // Your JavaScript code goes here
-    console.log(symbol)
-    fetchValue(symbol);
-    stock_symbol = symbol
+    console.log(id)
+    fetchValue(id);
+    resetForm();
+    stock_id = id
     var searchInput = document.getElementById('search-input');
 
     // Set the value of the input field to an empty string
     searchInput.value = '';
     searchResults.innerHTML = '';
+    updateHTMLPriceAndDuration(1000,1);
     forecastValue(1000, 1);
     updatesignalChartStart();
-      // alert(symbol);
   }
   searchResults.addEventListener('click', (event) => {
     if (event.target.classList.contains('search-result')) {
@@ -287,6 +301,10 @@
   function updateDurationValue(value) {
     document.getElementById("duration-value").innerHTML = value;
   }
+  function updatePriceValue(value) {
+    document.getElementById("investment-value").innerHTML = value;
+  }
+  
   let indian_index_url = "{% url 'indian-index-status' %}";
   function updateData() {
     $.ajax({
@@ -345,9 +363,9 @@
   let today = new Date().toISOString().split('T')[0];
   document.getElementById("historical-start-date").setAttribute("max", today);
   document.getElementById("historical-end-date").setAttribute("max", today);
-  var stock_symbol = "{{stock_symbol}}";
+  var stock_id = "{{stock_id}}";
 
-  function fetchValue(symbol, startDate, endDate, interval) {
+  function fetchValue(stock_id, startDate, endDate, interval) {
 
     // Validate that the start date is less than the end date
     if (startDate && endDate && startDate >= endDate) {
@@ -377,7 +395,7 @@
       }
     }
     let url = "{% url 'historical-data' %}?";
-    url += `symbol=${encodeURIComponent(symbol)}`;
+    url += `stock_id=${stock_id}`;
 
     if (startDate && endDate) {
       url += `&start_date=${startDate}&end_date=${endDate}`;
@@ -410,7 +428,7 @@
 
     
     let url = "{% url 'forecast-data' %}?";
-    url += `symbol=${encodeURIComponent(stock_symbol)}`;
+    url += `stock_id=${stock_id}`;
 
     if (price) {
       url += `&price=${price}`;
@@ -435,7 +453,7 @@
 
   function updatesignalChart() {
       let signal_url = "{% url 'signal-data-graph' %}?";
-      signal_url += `symbol=${encodeURIComponent(stock_symbol)}`;
+      signal_url += `stock_id=${stock_id}`;
       const now = new Date();
       const hours = now.getUTCHours() + 5.5; // Add 5.5 hours for IST timezone offset
       const minutes = now.getUTCMinutes();
@@ -457,7 +475,7 @@
 
   function updatesignalChartStart() {
       let signal_url = "{% url 'signal-data-graph' %}?";
-      signal_url += `symbol=${encodeURIComponent(stock_symbol)}`;
+      signal_url += `stock_id=${stock_id}`;
     
       // Send AJAX request to server to get updated chart data
       $.ajax({
@@ -506,7 +524,7 @@
       var interval = intervalSelect.value;
 
       // call the fetchValue function with updated values
-      fetchValue(symbol, startDate, endDate, interval);
+      fetchValue(stock_id, startDate, endDate, interval);
     });
 
     endDateInput.addEventListener('change', function () {
@@ -515,7 +533,7 @@
       var interval = intervalSelect.value;
 
       // call the fetchValue function with updated values
-      fetchValue(symbol, startDate, endDate, interval);
+      fetchValue(stock_id, startDate, endDate, interval);
     });
 
     intervalSelect.addEventListener('change', function () {
@@ -524,7 +542,7 @@
       var interval = intervalSelect.value;
 
       // call the fetchValue function with updated values
-      fetchValue(symbol, startDate, endDate, interval);
+      fetchValue(stock_id, startDate, endDate, interval);
     });
   });
 
