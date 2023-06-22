@@ -38,9 +38,9 @@ def index(request):
 
 
 def gainers_losers_status(request):
-    top_gainers = Indicator.objects.filter(indicator_type="TOPGAINER")
-    top_losers = Indicator.objects.filter(indicator_type="TOPLOSER")
-    top_crypto = Indicator.objects.filter(indicator_type="TOPCRYPTO")
+    top_gainers = Indicator.objects.filter(indicator_type="TOPGAINER").order_by('-id')[:3]
+    top_losers = Indicator.objects.filter(indicator_type="TOPLOSER").order_by('-id')[:3]
+    top_crypto = Indicator.objects.filter(indicator_type="TOPCRYPTO").order_by('-id')[:3]
     context = {
         "gainers": list(top_gainers.values()),
         "losers": list(top_losers.values()),
