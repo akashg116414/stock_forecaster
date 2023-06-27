@@ -23,7 +23,7 @@ def index(request):
     stock_obj = ListedStock.objects.filter(id=stock_id).first()
     period = '3mo'
     if not stock_obj:
-        symbol = "TATAMOTORS"
+        symbol = "^NSEI"
         stock_obj = ListedStock.objects.filter(symbol=symbol).first()
     ticker = stock_obj.ticker
     stock = yf.Ticker(ticker)
@@ -76,8 +76,7 @@ def add_stocks_into_db(request):
         # ListedStock.objects.all().delete() # to delete all
         df = pd.read_csv("./EQUITY_L.csv")
         for index, row in df.iterrows():
-            ticker = row['SYMBOL'] + '.NS'
-            stock = ListedStock(name=row['NAME OF COMPANY'],symbol=row['SYMBOL'],slug=row['NAME OF COMPANY'].lower(),ticker=ticker,exchange='NSI')
+            stock = ListedStock(name=row['NAME OF COMPANY'],symbol=row['SYMBOL'],slug=row['NAME OF COMPANY'].lower(),ticker=row['SYMBOL'],exchange='NSI')
             stock.save()
         return HttpResponse('Successfull added')
     
@@ -101,7 +100,7 @@ def historical_data(request):
     interval_period = {"1m":"1d", "5m":"1d", "15m":"5d", "30m":"5d", "1h":"5d", "1d":"1mo", "1wk":"3mo", "1mo":"2y", "3mo":"5y"}
     period = '3mo'
     if not stock_obj:
-        symbol = "TATAMOTORS"
+        symbol = "^NSEI"
         stock_obj = ListedStock.objects.filter(symbol=symbol).first()
     ticker = stock_obj.ticker
     stock = yf.Ticker(ticker)
@@ -139,7 +138,7 @@ def signal_data_graph(request):
     stock_id = request.GET.get('stock_id', None)
     stock_obj = ListedStock.objects.filter(id=stock_id).first()
     if not stock_obj:
-        symbol = "TATAMOTORS"
+        symbol = "^NSEI"
         stock_obj = ListedStock.objects.filter(symbol=symbol).first()
     ticker = stock_obj.ticker
     stock = yf.Ticker(ticker)
@@ -259,7 +258,7 @@ def forecast_data(request):
     stock_id = request.GET.get('stock_id', None)
     stock_obj = ListedStock.objects.filter(id=stock_id).first()
     if not stock_obj:
-        symbol = "TATAMOTORS"
+        symbol = "^NSEI"
         stock_obj = ListedStock.objects.filter(symbol=symbol).first()
     ticker = stock_obj.ticker
     # Download the historical stock data from Yahoo Finance
