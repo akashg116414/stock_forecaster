@@ -2,7 +2,8 @@ FROM python:3.8
 
 
 COPY manage.py gunicorn-cfg.py requirements.txt .env ./
-COPY Indian_tickers_YFinance.csv ./
+COPY EQUITY_new.csv ./
+
 COPY EQUITY_L.csv ./
 COPY app app
 COPY authentication authentication
