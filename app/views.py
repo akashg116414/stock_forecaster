@@ -74,9 +74,9 @@ def add_stocks_into_db(request):
     if request.method == 'GET':
         print("enter")
         # ListedStock.objects.all().delete() # to delete all
-        df = pd.read_csv("./EQUITY_L.csv")
+        df = pd.read_csv("./EQUITY_new.csv")
         for index, row in df.iterrows():
-            stock = ListedStock(name=row['NAME OF COMPANY'],symbol=row['SYMBOL'],slug=row['NAME OF COMPANY'].lower(),ticker=row['SYMBOL'],exchange='NSI')
+            stock = ListedStock(name=row['NAME OF COMPANY'],symbol=row['SYMBOL'],symbol1=row['SYMBOL1'],slug=row['NAME OF COMPANY'].lower(),ticker=row['SYMBOL'],exchange='NSI')
             stock.save()
         return HttpResponse('Successfull added')
     
