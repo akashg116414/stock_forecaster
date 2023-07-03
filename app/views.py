@@ -9,10 +9,10 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.template import loader
 
-from .utils import get_current_status, get_crypto_status, get_day_gainers, get_day_losers,get_top_crypto
+from .utils import get_current_status, get_crypto_status, get_day_gainers, get_day_losers, get_top_crypto
 from .models import ListedStock, Indicator
 from dateutil.relativedelta import relativedelta
-from .constant import indian_index, global_indicators,crypto_currency
+from .constant import indian_index, global_indicators, crypto_currency
 import datetime
 
 
@@ -33,14 +33,18 @@ def index(request):
         data = stock.history(period=period)
     prices = data['Close'].tolist()
     dates = data.index.strftime('%Y-%m-%d').tolist()
-    context = {'prices': prices, "dates":dates, "stock_name": stock_obj.name, "stock_symbol": stock_obj.symbol, 'stock_id': stock_obj.id}
+    context = {'prices': prices, "dates": dates, "stock_name": stock_obj.name,
+               "stock_symbol": stock_obj.symbol, 'stock_id': stock_obj.id}
     return render(request, "index.html", context)
 
 
 def gainers_losers_status(request):
-    top_gainers = Indicator.objects.filter(indicator_type="TOPGAINER").order_by('-id')[:3]
-    top_losers = Indicator.objects.filter(indicator_type="TOPLOSER").order_by('-id')[:3]
-    top_crypto = Indicator.objects.filter(indicator_type="TOPCRYPTO").order_by('-id')[:3]
+    top_gainers = Indicator.objects.filter(
+        indicator_type="TOPGAINER").order_by('-id')[:3]
+    top_losers = Indicator.objects.filter(
+        indicator_type="TOPLOSER").order_by('-id')[:3]
+    top_crypto = Indicator.objects.filter(
+        indicator_type="TOPCRYPTO").order_by('-id')[:3]
     context = {
         "gainers": list(top_gainers.values()),
         "losers": list(top_losers.values()),
@@ -54,19 +58,19 @@ def pages(request):
     # All resource paths end in .html.
     # Pick out the html file name from the url. And load that template.
     try:
-        
+
         load_template = request.path.split('/')[-1]
-        html_template = loader.get_template( load_template )
+        html_template = loader.get_template(load_template)
         return HttpResponse(html_template.render(context, request))
-        
+
     except template.TemplateDoesNotExist:
 
-        html_template = loader.get_template( 'error-404.html' )
+        html_template = loader.get_template('error-404.html')
         return HttpResponse(html_template.render(context, request))
 
     except:
-    
-        html_template = loader.get_template( 'error-500.html' )
+
+        html_template = loader.get_template('error-500.html')
         return HttpResponse(html_template.render(context, request))
 
 
@@ -76,19 +80,22 @@ def add_stocks_into_db(request):
         # ListedStock.objects.all().delete() # to delete all
         df = pd.read_csv("./EQUITY_L.csv")
         for index, row in df.iterrows():
-            stock = ListedStock(name=row['NAME OF COMPANY'],symbol=row['SYMBOL'],slug=row['NAME OF COMPANY'].lower(),ticker=row['SYMBOL'],exchange='NSI')
+            stock = ListedStock(name=row['NAME OF COMPANY'], symbol=row['SYMBOL'],
+                                slug=row['NAME OF COMPANY'].lower(), ticker=row['SYMBOL'], exchange='NSI')
             stock.save()
         return HttpResponse('Successfull added')
-    
-    
+
+
 def search_items(request):
     keyword = request.GET.get('q')
     if keyword:
         items = ListedStock.objects.filter(name__icontains=keyword)[:12]
-        data = [{'name': item.name,'symbol':item.symbol, 'stock_id': item.id} for item in items]
+        data = [{'name': item.name, 'symbol': item.symbol,
+                 'stock_id': item.id} for item in items]
     else:
         data = []
     return JsonResponse(data, safe=False)
+
 
 def historical_data(request):
     # symbol = request.GET.get('symbol')
@@ -97,7 +104,8 @@ def historical_data(request):
     interval = request.GET.get('interval')
     stock_id = request.GET.get('stock_id', None)
     stock_obj = ListedStock.objects.filter(id=stock_id).first()
-    interval_period = {"1m":"1d", "5m":"1d", "15m":"5d", "30m":"5d", "1h":"5d", "1d":"1mo", "1wk":"3mo", "1mo":"2y", "3mo":"5y"}
+    interval_period = {"1m": "1d", "5m": "1d", "15m": "5d", "30m": "5d",
+                       "1h": "5d", "1d": "1mo", "1wk": "3mo", "1mo": "2y", "3mo": "5y"}
     period = '3mo'
     if not stock_obj:
         symbol = "^NSEI"
@@ -107,31 +115,39 @@ def historical_data(request):
     if start_date and end_date and not interval:
         data = stock.history(start=start_date, end=end_date)
     elif start_date and end_date and interval:
-        data = stock.history(start=start_date, end=end_date,interval=interval)
+        data = stock.history(start=start_date, end=end_date, interval=interval)
     elif not start_date and not end_date and interval:
         period = interval_period.get(interval)
-        data = stock.history(period=period,interval=interval)
+        data = stock.history(period=period, interval=interval)
     else:
         data = stock.history(period=period)
-    
+
     prices = data['Close'].tolist()
     dates = data.index.strftime('%Y-%m-%d').tolist()
-    context = {'prices': prices,"dates":dates, "stock_name": stock_obj.name, 'stock_id': stock_obj.id}
+    context = {'prices': prices, "dates": dates,
+               "stock_name": stock_obj.name, 'stock_id': stock_obj.id}
 
     return JsonResponse(context, safe=False)
 
+
 def get_indian_index_status(request):
-    indian_indicators = list(Indicator.objects.filter(indicator_type = "INDIAN").values())
+    indian_indicators = list(Indicator.objects.filter(
+        indicator_type="INDIAN").values())
     context = {indicator['name']: indicator for indicator in indian_indicators}
     return JsonResponse(context, safe=False)
 
+
 def get_global_indicator_status(request):
-    all_indicators = list(Indicator.objects.filter(indicator_type = "GLOBAL").values())
+    all_indicators = list(Indicator.objects.filter(
+        indicator_type="GLOBAL").values())
     return JsonResponse(all_indicators, safe=False)
 
+
 def get_global_crypto_status(request):
-    context_crypto = {name:get_crypto_status(name,ticker) for name,ticker in crypto_currency.items()}
+    context_crypto = {name: get_crypto_status(
+        name, ticker) for name, ticker in crypto_currency.items()}
     return JsonResponse(context_crypto, safe=False)
+
 
 def signal_data_graph(request):
 
@@ -146,9 +162,9 @@ def signal_data_graph(request):
     signal_data = stock.history(period="5d", interval='5m')
     signal_data.ta.supertrend(length=20, multiplier=2, append=True)
 
-    
-    signal_data.drop(['SUPERTl_20_2.0','SUPERTs_20_2.0'],axis=1,inplace=True)
-    
+    signal_data.drop(['SUPERTl_20_2.0', 'SUPERTs_20_2.0'],
+                     axis=1, inplace=True)
+
     signal_data = signal_data.loc[signal_data['SUPERT_20_2.0'] != 0].copy()
     signal_data.dropna(inplace=True)
 
@@ -171,7 +187,6 @@ def signal_data_graph(request):
         'name': stock_obj.name,
         'showlegend': False
     }
-
 
     # Create trace for Supertrend
     supertrend_trace = {
@@ -228,28 +243,29 @@ def signal_data_graph(request):
             buy_signals_trace['marker']['symbol'] = 'triangle-up'
             buy_signals_trace['marker']['color'] = 'green'
 
-
     # Create layout for plot
     layout = {
         'title': {
-        'text': stock_obj.name,
-        'x': 0.5,
-        'xanchor': 'center'
+            'text': stock_obj.name,
+            'x': 0.5,
+            'xanchor': 'center'
         },
         'xaxis': {
-        'rangeslider': {
-        'visible': False
+            'rangeslider': {
+                'visible': False
+            }
         }
-        }
-        }
+    }
 
     # Create figure and plot data
-    graph_data = [candlestick_trace, supertrend_trace, sell_signals_trace, buy_signals_trace]
-    
+    graph_data = [candlestick_trace, supertrend_trace,
+                  sell_signals_trace, buy_signals_trace]
+
     chart = plot({'data': graph_data, 'layout': layout}, output_type='div')
     context = {'chart': chart}
 
     return JsonResponse(context, safe=False)
+
 
 def forecast_data(request):
     price = int(request.GET.get('price', 1000))
@@ -277,7 +293,24 @@ def forecast_data(request):
     prices = data['Close'].tolist()
     dates = pd.to_datetime(data['Date']).dt.strftime('%Y-%m').tolist()
     forecast_price = price + price * percentage * duration
-    chart_string = "₹ {} will be ₹ {:.2f} in {} Month".format(price, forecast_price, duration)
-    context = {'prices': prices,"dates":dates, "chart_string": chart_string, "stock_name": stock_obj.name}
+    chart_string = "₹ {} will be ₹ {:.2f} in {} Month".format(
+        price, forecast_price, duration)
+    context = {'prices': prices, "dates": dates,
+               "chart_string": chart_string, "stock_name": stock_obj.name}
 
     return JsonResponse(context, safe=False)
+
+
+def personalized_investment(request):
+    if request.method == "POST":
+        amount = int(request.POST.get('amount', 1000))
+        duration = int(request.POST.get('duration', 1))
+        risk = request.POST.get('risk', 'Low')
+        print(amount, duration, risk)
+        context = {'rank1': {'name': 'HDFC', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
+                   'rank2': {'name': 'HDFC', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
+                   'rank3': {'name': 'HDFC', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
+                   'rank4': {'name': 'HDFC', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
+                   'rank5': {'name': 'HDFC', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
+                   'rank6': {'name': 'HDFC', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}}
+        return JsonResponse(context, safe=False)

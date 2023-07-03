@@ -223,10 +223,127 @@
   </div>
 </div>
 
+<!-- Research Portfolio Investment -->
+<div class="home_search">
+  <div class="row">
+    <div class="col">
+      <div class="home_search_container">
+        <div class="home_search_title">Personalized Investment</div>
+        <div class="home_search_content">
+          <form action="." class="home_search_form" id="home_search_form" method="post">
+            {% csrf_token %}
+            <div class="d-flex flex-lg-row flex-column align-items-start justify-content-lg-between justify-content-start">
+              <input type="number" class="search_input search_input_1" placeholder="Amount" required="required" min="1000" max="1000000">
+              <input type="number" class="search_input search_input_2" placeholder="Duration" required="required" min="1" max="60">
+              <select class="search_input search_input_3" required="required">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+              <button class="home_search_button" id="submit_button">Search</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row" id="card_row"></div>
+</div>
+
+
+
 {% endblock content %}
+
+
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+
+<script>
+    $(document).ready(function() {
+      // Get the CSRF token from cookies
+      function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+          var cookies = document.cookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            // Cookie name is in the format "csrftoken=<token>"
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
+    // Handle click event of the submit button
+    $('#submit_button').click(function(e) {
+      e.preventDefault(); // Prevent the form from submitting
+
+      // Get the input values
+      var amount = $('.search_input_1').val();
+      var duration = $('.search_input_2').val();
+      var risk = $('.search_input_3').val();
+      let personalized_investment = "{% url 'personalized-investment' %}";
+
+      // Get the CSRF token
+    var csrftoken = getCookie('csrftoken');
+
+    // Add the CSRF token to the request headers
+    $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+          xhr.setRequestHeader('X-CSRFToken', csrftoken);
+        }
+      }
+    });
+
+      // Make the API call
+      $.ajax({
+        url: personalized_investment,
+        type: 'POST',
+        data: {
+          amount: amount,
+          duration: duration,
+          risk: risk
+        },
+        success: function(response) {
+          // Process the API response and generate the cards
+          var cardsHtml = '';
+          for (var rank in response) {
+            var cardData = response[rank];
+            var cardHtml = '<div class="col-md-4 mb-4">' +
+              '<div class="card">' +
+              '<div class="card-body">' +
+              '<h5 class="card-title">' + cardData.name + '</h5>' +
+              '<p class="card-text">Stock Price: ' + cardData['Stock Price'] + '</p>' +
+              '<p class="card-text">Number of Stocks: ' + cardData['number of stocks'] + '</p>' +
+              '<p class="card-text">Package Value: ' + cardData['package value'] + '</p>' +
+              '<p class="card-text">Risk: ' + cardData.risk + '</p>' +
+              '</div>' +
+              '</div>' +
+              '</div>';
+
+            cardsHtml += cardHtml;
+          }
+
+          // Append the generated cards to the card row
+          $('#card_row').html(cardsHtml);
+
+        },
+        error: function() {
+          console.log('API request failed.');
+        }
+      });
+    });
+  });
+
+</script>
 
 
 <script>
