@@ -163,7 +163,7 @@ def get_top_indian_gainer():
 
     # Fetch stock names from ListedStocks model and add them to DataFrame
     listed_stocks = ListedStock.objects.all()  # Replace with your actual code to fetch the ListedStocks model
-    symbol_to_name = {stock.symbol: stock.name for stock in listed_stocks}
+    symbol_to_name = {stock.symbol1: stock.name for stock in listed_stocks}
 
     df_gainers_new["Name"] = df_gainers_new["Symbol"].map(symbol_to_name)
     df_gainers_new.dropna(subset=["Name"], inplace=True)
@@ -194,7 +194,7 @@ def get_top_indian_looser():
 
     # Fetch stock names from ListedStocks model and add them to DataFrame
     listed_stocks = ListedStock.objects.all()  # Replace with your actual code to fetch the ListedStocks model
-    symbol_to_name = {stock.symbol: stock.name for stock in listed_stocks}
+    symbol_to_name = {stock.symbol1: stock.name for stock in listed_stocks}
 
     df_losers_new["Name"] = df_losers_new["Symbol"].map(symbol_to_name)
     df_losers_new.dropna(subset=["Name"], inplace=True)

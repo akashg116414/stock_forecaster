@@ -253,6 +253,13 @@
   <div class="row" id="card_row"></div>
 </div>
 
+<div class = "container" >
+<div class="collapse" id="collapsewithbutton1">
+  <div class="card card-body">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
+  </div>
+</div>
+</div>
 
 
 {% endblock content %}
@@ -318,7 +325,7 @@
           for (var rank in response) {
             var cardData = response[rank];
             var cardHtml = '<div class="col-md-4 mb-4">' +
-              '<div class="card">' +
+              '<div class="card" data-toggle="collapse" data-target="#collapsewithbutton1" aria-expanded="false" aria-controls="collapsewithbutton1">' +
               '<div class="card-body">' +
               '<h5 class="card-title">' + cardData.name + '</h5>' +
               '<p class="card-text">Stock Price: ' + cardData['Stock Price'] + '</p>' +
