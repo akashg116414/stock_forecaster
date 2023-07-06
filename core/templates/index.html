@@ -270,23 +270,23 @@
 {% block javascripts %}
 
 <script>
-    $(document).ready(function() {
-      // Get the CSRF token from cookies
-      function getCookie(name) {
-        var cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-          var cookies = document.cookie.split(';');
-          for (var i = 0; i < cookies.length; i++) {
-            var cookie = cookies[i].trim();
-            // Cookie name is in the format "csrftoken=<token>"
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-              break;
-            }
+  $(document).ready(function() {
+    // Get the CSRF token from cookies
+    function getCookie(name) {
+      var cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+          var cookie = cookies[i].trim();
+          // Cookie name is in the format "csrftoken=<token>"
+          if (cookie.substring(0, name.length + 1) === name + '=') {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
           }
         }
-        return cookieValue;
       }
+      return cookieValue;
+    }
 
     // Handle click event of the submit button
     $('#submit_button').click(function(e) {
@@ -299,16 +299,16 @@
       let personalized_investment = "{% url 'personalized-investment' %}";
 
       // Get the CSRF token
-    var csrftoken = getCookie('csrftoken');
+      var csrftoken = getCookie('csrftoken');
 
-    // Add the CSRF token to the request headers
-    $.ajaxSetup({
-      beforeSend: function(xhr, settings) {
-        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-          xhr.setRequestHeader('X-CSRFToken', csrftoken);
+      // Add the CSRF token to the request headers
+      $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+          if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader('X-CSRFToken', csrftoken);
+          }
         }
-      }
-    });
+      });
 
       // Make the API call
       $.ajax({
@@ -325,14 +325,20 @@
           for (var rank in response) {
             var cardData = response[rank];
             var cardHtml = '<div class="col-md-4 mb-4">' +
-              '<div class="card" data-toggle="collapse" data-target="#collapsewithbutton1" aria-expanded="false" aria-controls="collapsewithbutton1">' +
+              '<div class="card" data-toggle="collapse" data-target="#collapsewithbutton' + rank + '" aria-expanded="false" aria-controls="collapsewithbutton' + rank + '">' +
               '<div class="card-body">' +
+              '<h5 class="hide">' + rank + '</h5>' +
               '<h5 class="card-title">' + cardData.name + '</h5>' +
               '<p class="card-text">Stock Price: ' + cardData['Stock Price'] + '</p>' +
               '<p class="card-text">Number of Stocks: ' + cardData['number of stocks'] + '</p>' +
               '<p class="card-text">Package Value: ' + cardData['package value'] + '</p>' +
               '<p class="card-text">Risk: ' + cardData.risk + '</p>' +
               '</div>' +
+              '</div>' +
+              '</div>' +
+              '<div class="collapse mb-3" id="collapsewithbutton' + rank + '">' +
+              '<div class="card card-body">' +
+              'rank ' + rank +' Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.' +
               '</div>' +
               '</div>';
 
@@ -342,6 +348,14 @@
           // Append the generated cards to the card row
           $('#card_row').html(cardsHtml);
 
+          // Collapse and toggle functionality
+          $('.card').click(function() {
+            // Close all other card divs
+            $('.collapse.show').collapse('hide');
+            var name = $(this).find('.card-title').text();
+            console.log("cardData")
+            console.log(name)
+          });
         },
         error: function() {
           console.log('API request failed.');
@@ -349,8 +363,8 @@
       });
     });
   });
-
 </script>
+
 
 
 <script>
