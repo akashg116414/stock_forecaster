@@ -249,46 +249,10 @@
   </div>
 </div>
 
-<div class="cards">
-  <div class="my-card [ is-collapsed ] ">
-      <div class="my-card__inner [ js-expander ]">
-          <span>Card</span>
-          <i class="fa fa-folder-o"></i>
-      </div>
-      <div class="my-card__expander">
-          <i class="fa fa-close [ js-collapser ]"></i>
-          Expander
-      </div>
-  </div>
-
-  <div class="my-card [ is-collapsed ] ">
-      <div class="my-card__inner [ js-expander ]">
-          <span>Card</span>
-          <i class="fa fa-folder-o"></i>
-      </div>
-      <div class="my-card__expander">
-          <i class="fa fa-close [ js-collapser ]"></i>
-          Expander
-      </div>
-  </div>
-
-  <!-- Add more cards as needed -->
-
-</div>
+<!-- Research Portfolio Investment Cards-->
+<div class="cards" id="card_row"></div>
 
 
-
-<div class="container">
-  <div class="row" id="card_row"></div>
-</div>
-
-<div class = "container" >
-<div class="collapse" id="collapsewithbutton1">
-  <div class="card card-body">
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
-  </div>
-</div>
-</div>
 
 
 {% endblock content %}
@@ -298,41 +262,7 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 
-<script>
-  var $cell = $('.my-card');
 
-//open and close card when clicked on card
-$cell.find('.js-expander').click(function() {
-
-  var $thisCell = $(this).closest('.my-card');
-
-  if ($thisCell.hasClass('is-collapsed')) {
-    $cell.not($thisCell).removeClass('is-expanded').addClass('is-collapsed').addClass('is-inactive');
-    $thisCell.removeClass('is-collapsed').addClass('is-expanded');
-    
-    if ($cell.not($thisCell).hasClass('is-inactive')) {
-      //do nothing
-    } else {
-      $cell.not($thisCell).addClass('is-inactive');
-    }
-
-  } else {
-    $thisCell.removeClass('is-expanded').addClass('is-collapsed');
-    $cell.not($thisCell).removeClass('is-inactive');
-  }
-});
-
-//close card when click on cross
-$cell.find('.js-collapser').click(function() {
-
-  var $thisCell = $(this).closest('.my-card');
-
-  $thisCell.removeClass('is-expanded').addClass('is-collapsed');
-  $cell.not($thisCell).removeClass('is-inactive');
-
-});
-
-</script>
 
 <script>
   $(document).ready(function() {
@@ -389,37 +319,59 @@ $cell.find('.js-collapser').click(function() {
           var cardsHtml = '';
           for (var rank in response) {
             var cardData = response[rank];
-            var cardHtml = '<div class="col-md-4 mb-4">' +
-              '<div class="card" data-toggle="collapse" data-target="#collapsewithbutton' + rank + '" aria-expanded="false" aria-controls="collapsewithbutton' + rank + '">' +
-              '<div class="card-body">' +
-              '<h5 class="hide">' + rank + '</h5>' +
-              '<h5 class="card-title">' + cardData.name + '</h5>' +
-              '<p class="card-text">Stock Price: ' + cardData['Stock Price'] + '</p>' +
-              '<p class="card-text">Number of Stocks: ' + cardData['number of stocks'] + '</p>' +
-              '<p class="card-text">Package Value: ' + cardData['package value'] + '</p>' +
-              '<p class="card-text">Risk: ' + cardData.risk + '</p>' +
-              '</div>' +
-              '</div>' +
-              '</div>' +
-              '<div class="collapse mb-3" id="collapsewithbutton' + rank + '">' +
-              '<div class="card card-body">' +
-              'rank ' + rank +' Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.' +
-              '</div>' +
-              '</div>';
+            var cardHtml = '<div class="my-card [ is-collapsed ] ">'+
+                           '<div class="my-card__inner [ js-expander ]">'+
+                                '<span>'+ cardData.name +'</span>'+
+                                '<i class="fa fa-folder-o"></i>'+
+                                '<div class="my-card-body">' +
+                                '<p class="my-card-text">Stock Price: ' + cardData['Stock Price'] + '</p>' +
+                                '<p class="my-card-text">Number of Stocks: ' + cardData['number of stocks'] + '</p>' +
+                                '<p class="my-card-text">Package Value: ' + cardData['package value'] + '</p>' +
+                                '<p class="my-card-text">Risk: ' + cardData.risk + '</p>' +
+                              '</div>' +
+                            '</div>'+
+                            '<div class="my-card__expander">'+
+                                '<i class="fa fa-close [ js-collapser ]"></i>'+
+                                'Expander'+
+                            '</div>'+
+                        '</div>';
 
             cardsHtml += cardHtml;
           }
 
           // Append the generated cards to the card row
           $('#card_row').html(cardsHtml);
+          var $cell = $('.my-card');
 
-          // Collapse and toggle functionality
-          $('.card').click(function() {
-            // Close all other card divs
-            $('.collapse.show').collapse('hide');
-            var name = $(this).find('.card-title').text();
-            console.log("cardData")
-            console.log(name)
+          //open and close card when clicked on card
+          $cell.find('.js-expander').click(function() {
+
+            var $thisCell = $(this).closest('.my-card');
+
+            if ($thisCell.hasClass('is-collapsed')) {
+              $cell.not($thisCell).removeClass('is-expanded').addClass('is-collapsed').addClass('is-inactive');
+              $thisCell.removeClass('is-collapsed').addClass('is-expanded');
+              
+              if ($cell.not($thisCell).hasClass('is-inactive')) {
+                //do nothing
+              } else {
+                $cell.not($thisCell).addClass('is-inactive');
+              }
+
+            } else {
+              $thisCell.removeClass('is-expanded').addClass('is-collapsed');
+              $cell.not($thisCell).removeClass('is-inactive');
+            }
+          });
+
+          //close card when click on cross
+          $cell.find('.js-collapser').click(function() {
+
+            var $thisCell = $(this).closest('.my-card');
+
+            $thisCell.removeClass('is-expanded').addClass('is-collapsed');
+            $cell.not($thisCell).removeClass('is-inactive');
+
           });
         },
         error: function() {
