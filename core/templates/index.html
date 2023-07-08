@@ -265,6 +265,69 @@
 
 
 <script>
+  var expanderChart = null;
+  var expanderChartData = {
+    labels: "",
+    datasets: [{
+      label: "",
+      data: "",
+      backgroundColor: 'rgba(255, 99, 132, 0.2)',
+      borderColor: 'rgba(255, 99, 132, 1)',
+      borderWidth: 1
+    }]
+  };
+
+  function updateChartDataExpander(data) {
+    expanderChartData.labels = data.dates;
+    expanderChartData.datasets[0].data = data.prices;
+    expanderChartData.datasets[0].label = data.stock_name;
+  }
+
+  // Update the chart with new data
+  function updateExpanderCardChart(data_label, chartCanvas) {
+      // Create a new chart if it doesn't exist
+      var expander_ctx = document.getElementById(chartCanvas).getContext('2d');
+
+      expander_chart = new Chart(expander_ctx, {
+        type: 'line',
+        data: expanderChartData,
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true
+              }
+            }]
+          }
+        } 
+        
+      });
+    }
+
+  function fetchStockChartValues(stock_id) {
+
+    let url = "{% url 'historical-data' %}?";
+    url += `stock_id=${stock_id}`;
+    var chartDiv = 'personalized-portfolio-expander-card_' + stock_id
+    console.log(chartDiv)
+    chartCanvas = 'expander-card-graph_' + stock_id
+    console.log(chartCanvas)
+    expanderCavasHtml = '<canvas height="130" style="max-width: 100% !important;" id="' + chartCanvas +'"></canvas>'
+
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        console.log(data)
+        var expandercontainer = document.getElementById(chartDiv);
+        expandercontainer.innerHTML = expanderCavasHtml;
+        expandercontainer.style.height = 'auto';
+        updateChartDataExpander(data);
+        updateExpanderCardChart(data.chart_string,chartCanvas);
+      })
+      .catch(error => console.error(error));
+
+    }
+
   $(document).ready(function() {
     // Get the CSRF token from cookies
     function getCookie(name) {
@@ -319,25 +382,24 @@
           var cardsHtml = '';
           for (var rank in response) {
             var cardData = response[rank];
-            var cardHtml = '<div class="my-card [ is-collapsed ] ">'+
+            var cardHtml = '<div class="my-card [ is-collapsed ] " id='+ cardData.id +'>'+
                            '<div class="my-card__inner [ js-expander ]">'+
-                                '<span>'+ cardData.name +'</span>'+
-                                '<i class="fa fa-folder-o"></i>'+
+                                '<h4 class="my-card-title border-bottom">'+ cardData.name +'</h4>'+
                                 '<div class="my-card-body">' +
-                                '<p class="my-card-text">Stock Price: ' + cardData['Stock Price'] + '</p>' +
-                                '<p class="my-card-text">Number of Stocks: ' + cardData['number of stocks'] + '</p>' +
-                                '<p class="my-card-text">Package Value: ' + cardData['package value'] + '</p>' +
-                                '<p class="my-card-text">Risk: ' + cardData.risk + '</p>' +
+                                  '<p class="my-card-text"><i class="fas fa-coins"></i> Stock Price: ' + cardData['Stock Price'] + '</p>' +
+                                  '<p class="my-card-text"><i class="fa fa-chart-bar"></i> Number of Stocks: ' + cardData['number of stocks'] + '</p>' +
+                                  '<p class="my-card-text"><i class="fa fa-box-open"></i> Package Value: ' + cardData['package value'] + '</p>' +
+                                  '<p class="my-card-text"><i class="fa fa-exclamation-triangle"></i> Risk: ' + cardData.risk + '</p>' +
                               '</div>' +
                             '</div>'+
-                            '<div class="my-card__expander">'+
-                                '<i class="fa fa-close [ js-collapser ]"></i>'+
-                                'Expander'+
+                            '<div class="my-card__expander" id="personalized-portfolio-expander-card_'+ cardData.id+'">'+
                             '</div>'+
                         '</div>';
 
             cardsHtml += cardHtml;
           }
+
+      
 
           // Append the generated cards to the card row
           $('#card_row').html(cardsHtml);
@@ -347,8 +409,11 @@
           $cell.find('.js-expander').click(function() {
 
             var $thisCell = $(this).closest('.my-card');
+            var cardId = $thisCell.attr('id');
+            console.log(cardId)
 
             if ($thisCell.hasClass('is-collapsed')) {
+              fetchStockChartValues(cardId)
               $cell.not($thisCell).removeClass('is-expanded').addClass('is-collapsed').addClass('is-inactive');
               $thisCell.removeClass('is-collapsed').addClass('is-expanded');
               
@@ -365,14 +430,6 @@
           });
 
           //close card when click on cross
-          $cell.find('.js-collapser').click(function() {
-
-            var $thisCell = $(this).closest('.my-card');
-
-            $thisCell.removeClass('is-expanded').addClass('is-collapsed');
-            $cell.not($thisCell).removeClass('is-inactive');
-
-          });
         },
         error: function() {
           console.log('API request failed.');
@@ -380,11 +437,8 @@
       });
     });
   });
-</script>
 
 
-
-<script>
   function resetForm() {
     document.getElementById("historical-start-date").value = "";
     document.getElementById("historical-end-date").value = "";
@@ -1007,7 +1061,7 @@
 }
 
 .my-card:hover .my-card__inner {
-    background-color: #1abc9c;
+    background-color: #03c988;
     transform: scale(1.05);
 }
 
@@ -1016,11 +1070,11 @@
     padding: 30px;
     position: relative;
     cursor: pointer;
-    background-color: #1abc9c;
-    color: #eceef1;
-    font-size: 1.5em;
-    text-transform: uppercase;
-    text-align: center;
+    background-color: #ffffff;
+    /* color: #eceef1; */
+    /* font-size: 1.5em; */
+    /* text-transform: uppercase; */
+    /* text-align: center; */
     transition: all 0.2s ease-in-out;
 }
 
@@ -1030,24 +1084,24 @@
 
 .my-card__expander {
     transition: all 0.2s ease-in-out;
-    background-color: #00b3ff;
+    background-color: #ffffff;
     width: 100%;
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
     text-transform: uppercase;
-    color: #eceef1;
+    color: #000000;
     font-size: 1.5em;
 }
 
-.my-card__expander .fa {
+/* .my-card__expander .fa {
     font-size: 0.75em;
     position: absolute;
     top: 10px;
     right: 10px;
     cursor: pointer;
-}
+} */
 
 .my-card.is-collapsed .my-card__inner:after {
     content: "";
@@ -1062,8 +1116,11 @@
     opacity: 0;
 }
 
+  .my-card-text {
+    margin-bottom: 0.5rem;
+  }
 .my-card.is-expanded .my-card__inner {
-    background-color: #1abc9c;
+    background-color: #949fb0;
 }
 
 .my-card.is-expanded .my-card__inner:after {
@@ -1077,7 +1134,7 @@
     left: calc(50% - 15px);
     border-left: 15px solid transparent;
     border-right: 15px solid transparent;
-    border-bottom: 15px solid #333a45;
+    border-bottom: 15px solid #000000;
 }
 
 .my-card.is-expanded .my-card__expander {
@@ -1098,7 +1155,7 @@
 }
 
 .my-card.is-inactive:hover .my-card__inner {
-    background-color: #096855;
+    background-color:#949fb0;
     transform: scale(1);
 }
 

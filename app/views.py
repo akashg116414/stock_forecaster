@@ -307,10 +307,10 @@ def personalized_investment(request):
         duration = int(request.POST.get('duration', 1))
         risk = request.POST.get('risk', 'Low')
         print(amount, duration, risk)
-        context = {'rank1': {'name': 'HDFC', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
-                   'rank2': {'name': 'HDFC', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
-                   'rank3': {'name': 'HDFC', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
-                   'rank4': {'name': 'HDFC', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
-                   'rank5': {'name': 'HDFC', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
-                   'rank6': {'name': 'HDFC', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}}
+        context = {'rank1': {'id':653, 'name': 'HDFC', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
+                   'rank2': {'id':767,'name': 'INFOSYS Limited', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
+                   'rank3': {'id':1352,'name': 'Reliance', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
+                   'rank4': {'id':1645,'name': 'Tata Motors Limited', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
+                   'rank5': {'id':36,'name': 'Adani Enterperies Limited', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
+                   'rank6': {'id':980,'name': 'Mahindra & Mahindra', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}}
         return JsonResponse(context, safe=False)
