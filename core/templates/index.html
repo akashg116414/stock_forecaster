@@ -254,7 +254,6 @@
 
 
 
-
 {% endblock content %}
 
 
@@ -265,6 +264,7 @@
 
 
 <script>
+
   var expanderChart = null;
   var expanderChartData = {
     labels: "",
@@ -309,15 +309,12 @@
     let url = "{% url 'historical-data' %}?";
     url += `stock_id=${stock_id}`;
     var chartDiv = 'personalized-portfolio-expander-card_' + stock_id
-    console.log(chartDiv)
     chartCanvas = 'expander-card-graph_' + stock_id
-    console.log(chartCanvas)
     expanderCavasHtml = '<canvas height="130" style="max-width: 100% !important;" id="' + chartCanvas +'"></canvas>'
 
     fetch(url)
       .then(response => response.json())
       .then(data => {
-        console.log(data)
         var expandercontainer = document.getElementById(chartDiv);
         expandercontainer.innerHTML = expanderCavasHtml;
         expandercontainer.style.height = 'auto';
@@ -327,6 +324,61 @@
       .catch(error => console.error(error));
 
     }
+
+    function fetchStocknews(stock_id) {
+
+      let url = "{% url 'stock-news' %}?";
+      url += `stock_id=${stock_id}`;
+      var newsOutterDiv = 'news-expander-card_' + stock_id
+      var sentimentsOutterDiv = 'sentiments-expander-card_' + stock_id
+      console.log(sentimentsOutterDiv)
+      newsDiv = 'news_' + stock_id
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          console.log(data)
+          newsMainHTML = ""
+          var newsData = data.news
+          for (var i = 0; i < newsData.length; i++) {
+            var truncatedDescription = newsData[i].description.slice(0, 100) + "...";
+            news = '<div class="news-container" id="'+ newsDiv +'">'+
+                      '<div class="headline">'+
+                      '<a href="'+newsData[i].url+'">'+ newsData[i].headline +'</a>'+
+                      '</div>'+
+                      '<div class="description">'+ truncatedDescription +
+                      '</div>'+
+                      '<div class="source">Source: '+ newsData[i].source +
+                      '</div>'+
+                      '</div>';
+            newsMainHTML += news;
+          }
+          var newsExpanderContainer = document.getElementById(newsOutterDiv);
+          newsExpanderContainer.innerHTML = newsMainHTML;
+          newsExpanderContainer.style.height = 'auto';
+          // Update the HTML for the circular gauge
+          var averageSentimentScore = data.sentiment_score
+          var sentimentValue = data.sentiment_val
+          var angle = (averageSentimentScore + 1) * 180;
+          var gaugeHTML = '<div class="gauge-container">' +
+                            '<div class="gauge-meter">' +
+                              '<div class="gauge-fill" style="transform: rotate(' + angle + 'deg);"></div>' +
+                            '</div>' +
+                            '<div class="gauge-label">' +
+                              '<span class="sentiment-value">' + sentimentValue + '</span>' +
+                              '<span class="sentiment-score">' + averageSentimentScore + '</span>' +
+                            '</div>' +
+                          '</div>';
+
+          // Append the gauge HTML to a container element in your page
+          var gaugeContainer = document.getElementById(sentimentsOutterDiv);
+          gaugeContainer.innerHTML = gaugeHTML;
+          gaugeContainer.style.height = 'auto';
+          
+        })
+        .catch(error => console.error(error));
+
+      }
 
   $(document).ready(function() {
     // Get the CSRF token from cookies
@@ -383,18 +435,41 @@
           for (var rank in response) {
             var cardData = response[rank];
             var cardHtml = '<div class="my-card [ is-collapsed ] " id='+ cardData.id +'>'+
-                           '<div class="my-card__inner [ js-expander ]">'+
-                                '<h4 class="my-card-title border-bottom">'+ cardData.name +'</h4>'+
-                                '<div class="my-card-body">' +
-                                  '<p class="my-card-text"><i class="fas fa-coins"></i> Stock Price: ' + cardData['Stock Price'] + '</p>' +
-                                  '<p class="my-card-text"><i class="fa fa-chart-bar"></i> Number of Stocks: ' + cardData['number of stocks'] + '</p>' +
-                                  '<p class="my-card-text"><i class="fa fa-box-open"></i> Package Value: ' + cardData['package value'] + '</p>' +
-                                  '<p class="my-card-text"><i class="fa fa-exclamation-triangle"></i> Risk: ' + cardData.risk + '</p>' +
-                              '</div>' +
-                            '</div>'+
-                            '<div class="my-card__expander" id="personalized-portfolio-expander-card_'+ cardData.id+'">'+
-                            '</div>'+
-                        '</div>';
+                  '<div class="my-card__inner [ js-expander ]">'+
+                    '<h4 class="my-card-title border-bottom">'+ cardData.name +'</h4>'+
+                    '<div class="my-card-body">' +
+                      '<p class="my-card-text"><i class="fas fa-coins"></i> Stock Price: ' + cardData['Stock Price'] + '</p>' +
+                      '<p class="my-card-text"><i class="fa fa-chart-bar"></i> Number of Stocks: ' + cardData['number of stocks'] + '</p>' +
+                      '<p class="my-card-text"><i class="fa fa-box-open"></i> Package Value: ' + cardData['package value'] + '</p>' +
+                      '<p class="my-card-text"><i class="fa fa-exclamation-triangle"></i> Risk: ' + cardData.risk + '</p>' +
+                    '</div>' +
+                  '</div>'+
+                  '<div class="my-card__expander">'+
+                    '<div class="card-expander-row ml-2">' +
+                      '<div class="col-lg-12 mb-3">' +
+                        '<h6 class="mt-3 border-bottom">Growth Chart</h6>'+
+                        '<div id="personalized-portfolio-expander-card_'+ cardData.id +'">'+
+                          '<div class="loader mt-20" style="display: flex; align-items: center; justify-content: center; top: revert;"></div>'+
+                          '</div>' +
+                      '</div>' +
+                    '</div>' +
+                    '<div class="card-expander-row ml-2">' +
+                      '<div class="card-expander-column">' +
+                        '<h6 class="mt-3 border-bottom">News</h6>'+
+                        '<div id="news-expander-card_'+ cardData.id +'">'+
+                          '<div class="description">Recent news are not available for this stock.</div>' +
+                          '</div>' +
+                      '</div>' +
+                      '<div class="card-expander-column">' +
+                        '<h6 class="mt-3 border-bottom">Sentimental Views</h6>'+
+                        '<div id="sentiments-expander-card_'+ cardData.id +'">'+
+                          '<div class="description">Sentimental Views are not available for this stock.</div>' +
+                          '</div>' +
+                      '</div>' +
+                    '</div>' +
+                    '</div>' +
+                '</div>';
+
 
             cardsHtml += cardHtml;
           }
@@ -414,6 +489,7 @@
 
             if ($thisCell.hasClass('is-collapsed')) {
               fetchStockChartValues(cardId)
+              fetchStocknews(cardId)
               $cell.not($thisCell).removeClass('is-expanded').addClass('is-collapsed').addClass('is-inactive');
               $thisCell.removeClass('is-collapsed').addClass('is-expanded');
               
@@ -1000,191 +1076,279 @@
 
 
 <style>
-  h3 {
-  font-family: "Inter";
-  font-size: 70px;
-  font-weight: 600;
-  margin: 0px;
-  color: Black;
-  user-select: none;
-  z-index: 0;
+    .gauge-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .gauge-meter {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      border: 10px solid #ccc;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+
+    .gauge-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #69B34C;
+      border-radius: 50%;
+      transform-origin: bottom center;
+      transition: transform 0.5s ease-in-out;
+    }
+
+    .gauge-pointer {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 3px;
+      height: 80px;
+      background-color: red;
+      border-radius: 2px;
+      transform-origin: bottom;
+      transition: transform 0.5s ease-in-out;
+    }
+
+    .gauge-label {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 10px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .sentiment-value {
+      margin-right: 5px;
+    }
+
+    .sentiment-score {
+      color: #69B34C;
+    }
+
+
+  .card-expander-row {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    
+  .card-expander-column {
+      flex: 0 0 50%; /* Adjust the width as needed */
+      padding: 10px;
+      /* Additional styles for custom columns */
+    }
+  .news-container {
+      margin-bottom: 20px;
+    }
+  .headline {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+  .description {
+      margin-bottom: 5px;
+    }
+  .source {
+      color: #666;
+    }
+  .timestamp {
+      color: #999;
+      font-size: 12px;
+    }
+  .gauge-meter {
+      width: 200px;
+      height: 20px;
+      border: 1px solid #ccc;
+      position: relative;
+    }
+  .gauge-meter-fill {
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-color: #69B34C;
+    }
+
+    h3 {
+    font-family: "Inter";
+    font-size: 70px;
+    font-weight: 600;
+    margin: 0px;
+    color: Black;
+    user-select: none;
+    z-index: 0;
+    }
+
+    h3 span {
+    color: #03c988;
+    }
+
+    .top-gainer {
+      min-height: 250px;
+    }
+
+    .search-result {
+      color: rgb(9, 9, 9);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .search-result:hover {
+      text-decoration: underline;
+    }
+
+    .loader {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      position: absolute;
+      top: 50%;
+      left: 45%;
+      transform: translate(-50%, -50%);
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .cards {
+      padding: 15px;
+      display: flex;
+      flex-flow: row wrap;
   }
-  h3 span {
-  color: #03c988;
-  }
-  .top-gainer {
-    min-height: 250px;
-  }
-  .search-result {
-    color: rgb(9, 9, 9);
-    text-decoration: none;
-    cursor: pointer;
+
+  .my-card {
+      margin: 15px;
+      width: calc((100% / 3) - 30px);
+      transition: all 0.2s ease-in-out;
   }
 
-  .search-result:hover {
-    text-decoration: underline;
+  .my-card:hover .my-card__inner {
+      background-color: #03c988;
+      transform: scale(1.05);
   }
 
-  .loader {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #3498db;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    animation: spin 1s linear infinite;
-    position: absolute;
-    top: 50%;
-    left: 45%;
-    transform: translate(-50%, -50%);
+  .my-card__inner {
+      width: 100%;
+      padding: 30px;
+      position: relative;
+      cursor: pointer;
+      background-color: #ffffff;
+      /* color: #eceef1; */
+      /* font-size: 1.5em; */
+      /* text-transform: uppercase; */
+      /* text-align: center; */
+      transition: all 0.2s ease-in-out;
   }
 
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-
-    100% {
-      transform: rotate(360deg);
-    }
+  .my-card__inner:after {
+      transition: all 0.3s ease-in-out;
   }
 
-  .cards {
-    padding: 15px;
-    display: flex;
-    flex-flow: row wrap;
-}
-
-.my-card {
-    margin: 15px;
-    width: calc((100% / 3) - 30px);
-    transition: all 0.2s ease-in-out;
-}
-
-.my-card:hover .my-card__inner {
-    background-color: #03c988;
-    transform: scale(1.05);
-}
-
-.my-card__inner {
-    width: 100%;
-    padding: 30px;
-    position: relative;
-    cursor: pointer;
-    background-color: #ffffff;
-    /* color: #eceef1; */
-    /* font-size: 1.5em; */
-    /* text-transform: uppercase; */
-    /* text-align: center; */
-    transition: all 0.2s ease-in-out;
-}
-
-.my-card__inner:after {
-    transition: all 0.3s ease-in-out;
-}
-
-.my-card__expander {
-    transition: all 0.2s ease-in-out;
-    background-color: #ffffff;
-    width: 100%;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-transform: uppercase;
-    color: #000000;
-    font-size: 1.5em;
-}
-
-/* .my-card__expander .fa {
-    font-size: 0.75em;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-} */
-
-.my-card.is-collapsed .my-card__inner:after {
-    content: "";
-    opacity: 0;
-}
-
-.my-card.is-collapsed .my-card__expander {
-    max-height: 0;
-    min-height: 0;
-    overflow: hidden;
-    margin-top: 0;
-    opacity: 0;
-}
-
-  .my-card-text {
-    margin-bottom: 0.5rem;
+  .my-card__expander {
+      transition: all 0.2s ease-in-out;
+      background-color: #ffffff;
+      width: 100%;
+      position: relative;
   }
-.my-card.is-expanded .my-card__inner {
-    background-color: #949fb0;
-}
 
-.my-card.is-expanded .my-card__inner:after {
-    content: "";
-    opacity: 1;
-    display: block;
-    height: 0;
-    width: 0;
-    position: absolute;
-    bottom: -30px;
-    left: calc(50% - 15px);
-    border-left: 15px solid transparent;
-    border-right: 15px solid transparent;
-    border-bottom: 15px solid #000000;
-}
+  .my-card.is-collapsed .my-card__inner:after {
+      content: "";
+      opacity: 0;
+  }
 
-.my-card.is-expanded .my-card__expander {
-    max-height: 1000px;
-    min-height: 200px;
-    overflow: visible;
-    margin-top: 30px;
-    opacity: 1;
-}
+  .my-card.is-collapsed .my-card__expander {
+      max-height: 0;
+      min-height: 0;
+      overflow: hidden;
+      margin-top: 0;
+      opacity: 0;
+  }
 
-.my-card.is-expanded:hover .my-card__inner {
-    transform: scale(1);
-}
+    .my-card-text {
+      margin-bottom: 0.5rem;
+    }
+  .my-card.is-expanded .my-card__inner {
+      background-color: #949fb0;
+  }
 
-.my-card.is-inactive .my-card__inner {
-    pointer-events: none;
-    opacity: 0.5;
-}
+  .my-card.is-expanded .my-card__inner:after {
+      content: "";
+      opacity: 1;
+      display: block;
+      height: 0;
+      width: 0;
+      position: absolute;
+      bottom: -30px;
+      left: calc(50% - 15px);
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-bottom: 15px solid #000000;
+  }
 
-.my-card.is-inactive:hover .my-card__inner {
-    background-color:#949fb0;
-    transform: scale(1);
-}
+  .my-card.is-expanded .my-card__expander {
+      max-height: 1500px;
+      min-height: 500px;
+      overflow: visible;
+      margin-top: 30px;
+      opacity: 1;
+  }
 
-@media screen and (min-width: 992px) {
-    .my-card:nth-of-type(3n+2) .my-card__expander {
-        margin-left: calc(-100% - 30px);
-    }
-    .my-card:nth-of-type(3n+3) .my-card__expander {
-        margin-left: calc(-200% - 60px);
-    }
-    .my-card:nth-of-type(3n+4) {
-        clear: left;
-    }
-    .my-card__expander {
-        width: calc(300% + 60px);
-    }
-}
+  .my-card.is-expanded:hover .my-card__inner {
+      transform: scale(1);
+  }
 
-@media screen and (min-width: 768px) and (max-width: 991px) {
-    .my-card:nth-of-type(2n+2) .my-card__expander {
-        margin-left: calc(-100% - 30px);
-    }
-    .my-card:nth-of-type(2n+3) {
-        clear: left;
-    }
-    .my-card__expander {
-        width: calc(200% + 30px);
-    }
-}
+  .my-card.is-inactive .my-card__inner {
+      pointer-events: none;
+      opacity: 0.5;
+  }
+
+  .my-card.is-inactive:hover .my-card__inner {
+      background-color:#949fb0;
+      transform: scale(1);
+  }
+
+  @media screen and (min-width: 992px) {
+      .my-card:nth-of-type(3n+2) .my-card__expander {
+          margin-left: calc(-100% - 30px);
+      }
+      .my-card:nth-of-type(3n+3) .my-card__expander {
+          margin-left: calc(-200% - 60px);
+      }
+      .my-card:nth-of-type(3n+4) {
+          clear: left;
+      }
+      .my-card__expander {
+          width: calc(300% + 60px);
+      }
+  }
+
+  @media screen and (min-width: 768px) and (max-width: 991px) {
+      .my-card:nth-of-type(2n+2) .my-card__expander {
+          margin-left: calc(-100% - 30px);
+      }
+      .my-card:nth-of-type(2n+3) {
+          clear: left;
+      }
+      .my-card__expander {
+          width: calc(200% + 30px);
+      }
+  }
 
 </style>
 

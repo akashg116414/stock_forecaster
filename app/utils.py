@@ -1,4 +1,32 @@
 import pandas as pd
+import time
+import string
+
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+
+# nltk.download('stopwords')
+# nltk.download('punkt')
+
+# Set up Chrome options
+chrome_options = Options()
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--disable-extensions")
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--incognito")
+chrome_options.add_argument("--disable-gpu ") # Run Chrome in headless mode
+
+# Set path to chromedriver executable
+webdriver_service = Service(r'C:\Users\Admin\Downloads\chromedriver.exe')
+
 import requests
 from requests_html import HTMLSession
 from .models import ListedStock
@@ -200,3 +228,118 @@ def get_top_indian_looser():
     df_losers_new.dropna(subset=["Name"], inplace=True)
 
     return df_losers_new
+
+def get_stock_news(keyword):
+
+    # Choose the driver (e.g., Chrome) and set options
+    driver = webdriver.Chrome(service=webdriver_service, options=chrome_options)
+
+    url = f"https://realtime.rediff.com/news/{keyword}"
+
+    # Load the webpage
+    driver.get(url)
+
+    # Wait for the page to load and dynamic content to appear
+    time.sleep(5)
+
+    # Extract the page source after waiting
+    page_source = driver.page_source
+
+    # Create BeautifulSoup object
+    soup = BeautifulSoup(page_source, 'html.parser')
+
+    # Find all table elements
+    table_elements = soup.find_all('table', width="100%")
+    news_items = []
+
+    for table in table_elements:
+        news_item = {}
+
+        # Extract the news headline and URL
+        headline_element = table.find('a')
+        if headline_element:
+            news_item['headline'] = headline_element.text.strip() if headline_element.text.strip() else None
+            news_item['url'] = headline_element['href']
+
+        # Extract the news description
+        description_element = table.find('div')
+        if description_element:
+            news_item['description'] = description_element.text.strip()
+
+        # Extract the news source and timestamp
+        source_element = table.find('span', class_="green")
+        if source_element:
+            news_item['source'] = source_element.text.strip()
+
+        timestamp_element = table.find('span', class_="grey")
+        if timestamp_element:
+            news_item['timestamp'] = timestamp_element.text.strip()
+
+        news_items.append(news_item)
+    # Quit the driver
+    driver.quit()
+    df = pd.DataFrame(news_items)
+    df = df.dropna()
+    df = df.reset_index(drop=True)
+    df['timestamp'] = df['timestamp'].apply(parse_hours_ago)
+    return df
+
+def preprocess_text(text):
+    # Convert to lowercase
+    text = text.lower()
+
+    # Remove punctuation
+    text = text.translate(str.maketrans('', '', string.punctuation))
+
+    # Tokenize text
+    tokens = word_tokenize(text)
+
+    # Remove stop words
+    stop_words = set(stopwords.words('english'))
+    tokens = [token for token in tokens if token not in stop_words]
+
+    # Rejoin tokens into a string
+    text = ' '.join(tokens)
+
+    return text
+
+def get_sentiment(text):
+    analyzer = SentimentIntensityAnalyzer()
+    scores = analyzer.polarity_scores(text)
+    sentiment = scores['compound']
+    return sentiment
+
+def get_stock_news_sentiment(df):
+    # Make request to NewsAPI
+    sentiments = []
+    for i in range(len(df)):
+        # Preprocess text
+        text = df['headline'][i] + ' ' + df['description'][i]
+        text = preprocess_text(text)
+        
+        # Perform sentiment analysis
+        sent = get_sentiment(text)
+        sentiments.append(sent)
+    df['sentiment_score'] = sentiments if len(sentiments)>0 else [None]*len(df)
+    return df
+
+def parse_hours_ago(timestamp):
+    if pd.isnull(timestamp):
+        return timestamp
+    timestamp_split = timestamp.split(" ")
+    if timestamp_split[1].lower() in ['hour', 'hours', 'hrs']:
+        return pd.Timestamp.now() - pd.Timedelta(hours=int(timestamp_split[0]))
+    elif timestamp_split[1].lower() in ['minutes', 'mins', 'minute']:
+        return pd.Timestamp.now() - pd.Timedelta(minutes=int(timestamp_split[0]))
+    elif timestamp_split[1].lower() in ['sec', 'seconds', 'second']:
+        return pd.Timestamp.now() - pd.Timedelta(seconds=int(timestamp_split[0]))
+    elif timestamp_split[1].lower() in ['day', 'days']:
+        return pd.Timestamp.now() - pd.Timedelta(days=int(timestamp_split[0]))
+    elif timestamp_split[1].lower() in ['week', 'weeks']:
+        return pd.Timestamp.now() - pd.Timedelta(weeks=int(timestamp_split[0]))
+    elif timestamp_split[1].lower() in ['month', 'months']:
+        return pd.Timestamp.now() - pd.DateOffset(months=int(timestamp_split[0]))
+    elif timestamp_split[1].lower() in ['yrs', 'year', 'years']:
+        return pd.Timestamp.now() - pd.DateOffset(years=int(timestamp_split[0]))
+    else:
+        return timestamp

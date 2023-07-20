@@ -22,5 +22,6 @@ urlpatterns = [
     path('global-crypto-status/', views.get_global_crypto_status, name='global-crypto-status'),
     path('signal-data-graph', views.signal_data_graph, name='signal-data-graph'),
     path('personalized-investment', views.personalized_investment, name='personalized-investment'),
+    path('stock-news', views.stock_news, name='stock-news'),
     
 ]

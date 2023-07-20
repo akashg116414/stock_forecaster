@@ -37,3 +37,16 @@ class Indicator(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class NewsItem(models.Model):
+    headline = models.CharField(max_length=255)
+    url = models.URLField()
+    description = models.TextField()
+    source = models.CharField(max_length=255)
+    timestamp = models.CharField(max_length=255)
+    listed_stock = models.ForeignKey(ListedStock, on_delete=models.CASCADE)
+    sentiment_score = models.FloatField(default=0.0)
+
+    def __str__(self):
+        return self.headline

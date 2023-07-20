@@ -1,6 +1,5 @@
 import pandas_ta as ta
 from plotly.offline import plot
-from prophet import Prophet
 
 import pandas as pd
 import yfinance as yf
@@ -9,12 +8,19 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.template import loader
 
-from .utils import get_current_status, get_crypto_status, get_day_gainers, get_day_losers, get_top_crypto
-from .models import ListedStock, Indicator
+from app import utils
+from .models import ListedStock, Indicator, NewsItem
 from dateutil.relativedelta import relativedelta
-from .constant import indian_index, global_indicators, crypto_currency
+from .constant import crypto_currency
 import datetime
 
+import logging
+import threading
+import time
+
+format = "%(asctime)s: %(message)s"
+logging.basicConfig(format=format, level=logging.INFO,
+                        datefmt="%H:%M:%S")
 
 def index(request):
     start_date = request.GET.get('start_date')
@@ -144,7 +150,7 @@ def get_global_indicator_status(request):
 
 
 def get_global_crypto_status(request):
-    context_crypto = {name: get_crypto_status(
+    context_crypto = {name: utils.get_crypto_status(
         name, ticker) for name, ticker in crypto_currency.items()}
     return JsonResponse(context_crypto, safe=False)
 
@@ -307,10 +313,59 @@ def personalized_investment(request):
         duration = int(request.POST.get('duration', 1))
         risk = request.POST.get('risk', 'Low')
         print(amount, duration, risk)
+
+        
         context = {'rank1': {'id':653, 'name': 'HDFC', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
                    'rank2': {'id':767,'name': 'INFOSYS Limited', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
                    'rank3': {'id':1352,'name': 'Reliance', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
                    'rank4': {'id':1645,'name': 'Tata Motors Limited', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
                    'rank5': {'id':36,'name': 'Adani Enterperies Limited', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
                    'rank6': {'id':980,'name': 'Mahindra & Mahindra', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}}
+        x = threading.Thread(target=thread_function, args=(context,))
+        x.start()
         return JsonResponse(context, safe=False)
+    
+
+def stock_news(request):
+    stock_id = request.GET.get('stock_id', None)
+    if not stock_id:
+        return JsonResponse({"error_message": "stock_id is required"}, safe=False)
+    stock_obj = ListedStock.objects.filter(id=int(stock_id)).first()
+    news_list = list(NewsItem.objects.filter(listed_stock=stock_obj).order_by('-timestamp')[:5].values())
+    sentiment_sum = 0
+    if len(news_list) > 0:
+        for news in news_list:
+            sentiment_sum += news['sentiment_score']
+        sentiment_score = sentiment_sum/len(news_list)
+    else:
+        sentiment_score = 0
+    if sentiment_score > 0.1:
+        sentiment_value = 'Positive'
+    elif sentiment_score >= -0.1 and sentiment_score <= 0.1:
+        sentiment_value = 'Netural'
+    else:
+        sentiment_value = 'Negative'
+    
+    context = {
+        "news": news_list,
+        "sentiment_score":sentiment_score,
+        "sentiment_val": sentiment_value
+        }
+    return JsonResponse(context, safe=False)
+
+def thread_function(context):
+    for context_val in context.values():
+        logging.info("News Thread starting for %s", context_val['name'])
+        stock_obj = ListedStock.objects.filter(id=context_val['id']).first()
+        keyword = "-".join(stock_obj.name.split(" "))
+        df = utils.get_stock_news(keyword)
+        df = utils.get_stock_news_sentiment(df)
+        # Save the news items in the database
+        for news_item in df.to_dict(orient='records'):
+            news_item['listed_stock'] = stock_obj
+            timestamp = news_item.pop('timestamp')
+            news_obj, created = NewsItem.objects.get_or_create(**news_item)
+            if created:
+                news_obj.timestamp = timestamp
+                news_obj.save()
+        logging.info("News Thread ends for %s", context_val['name'])
