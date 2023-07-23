@@ -6,6 +6,9 @@ from requests_html import HTMLSession
 from .models import ListedStock
 import re
 import logging
+import requests
+from requests_html import HTMLSession
+from .models import ListedStock
 
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
@@ -16,10 +19,9 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from app.open_ai import InvestinglyGPT
 from .models import RiskAnalysis
 from langchain.chat_models import ChatOpenAI
-import logging
+from app.open_ai import InvestinglyGPT
 
 # nltk.download('stopwords')
 # nltk.download('punkt')
