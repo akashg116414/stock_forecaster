@@ -1,6 +1,7 @@
 import pandas as pd
 import time
 import string
+import re
 
 import nltk
 from nltk.corpus import stopwords
@@ -12,6 +13,10 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from app.open_ai import InvestinglyGPT
+from .models import RiskAnalysis
+from langchain.chat_models import ChatOpenAI
+import logging
 
 # nltk.download('stopwords')
 # nltk.download('punkt')
@@ -343,3 +348,50 @@ def parse_hours_ago(timestamp):
         return pd.Timestamp.now() - pd.DateOffset(years=int(timestamp_split[0]))
     else:
         return timestamp
+
+def extract_company_names(input_string):
+    pattern = r'Company: (\S+)'
+    company_names = re.findall(pattern, input_string)
+    return company_names
+
+def conversation_setup(time_duration,risk_category):
+    # Read the CSV file
+    llm = ChatOpenAI(temperature=0.9)
+    df = pd.read_csv("test_2.csv")
+    
+    # Configure the agent
+    config = dict(data=df)
+    human_input = "time is {} and risk is {}".format(time_duration, risk_category)
+    investingly_agent = InvestinglyGPT.from_llm(llm, verbose=False, **config)
+    investingly_agent.seed_agent()
+    
+    # Perform the conversation steps
+    investingly_agent.human_step("hello")
+    investingly_agent.step()
+    
+    # input to agent
+    investingly_agent.human_step(human_input)
+    stock_list_str = investingly_agent.step()
+    
+    if "Please wait" in stock_list_str:
+        print("true")
+        investingly_agent.human_step(human_input)
+        stock_list_str = investingly_agent.step()
+        
+    stock_list = extract_company_names(stock_list_str)
+    return stock_list
+
+def stock_risk_calculated():
+    risk_categories = ["Low", "Medium", "High"]
+    # Loop through each risk category
+    for risk_category in risk_categories:
+        # Loop through each time from 1 to 60 months
+        for time in range(1, 61):
+            # Call the function with the current risk category and time
+            time  = str(time) + "months"
+            print(risk_category, time)
+            result = conversation_setup(risk_category, time)
+            risk_analysis = RiskAnalysis(risk_category=risk_category,time=time,stock_list=result)
+            risk_analysis.save()
+            # print(result)
+    logging.info("Successfull added")

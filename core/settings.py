@@ -14,6 +14,9 @@ PROJECT_DIR = Path(__file__).parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY', default='S#perS3crEt_1122')
 
+#OpenAi key
+OPENAI_API_KEY = config('OPENAI_API_KEY', default='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')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False)
 
