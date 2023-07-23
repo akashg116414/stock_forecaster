@@ -1,9 +1,12 @@
 import pandas as pd
 import time
 import string
+import requests
+from requests_html import HTMLSession
+from .models import ListedStock
 import re
+import logging
 
-import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
@@ -22,19 +25,21 @@ import logging
 # nltk.download('punkt')
 
 # Set up Chrome options
-chrome_options = Options()
+chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--disable-extensions")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--incognito")
 chrome_options.add_argument("--disable-gpu ") # Run Chrome in headless mode
 
-# Set path to chromedriver executable
-webdriver_service = Service(r'C:\Users\Admin\Downloads\chromedriver.exe')
 
-import requests
-from requests_html import HTMLSession
-from .models import ListedStock
+# Use ChromeDriverManager to automatically download and install ChromeDriver
+# driver = webdriver.Chrome(service=ChromeDriverManager().install(), options=chrome_options)
+
+# Set path to chromedriver executable
+webdriver_service = Service(ChromeDriverManager().install())
+
+driver = webdriver.Chrome(service=webdriver_service, options=chrome_options)
 
 base_url = "https://query1.finance.yahoo.com/v8/finance/chart/"
 

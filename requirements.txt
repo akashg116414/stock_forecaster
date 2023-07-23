@@ -50,8 +50,7 @@ marshmallow==3.20.1
 matplotlib==3.7.1
 multidict==6.0.4
 multitasking==0.0.11
-mypy-extensions==1.0.0
-mysqlclient==2.1.1
+# mysqlclient==2.1.1
 nltk==3.8.1
 numexpr==2.8.4
 numpy==1.24.3
@@ -64,7 +63,6 @@ pandas-ta==0.3.14b0
 parse==1.19.0
 Pillow==9.5.0
 plotly==5.14.1
-prophet==1.1.4
 pycodestyle==2.10.0
 pycparser==2.21
 pydantic==1.10.11

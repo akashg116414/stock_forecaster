@@ -8,10 +8,10 @@
 {% block content %}
 
 
-<!-- Page Header --> 
+<!-- Page Header -->
 <div class="page-header row no-gutters py-4">
   <div class="col-12 col-sm-4 text-center text-sm-left mb-3">
-    <h3 >Intelli<span>In</span>vestor</h3>
+    <h3>Intelli<span>In</span>vestor</h3>
   </div>
 </div>
 <!-- End Page Header -->
@@ -50,7 +50,7 @@
             </h6>
           </div>
           <div class="stats-small__data">
-            <span class="stats-small__percentage"  id="sensex-details"></span>
+            <span class="stats-small__percentage" id="sensex-details"></span>
           </div>
         </div>
       </div>
@@ -152,19 +152,21 @@
 
     <!-- Predictions Data -->
     <div class="card card-small mt-4" style="min-height: 350px">
-      <div class="card-body pt-0", id="signal-graph-1">
+      <div class="card-body pt-0" , id="signal-graph-1">
         <div class="row border-bottom py-2 bg-light">
           <div class="input-daterange input-group">
             <!-- <input type="number" class="input-sm form-control ml-3" id="price" name="price" min="100" required placeholder="Enter The Price" value="1000"> -->
             <div class="col-lg-6">
-              <label for="duration">Investment: ₹  <span id="investment-value">1000</span></label>
-              <input placeholder="Investment: 1" type="range" class="input-sm form-control-range" id="price" name="price" min="1000" max="100000" value="1000" oninput="updatePriceValue(this.value)">
+              <label for="duration">Investment: ₹ <span id="investment-value">1000</span></label>
+              <input placeholder="Investment: 1" type="range" class="input-sm form-control-range" id="price"
+                name="price" min="1000" max="100000" value="1000" oninput="updatePriceValue(this.value)">
             </div>
             <div class="col-lg-6">
-            <label for="duration">Duration (months): <span id="duration-value">1</span></label>
-            <input placeholder="Duration (months): 1" type="range" class="input-sm form-control-range" id="duration" name="duration" min="1" max="60" value="1" oninput="updateDurationValue(this.value)">
+              <label for="duration">Duration (months): <span id="duration-value">1</span></label>
+              <input placeholder="Duration (months): 1" type="range" class="input-sm form-control-range" id="duration"
+                name="duration" min="1" max="60" value="1" oninput="updateDurationValue(this.value)">
+            </div>
           </div>
-        </div>
         </div>
         <div id="pred-chart-div">
           <div class="loader" style="display: flex; align-items: center; justify-content: center;"></div>
@@ -174,15 +176,15 @@
     </div>
     <!-- Signals Data -->
     <div class="card card-small mt-4" style="min-height: 400px">
-      <div class="card-body pt-0", id="signal-graph">
+      <div class="card-body pt-0" , id="signal-graph">
         <div class="loader" style="display: flex; align-items: center; justify-content: center;"></div>
       </div>
     </div>
 
-    
+
   </div>
   <!-- Second Column -->
-  <div class="col-lg-4 col-md-6 col-sm-12 mb-4" >
+  <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
     <div class="card card-small" style="min-height: 450px">
       <div class="card-header border-bottom">
         <h6 class="m-0">Global Indicators</h6>
@@ -192,7 +194,7 @@
       </div>
       <div class="mb-3"></div>
     </div>
-    
+
     <div class="card card-small mt-4" style="min-height: 250px">
       <div class="card-header border-bottom">
         <h6 class="m-0">Top Gainers</h6>
@@ -232,9 +234,12 @@
         <div class="home_search_content">
           <form action="." class="home_search_form" id="home_search_form" method="post">
             {% csrf_token %}
-            <div class="d-flex flex-lg-row flex-column align-items-start justify-content-lg-between justify-content-start">
-              <input type="number" class="search_input search_input_1" placeholder="Amount" required="required" min="1000" max="1000000">
-              <input type="number" class="search_input search_input_2" placeholder="Duration" required="required" min="1" max="60">
+            <div
+              class="d-flex flex-lg-row flex-column align-items-start justify-content-lg-between justify-content-start">
+              <input type="number" class="search_input search_input_1" placeholder="Amount" required="required"
+                min="1000" max="1000000">
+              <input type="number" class="search_input search_input_2" placeholder="Duration" required="required"
+                min="1" max="60">
               <select class="search_input search_input_3" required="required">
                 <option value="Low">Low</option>
                 <option value="Medium">Medium</option>
@@ -264,6 +269,46 @@
 
 
 <script>
+  var gaugeOpts = {
+    angle: 0, // The span of the gauge arc
+    lineWidth: 0.3, // The line thickness
+    radiusScale: 0.9, // Relative radius
+    pointer: {
+      length: 0.42, // // Relative to gauge radius
+      strokeWidth: 0.029, // The thickness
+      color: '#000000' // Fill color
+    },
+    limitMax: true,     // If false, max value increases automatically if value > maxValue
+    limitMin: true,     // If true, the min value of the gauge will be fixed
+    colorStart: '#6F6EA0',   // Colors
+    colorStop: '#C0C0DB',    // just experiment with them
+    strokeColor: '#EEEEEE',  // to see which ones work best for you
+    generateGradient: true,
+    highDpiSupport: true,
+    staticZones: [
+      { strokeStyle: "#F03E3E", min: -1, max: -0.1 }, // Red from -1 to -0.1
+      { strokeStyle: "#FFDD00", min: -0.1, max: 0.1 }, // Yellow -0.1 to 0.1
+      { strokeStyle: "#30B32D", min: 0.1, max: 1 }, // Green 0.1 to 1
+    ],
+    staticLabels: {
+      font: "15px sans-serif",  // Specifies font
+      labels: [-1, 0, 1],  // Print labels at these values
+      color: "#000000",  // Optional: Label text color
+      fractionDigits: 0
+    },
+
+  };
+
+  function updateSentimentsGauge(canvasdiv, val) {
+    // Create a new chart if it doesn't exist
+    var target = document.getElementById(canvasdiv);
+
+    var gauge = new Gauge(target).setOptions(gaugeOpts); // create sexy gauge!
+    gauge.maxValue = 1; // set max gauge value
+    gauge.setMinValue(-1);  // Prefer setter over gauge.minValue = 0
+    gauge.animationSpeed = 10; // set animation speed (32 is default value)
+    gauge.set(val);
+  }
 
   var expanderChart = null;
   var expanderChartData = {
@@ -285,24 +330,24 @@
 
   // Update the chart with new data
   function updateExpanderCardChart(data_label, chartCanvas) {
-      // Create a new chart if it doesn't exist
-      var expander_ctx = document.getElementById(chartCanvas).getContext('2d');
+    // Create a new chart if it doesn't exist
+    var expander_ctx = document.getElementById(chartCanvas).getContext('2d');
 
-      expander_chart = new Chart(expander_ctx, {
-        type: 'line',
-        data: expanderChartData,
-        options: {
-          scales: {
-            yAxes: [{
-              ticks: {
-                beginAtZero: true
-              }
-            }]
-          }
-        } 
-        
-      });
-    }
+    expander_chart = new Chart(expander_ctx, {
+      type: 'line',
+      data: expanderChartData,
+      options: {
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        }
+      }
+
+    });
+  }
 
   function fetchStockChartValues(stock_id) {
 
@@ -310,7 +355,7 @@
     url += `stock_id=${stock_id}`;
     var chartDiv = 'personalized-portfolio-expander-card_' + stock_id
     chartCanvas = 'expander-card-graph_' + stock_id
-    expanderCavasHtml = '<canvas height="130" style="max-width: 100% !important;" id="' + chartCanvas +'"></canvas>'
+    expanderCavasHtml = '<canvas height="130" style="max-width: 100% !important;" id="' + chartCanvas + '"></canvas>'
 
     fetch(url)
       .then(response => response.json())
@@ -319,68 +364,73 @@
         expandercontainer.innerHTML = expanderCavasHtml;
         expandercontainer.style.height = 'auto';
         updateChartDataExpander(data);
-        updateExpanderCardChart(data.chart_string,chartCanvas);
+        updateExpanderCardChart(data.chart_string, chartCanvas);
       })
       .catch(error => console.error(error));
 
-    }
+  }
 
-    function fetchStocknews(stock_id) {
+  function fetchStocknews(stock_id) {
 
-      let url = "{% url 'stock-news' %}?";
-      url += `stock_id=${stock_id}`;
-      var newsOutterDiv = 'news-expander-card_' + stock_id
-      var sentimentsOutterDiv = 'sentiments-expander-card_' + stock_id
-      console.log(sentimentsOutterDiv)
-      newsDiv = 'news_' + stock_id
+    let url = "{% url 'stock-news' %}?";
+    url += `stock_id=${stock_id}`;
+    var newsOutterDiv = 'news-expander-card_' + stock_id
+    var sentimentsOutterDiv = 'sentiments-expander-card_' + stock_id
+    var sentimentsCanvasDiv = 'sentiments-canvas-card_' + stock_id
+    sentimentsCavasHtml = '<canvas style="max-width: 100% !important;" id="' + sentimentsCanvasDiv + '"></canvas>'
+    newsDiv = 'news_' + stock_id
 
-      fetch(url)
-        .then(response => response.json())
-        .then(data => {
-          console.log(data)
-          newsMainHTML = ""
-          var newsData = data.news
-          for (var i = 0; i < newsData.length; i++) {
-            var truncatedDescription = newsData[i].description.slice(0, 100) + "...";
-            news = '<div class="news-container" id="'+ newsDiv +'">'+
-                      '<div class="headline">'+
-                      '<a href="'+newsData[i].url+'">'+ newsData[i].headline +'</a>'+
-                      '</div>'+
-                      '<div class="description">'+ truncatedDescription +
-                      '</div>'+
-                      '<div class="source">Source: '+ newsData[i].source +
-                      '</div>'+
-                      '</div>';
-            newsMainHTML += news;
-          }
-          var newsExpanderContainer = document.getElementById(newsOutterDiv);
-          newsExpanderContainer.innerHTML = newsMainHTML;
-          newsExpanderContainer.style.height = 'auto';
-          // Update the HTML for the circular gauge
-          var averageSentimentScore = data.sentiment_score
-          var sentimentValue = data.sentiment_val
-          var angle = (averageSentimentScore + 1) * 180;
-          var gaugeHTML = '<div class="gauge-container">' +
-                            '<div class="gauge-meter">' +
-                              '<div class="gauge-fill" style="transform: rotate(' + angle + 'deg);"></div>' +
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        console.log(data)
+        newsMainHTML = ""
+        var newsData = data.news
+        for (var i = 0; i < newsData.length; i++) {
+          var truncatedDescription = newsData[i].description.slice(0, 100) + "...";
+          news = '<div class="news-container" id="' + newsDiv + '">' +
+            '<div class="headline">' +
+            '<a href="' + newsData[i].url + '">' + newsData[i].headline + '</a>' +
+            '</div>' +
+            '<div class="description">' + truncatedDescription +
+            '</div>' +
+            '<div class="source">Source: ' + newsData[i].source +
+            '</div>' +
+            '</div>';
+          newsMainHTML += news;
+        }
+        var newsExpanderContainer = document.getElementById(newsOutterDiv);
+        newsExpanderContainer.innerHTML = newsMainHTML;
+        newsExpanderContainer.style.height = 'auto';
+        // Update the HTML for the circular gauge
+        var averageSentimentScore = data.sentiment_score
+        var sentimentValue = data.sentiment_val
+        var sentimentsCanvasDiv = 'sentiments-canvas-card_' + stock_id
+        var gaugeHTML = '<div>' +
+                            '<div>' +
+                              '<canvas style="max-width: 100% !important;" id="' + sentimentsCanvasDiv + '"></canvas>' +
                             '</div>' +
-                            '<div class="gauge-label">' +
-                              '<span class="sentiment-value">' + sentimentValue + '</span>' +
-                              '<span class="sentiment-score">' + averageSentimentScore + '</span>' +
+                            '<div>' +
+                              '<div class="description" style="justify-content: center;">' + averageSentimentScore +
+                              '</div>' +
+                              '<div class="source" style="justify-content: center;">' + sentimentValue +
+                              '</div>' +
                             '</div>' +
                           '</div>';
 
-          // Append the gauge HTML to a container element in your page
-          var gaugeContainer = document.getElementById(sentimentsOutterDiv);
-          gaugeContainer.innerHTML = gaugeHTML;
-          gaugeContainer.style.height = 'auto';
-          
-        })
-        .catch(error => console.error(error));
 
-      }
+        // Append the gauge HTML to a container element in your page
+        var gaugeContainer = document.getElementById(sentimentsOutterDiv);
+        gaugeContainer.innerHTML = gaugeHTML;
+        updateSentimentsGauge(sentimentsCanvasDiv, averageSentimentScore);
+        gaugeContainer.style.height = 'auto';
 
-  $(document).ready(function() {
+      })
+      .catch(error => console.error(error));
+
+  }
+
+  $(document).ready(function () {
     // Get the CSRF token from cookies
     function getCookie(name) {
       var cookieValue = null;
@@ -399,7 +449,7 @@
     }
 
     // Handle click event of the submit button
-    $('#submit_button').click(function(e) {
+    $('#submit_button').click(function (e) {
       e.preventDefault(); // Prevent the form from submitting
 
       // Get the input values
@@ -413,7 +463,7 @@
 
       // Add the CSRF token to the request headers
       $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
+        beforeSend: function (xhr, settings) {
           if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
             xhr.setRequestHeader('X-CSRFToken', csrftoken);
           }
@@ -429,59 +479,59 @@
           duration: duration,
           risk: risk
         },
-        success: function(response) {
+        success: function (response) {
           // Process the API response and generate the cards
           var cardsHtml = '';
           for (var rank in response) {
             var cardData = response[rank];
-            var cardHtml = '<div class="my-card [ is-collapsed ] " id='+ cardData.id +'>'+
-                  '<div class="my-card__inner [ js-expander ]">'+
-                    '<h4 class="my-card-title border-bottom">'+ cardData.name +'</h4>'+
-                    '<div class="my-card-body">' +
-                      '<p class="my-card-text"><i class="fas fa-coins"></i> Stock Price: ' + cardData['Stock Price'] + '</p>' +
-                      '<p class="my-card-text"><i class="fa fa-chart-bar"></i> Number of Stocks: ' + cardData['number of stocks'] + '</p>' +
-                      '<p class="my-card-text"><i class="fa fa-box-open"></i> Package Value: ' + cardData['package value'] + '</p>' +
-                      '<p class="my-card-text"><i class="fa fa-exclamation-triangle"></i> Risk: ' + cardData.risk + '</p>' +
-                    '</div>' +
-                  '</div>'+
-                  '<div class="my-card__expander">'+
-                    '<div class="card-expander-row ml-2">' +
-                      '<div class="col-lg-12 mb-3">' +
-                        '<h6 class="mt-3 border-bottom">Growth Chart</h6>'+
-                        '<div id="personalized-portfolio-expander-card_'+ cardData.id +'">'+
-                          '<div class="loader mt-20" style="display: flex; align-items: center; justify-content: center; top: revert;"></div>'+
-                          '</div>' +
-                      '</div>' +
-                    '</div>' +
-                    '<div class="card-expander-row ml-2">' +
-                      '<div class="card-expander-column">' +
-                        '<h6 class="mt-3 border-bottom">News</h6>'+
-                        '<div id="news-expander-card_'+ cardData.id +'">'+
-                          '<div class="description">Recent news are not available for this stock.</div>' +
-                          '</div>' +
-                      '</div>' +
-                      '<div class="card-expander-column">' +
-                        '<h6 class="mt-3 border-bottom">Sentimental Views</h6>'+
-                        '<div id="sentiments-expander-card_'+ cardData.id +'">'+
-                          '<div class="description">Sentimental Views are not available for this stock.</div>' +
-                          '</div>' +
-                      '</div>' +
-                    '</div>' +
-                    '</div>' +
-                '</div>';
+            var cardHtml = '<div class="my-card [ is-collapsed ] " id=' + cardData.id + '>' +
+              '<div class="my-card__inner [ js-expander ]">' +
+              '<h4 class="my-card-title border-bottom">' + cardData.name + '</h4>' +
+              '<div class="my-card-body">' +
+              '<p class="my-card-text"><i class="fas fa-coins"></i> Stock Price: ' + cardData['Stock Price'] + '</p>' +
+              '<p class="my-card-text"><i class="fa fa-chart-bar"></i> Number of Stocks: ' + cardData['number of stocks'] + '</p>' +
+              '<p class="my-card-text"><i class="fa fa-box-open"></i> Package Value: ' + cardData['package value'] + '</p>' +
+              '<p class="my-card-text"><i class="fa fa-exclamation-triangle"></i> Risk: ' + cardData.risk + '</p>' +
+              '</div>' +
+              '</div>' +
+              '<div class="my-card__expander">' +
+              '<div class="card-expander-row ml-2">' +
+              '<div class="col-lg-12 mb-3">' +
+              '<h6 class="mt-3 border-bottom">Growth Chart</h6>' +
+              '<div id="personalized-portfolio-expander-card_' + cardData.id + '">' +
+              '<div class="loader mt-20" style="display: flex; align-items: center; justify-content: center; top: revert;"></div>' +
+              '</div>' +
+              '</div>' +
+              '</div>' +
+              '<div class="card-expander-row ml-2">' +
+              '<div class="card-expander-column">' +
+              '<h6 class="mt-3 border-bottom">News</h6>' +
+              '<div id="news-expander-card_' + cardData.id + '">' +
+              '<div class="description">Recent news are not available for this stock.</div>' +
+              '</div>' +
+              '</div>' +
+              '<div class="card-expander-column-1">' +
+              '<h6 class="mt-3 border-bottom">Sentimental Views</h6>' +
+              '<div id="sentiments-expander-card_' + cardData.id + '">' +
+              '<div class="description">Sentimental Views are not available for this stock.</div>' +
+              '</div>' +
+              '</div>' +
+              '</div>' +
+              '</div>' +
+              '</div>';
 
 
             cardsHtml += cardHtml;
           }
 
-      
+
 
           // Append the generated cards to the card row
           $('#card_row').html(cardsHtml);
           var $cell = $('.my-card');
 
           //open and close card when clicked on card
-          $cell.find('.js-expander').click(function() {
+          $cell.find('.js-expander').click(function () {
 
             var $thisCell = $(this).closest('.my-card');
             var cardId = $thisCell.attr('id');
@@ -492,7 +542,7 @@
               fetchStocknews(cardId)
               $cell.not($thisCell).removeClass('is-expanded').addClass('is-collapsed').addClass('is-inactive');
               $thisCell.removeClass('is-collapsed').addClass('is-expanded');
-              
+
               if ($cell.not($thisCell).hasClass('is-inactive')) {
                 //do nothing
               } else {
@@ -507,7 +557,7 @@
 
           //close card when click on cross
         },
-        error: function() {
+        error: function () {
           console.log('API request failed.');
         }
       });
@@ -539,9 +589,9 @@
             let html = '';
             if (items.length > 0) {
               html += '<p style="margin-bottom:auto;">';
-                for (const item of items) {
-                  html += `<a href="#" onclick="changeAllGraph('${item.stock_id}')" class="search-result">${item.name}</a><br>`;
-                }
+              for (const item of items) {
+                html += `<a href="#" onclick="changeAllGraph('${item.stock_id}')" class="search-result">${item.name}</a><br>`;
+              }
               html += '</p>';
             }
             else {
@@ -569,7 +619,7 @@
     // Set the value of the input field to an empty string
     searchInput.value = '';
     searchResults.innerHTML = '';
-    updateHTMLPriceAndDuration(1000,1);
+    updateHTMLPriceAndDuration(1000, 1);
     forecastValue(1000, 1);
     updatesignalChartStart();
   }
@@ -589,7 +639,7 @@
   function updatePriceValue(value) {
     document.getElementById("investment-value").innerHTML = value;
   }
-  
+
   let indian_index_url = "{% url 'indian-index-status' %}";
   function updateData() {
     $.ajax({
@@ -601,7 +651,7 @@
         var indiaVIX = response["India VIX"];
         var bankNifty = response["Bank Nifty"];
 
-        $("#nifty-details").text(nifty50.change +" " +"(" + nifty50.percentage_change + "%)");
+        $("#nifty-details").text(nifty50.change + " " + "(" + nifty50.percentage_change + "%)");
         $("#nifty-price").text(nifty50.price);
 
         if (nifty50.change < 0) {
@@ -610,7 +660,7 @@
           $("#nifty-details").addClass("stats-small__percentage--increase");
         }
 
-        $("#sensex-details").text(sensex.change +" " +"(" + sensex.percentage_change + "%)");
+        $("#sensex-details").text(sensex.change + " " + "(" + sensex.percentage_change + "%)");
         $("#sensex-price").text(sensex.price);
 
         if (sensex.change < 0) {
@@ -619,7 +669,7 @@
           $("#sensex-details").addClass("stats-small__percentage--increase");
         }
 
-        $("#vix-details").text(indiaVIX.change +" " +"(" + indiaVIX.percentage_change + "%)");
+        $("#vix-details").text(indiaVIX.change + " " + "(" + indiaVIX.percentage_change + "%)");
         $("#vix-price").text(indiaVIX.price);
 
         if (indiaVIX.change < 0) {
@@ -628,7 +678,7 @@
           $("#vix-details").addClass("stats-small__percentage--increase");
         }
 
-        $("#bank-nifty-details").text(bankNifty.change +" " +"(" + bankNifty.percentage_change + "%)");
+        $("#bank-nifty-details").text(bankNifty.change + " " + "(" + bankNifty.percentage_change + "%)");
         $("#bank-nifty-price").text(bankNifty.price);
 
         if (bankNifty.change < 0) {
@@ -704,14 +754,14 @@
           id="pred-data-graph"></canvas>`
   function forecastValue(price, duration) {
 
-  // Validate that the start date is less than the end date
+    // Validate that the start date is less than the end date
     if (price < 100) {
       alert('Please Enter Price Greater than 100');
       return;
       // your API call logic here
     }
 
-    
+
     let url = "{% url 'forecast-data' %}?";
     url += `stock_id=${stock_id}`;
 
@@ -721,7 +771,7 @@
     if (duration) {
       url += `&duration=${duration}`;
     }
-        
+
     fetch(url)
       .then(response => response.json())
       .then(data => {
@@ -734,44 +784,44 @@
       })
       .catch(error => console.error(error));
 
-    }
+  }
 
   function updatesignalChart() {
-      let signal_url = "{% url 'signal-data-graph' %}?";
-      signal_url += `stock_id=${stock_id}`;
-      const now = new Date();
-      const hours = now.getUTCHours() + 5.5; // Add 5.5 hours for IST timezone offset
-      const minutes = now.getUTCMinutes();
-      const currentTime = hours * 60 + minutes;
+    let signal_url = "{% url 'signal-data-graph' %}?";
+    signal_url += `stock_id=${stock_id}`;
+    const now = new Date();
+    const hours = now.getUTCHours() + 5.5; // Add 5.5 hours for IST timezone offset
+    const minutes = now.getUTCMinutes();
+    const currentTime = hours * 60 + minutes;
 
-      // Check if the current time is between 9:15 am and 4:00 pm IST
-      // if (currentTime >= 555 && currentTime <= 960) {
-      // Send AJAX request to server to get updated chart data
-      $.ajax({
-        url: signal_url,
-        type: 'GET',
-        success: function(data) {
-          // Replace chart HTML with updated data
-          $('#signal-graph').html(data.chart);
-        }
-      });
-    }
-  
+    // Check if the current time is between 9:15 am and 4:00 pm IST
+    // if (currentTime >= 555 && currentTime <= 960) {
+    // Send AJAX request to server to get updated chart data
+    $.ajax({
+      url: signal_url,
+      type: 'GET',
+      success: function (data) {
+        // Replace chart HTML with updated data
+        $('#signal-graph').html(data.chart);
+      }
+    });
+  }
+
 
   function updatesignalChartStart() {
-      let signal_url = "{% url 'signal-data-graph' %}?";
-      signal_url += `stock_id=${stock_id}`;
-    
-      // Send AJAX request to server to get updated chart data
-      $.ajax({
-        url: signal_url,
-        type: 'GET',
-        success: function(data) {
-          // Replace chart HTML with updated data
-          $('#signal-graph').html(data.chart);
-        }
-      });
-    }
+    let signal_url = "{% url 'signal-data-graph' %}?";
+    signal_url += `stock_id=${stock_id}`;
+
+    // Send AJAX request to server to get updated chart data
+    $.ajax({
+      url: signal_url,
+      type: 'GET',
+      success: function (data) {
+        // Replace chart HTML with updated data
+        $('#signal-graph').html(data.chart);
+      }
+    });
+  }
 
   updatesignalChartStart()
   // Call updateChart function every 5 min
@@ -880,7 +930,7 @@
               }
             }]
           }
-        } 
+        }
       });
     } else {
       // Update the existing chart with new data
@@ -926,11 +976,11 @@
         data: chartDataForecast,
         options: {
           title: {
-          display: true,
-          text: data_label,
-          fontSize: 18,
-          fontWeight: 'bold',
-          fontFamily: 'Roboto, sans-serif'
+            display: true,
+            text: data_label,
+            fontSize: 18,
+            fontWeight: 'bold',
+            fontFamily: 'Roboto, sans-serif'
           },
           scales: {
             yAxes: [{
@@ -940,7 +990,7 @@
             }]
           }
         }
-        
+
       });
     } else {
       // Update the existing chart with new data
@@ -956,26 +1006,26 @@
   }
 
   // for global indicators
-  let global_index_url = "{% url 'global-index-status' %}";       
+  let global_index_url = "{% url 'global-index-status' %}";
   function updateGlobalData() {
     $.ajax({
       type: 'GET',
       url: global_index_url,
       success: function (response) {
         var global_index = response;
-       
+
 
         // Function to generate HTML code for the entire API response
         function generateHTMLList(response) {
           var html = '';
           let sign = false;
           for (var i = 0; i < response.length; i++) {
-            html += generateHTMLG(response[i],sign);
+            html += generateHTMLG(response[i], sign);
           }
           return html;
         }
 
-        function generateHTMLG(item,sign) {
+        function generateHTMLG(item, sign) {
           let percentageClass = item.percentage_change > 0 ? "stats-small__percentage stats-small__percentage--increase" : "stats-small__percentage stats-small__percentage--decrease";
           let currency_sign = (["S&P 500", "Nasdaq", "Dow Jones"].includes(item.name)) ? '$' : '₹';
           let price = (currency_sign === '$') ? `${item.price}$` : `₹${item.price}`;
@@ -986,7 +1036,7 @@
         </div>
         <div class="stats-small__data">
           <span class="stats-small__value count my-1 text-right">${price}</span>
-          <span class="${percentageClass}">${item.percentage_change+ "%"}</span>
+          <span class="${percentageClass}">${item.percentage_change + "%"}</span>
         </div>
       </div>
           `;
@@ -994,11 +1044,11 @@
 
         // Generate HTML code for the API response
         var globalhtmlCode = generateHTMLList(global_index);
-    
+
         // Append the HTML code to a specific element in your page
         var globalcontainer = document.getElementById('global-indicator');
         globalcontainer.innerHTML = globalhtmlCode;
-        globalcontainer.style.height = 'auto';  
+        globalcontainer.style.height = 'auto';
       }
     });
   }
@@ -1006,33 +1056,33 @@
   $(document).ready(function () {
     setInterval(updateGlobalData, 20000); //update data every 20 seconds
   });
-  
+
   // for top gainers losers stocks
   // Function to generate HTML code for each item in the API response
-  function generateHTML(item,sign) {
-          let percentageClass = item.percentage_change > 0 ? "stats-small__percentage stats-small__percentage--increase" : "stats-small__percentage stats-small__percentage--decrease";
-          let currency_sign = (sign === true) ? '$' : '';
-          let price = sign ? item.price : `₹${item.price}`;
-          return `
+  function generateHTML(item, sign) {
+    let percentageClass = item.percentage_change > 0 ? "stats-small__percentage stats-small__percentage--increase" : "stats-small__percentage stats-small__percentage--decrease";
+    let currency_sign = (sign === true) ? '$' : '';
+    let price = sign ? item.price : `₹${item.price}`;
+    return `
           <div class="card-body d-flex py-0">
         <div class="stats-small__data text">
           <span class="stats-medium__label text">${item.name}</span>
         </div>
         <div class="stats-small__data">
           <span class="stats-small__value count my-1 text-right">${price}${currency_sign}</span>
-          <span class="${percentageClass}">${item.percentage_change+ "%"}</span>
+          <span class="${percentageClass}">${item.percentage_change + "%"}</span>
         </div>
       </div>
           `;
-        }
-  function generateHTMLList(response,sign) {
+  }
+  function generateHTMLList(response, sign) {
     var html = '';
     for (var i = 0; i < response.length; i++) {
-      html += generateHTML(response[i],sign);
+      html += generateHTML(response[i], sign);
     }
     return html;
   }
-  
+
   let gainers_losers_url = "{% url 'gainers-losers-status' %}";
   function updateGainersLosersData() {
     $.ajax({
@@ -1042,18 +1092,18 @@
         var top_gainers = response["gainers"];
         var top_losers = response["losers"];
         var top_crypto = response["crypto"];
-       
+
 
         // Function to generate HTML code for the entire API response
-        
+
 
         // Generate HTML code for the API response
         let sign = false;
         var gainerhtmlCode = generateHTMLList(top_gainers, sign);
         var looserhtmlCode = generateHTMLList(top_losers, sign);
         sign = true;
-        var cryptohtmlCode = generateHTMLList(top_crypto,sign);
-    
+        var cryptohtmlCode = generateHTMLList(top_crypto, sign);
+
         // Append the HTML code to a specific element in your page
         var gainercontainer = document.getElementById('top-gainer');
         gainercontainer.innerHTML = gainerhtmlCode;
@@ -1076,106 +1126,63 @@
 
 
 <style>
-    .gauge-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .gauge-meter {
-      position: relative;
-      width: 200px;
-      height: 200px;
-      border: 10px solid #ccc;
-      border-radius: 50%;
-      overflow: hidden;
-    }
-
-    .gauge-fill {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #69B34C;
-      border-radius: 50%;
-      transform-origin: bottom center;
-      transition: transform 0.5s ease-in-out;
-    }
-
-    .gauge-pointer {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 3px;
-      height: 80px;
-      background-color: red;
-      border-radius: 2px;
-      transform-origin: bottom;
-      transition: transform 0.5s ease-in-out;
-    }
-
-    .gauge-label {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-top: 10px;
-      font-size: 16px;
-      font-weight: bold;
-    }
-
-    .sentiment-value {
-      margin-right: 5px;
-    }
-
-    .sentiment-score {
-      color: #69B34C;
-    }
-
-
   .card-expander-row {
-      display: flex;
-      flex-wrap: wrap;
-    }
-    
-  .card-expander-column {
-      flex: 0 0 50%; /* Adjust the width as needed */
-      padding: 10px;
-      /* Additional styles for custom columns */
-    }
-  .news-container {
-      margin-bottom: 20px;
-    }
-  .headline {
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-  .description {
-      margin-bottom: 5px;
-    }
-  .source {
-      color: #666;
-    }
-  .timestamp {
-      color: #999;
-      font-size: 12px;
-    }
-  .gauge-meter {
-      width: 200px;
-      height: 20px;
-      border: 1px solid #ccc;
-      position: relative;
-    }
-  .gauge-meter-fill {
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      background-color: #69B34C;
-    }
+    display: flex;
+    flex-wrap: wrap;
+  }
 
-    h3 {
+  .card-expander-column {
+    flex: 0 0 70%;
+    /* Adjust the width as needed */
+    padding: 10px;
+    /* Additional styles for custom columns */
+  }
+
+  .card-expander-column-1 {
+    flex: 0 0 30%;
+    /* Adjust the width as needed */
+    padding: 10px;
+    /* Additional styles for custom columns */
+  }
+
+  .news-container {
+    margin-bottom: 20px;
+  }
+
+  .headline {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .description {
+    margin-bottom: 5px;
+  }
+
+  .source {
+    color: #666;
+  }
+
+  .timestamp {
+    color: #999;
+    font-size: 12px;
+  }
+
+  .gauge-meter {
+    width: 200px;
+    height: 20px;
+    border: 1px solid #ccc;
+    position: relative;
+  }
+
+  .gauge-meter-fill {
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #69B34C;
+  }
+
+  h3 {
     font-family: "Inter";
     font-size: 70px;
     font-weight: 600;
@@ -1183,173 +1190,178 @@
     color: Black;
     user-select: none;
     z-index: 0;
-    }
+  }
 
-    h3 span {
+  h3 span {
     color: #03c988;
+  }
+
+  .top-gainer {
+    min-height: 250px;
+  }
+
+  .search-result {
+    color: rgb(9, 9, 9);
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .search-result:hover {
+    text-decoration: underline;
+  }
+
+  .loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    position: absolute;
+    top: 50%;
+    left: 45%;
+    transform: translate(-50%, -50%);
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
     }
 
-    .top-gainer {
-      min-height: 250px;
+    100% {
+      transform: rotate(360deg);
     }
+  }
 
-    .search-result {
-      color: rgb(9, 9, 9);
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    .search-result:hover {
-      text-decoration: underline;
-    }
-
-    .loader {
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #3498db;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      animation: spin 1s linear infinite;
-      position: absolute;
-      top: 50%;
-      left: 45%;
-      transform: translate(-50%, -50%);
-    }
-
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-
-    .cards {
-      padding: 15px;
-      display: flex;
-      flex-flow: row wrap;
+  .cards {
+    padding: 15px;
+    display: flex;
+    flex-flow: row wrap;
   }
 
   .my-card {
-      margin: 15px;
-      width: calc((100% / 3) - 30px);
-      transition: all 0.2s ease-in-out;
+    margin: 15px;
+    width: calc((100% / 3) - 30px);
+    transition: all 0.2s ease-in-out;
   }
 
   .my-card:hover .my-card__inner {
-      background-color: #03c988;
-      transform: scale(1.05);
+    background-color: #03c988;
+    transform: scale(1.05);
   }
 
   .my-card__inner {
-      width: 100%;
-      padding: 30px;
-      position: relative;
-      cursor: pointer;
-      background-color: #ffffff;
-      /* color: #eceef1; */
-      /* font-size: 1.5em; */
-      /* text-transform: uppercase; */
-      /* text-align: center; */
-      transition: all 0.2s ease-in-out;
+    width: 100%;
+    padding: 30px;
+    position: relative;
+    cursor: pointer;
+    background-color: #ffffff;
+    /* color: #eceef1; */
+    /* font-size: 1.5em; */
+    /* text-transform: uppercase; */
+    /* text-align: center; */
+    transition: all 0.2s ease-in-out;
   }
 
   .my-card__inner:after {
-      transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
   }
 
   .my-card__expander {
-      transition: all 0.2s ease-in-out;
-      background-color: #ffffff;
-      width: 100%;
-      position: relative;
+    transition: all 0.2s ease-in-out;
+    background-color: #ffffff;
+    width: 100%;
+    position: relative;
   }
 
   .my-card.is-collapsed .my-card__inner:after {
-      content: "";
-      opacity: 0;
+    content: "";
+    opacity: 0;
   }
 
   .my-card.is-collapsed .my-card__expander {
-      max-height: 0;
-      min-height: 0;
-      overflow: hidden;
-      margin-top: 0;
-      opacity: 0;
+    max-height: 0;
+    min-height: 0;
+    overflow: hidden;
+    margin-top: 0;
+    opacity: 0;
   }
 
-    .my-card-text {
-      margin-bottom: 0.5rem;
-    }
+  .my-card-text {
+    margin-bottom: 0.5rem;
+  }
+
   .my-card.is-expanded .my-card__inner {
-      background-color: #949fb0;
+    background-color: #949fb0;
   }
 
   .my-card.is-expanded .my-card__inner:after {
-      content: "";
-      opacity: 1;
-      display: block;
-      height: 0;
-      width: 0;
-      position: absolute;
-      bottom: -30px;
-      left: calc(50% - 15px);
-      border-left: 15px solid transparent;
-      border-right: 15px solid transparent;
-      border-bottom: 15px solid #000000;
+    content: "";
+    opacity: 1;
+    display: block;
+    height: 0;
+    width: 0;
+    position: absolute;
+    bottom: -30px;
+    left: calc(50% - 15px);
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-bottom: 15px solid #000000;
   }
 
   .my-card.is-expanded .my-card__expander {
-      max-height: 1500px;
-      min-height: 500px;
-      overflow: visible;
-      margin-top: 30px;
-      opacity: 1;
+    max-height: 1500px;
+    min-height: 500px;
+    overflow: visible;
+    margin-top: 30px;
+    opacity: 1;
   }
 
   .my-card.is-expanded:hover .my-card__inner {
-      transform: scale(1);
+    transform: scale(1);
   }
 
   .my-card.is-inactive .my-card__inner {
-      pointer-events: none;
-      opacity: 0.5;
+    pointer-events: none;
+    opacity: 0.5;
   }
 
   .my-card.is-inactive:hover .my-card__inner {
-      background-color:#949fb0;
-      transform: scale(1);
+    background-color: #949fb0;
+    transform: scale(1);
   }
 
   @media screen and (min-width: 992px) {
-      .my-card:nth-of-type(3n+2) .my-card__expander {
-          margin-left: calc(-100% - 30px);
-      }
-      .my-card:nth-of-type(3n+3) .my-card__expander {
-          margin-left: calc(-200% - 60px);
-      }
-      .my-card:nth-of-type(3n+4) {
-          clear: left;
-      }
-      .my-card__expander {
-          width: calc(300% + 60px);
-      }
+    .my-card:nth-of-type(3n+2) .my-card__expander {
+      margin-left: calc(-100% - 30px);
+    }
+
+    .my-card:nth-of-type(3n+3) .my-card__expander {
+      margin-left: calc(-200% - 60px);
+    }
+
+    .my-card:nth-of-type(3n+4) {
+      clear: left;
+    }
+
+    .my-card__expander {
+      width: calc(300% + 60px);
+    }
   }
 
   @media screen and (min-width: 768px) and (max-width: 991px) {
-      .my-card:nth-of-type(2n+2) .my-card__expander {
-          margin-left: calc(-100% - 30px);
-      }
-      .my-card:nth-of-type(2n+3) {
-          clear: left;
-      }
-      .my-card__expander {
-          width: calc(200% + 30px);
-      }
-  }
+    .my-card:nth-of-type(2n+2) .my-card__expander {
+      margin-left: calc(-100% - 30px);
+    }
 
+    .my-card:nth-of-type(2n+3) {
+      clear: left;
+    }
+
+    .my-card__expander {
+      width: calc(200% + 30px);
+    }
+  }
 </style>
 
 {% endblock javascripts %}
