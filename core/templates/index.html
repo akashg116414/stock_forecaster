@@ -255,7 +255,8 @@
 </div>
 
 <!-- Research Portfolio Investment Cards-->
-<div class="cards" id="card_row"></div>
+<div class="cards" id="card_row">
+</div>
 
 
 
@@ -407,10 +408,10 @@
         var sentimentValue = data.sentiment_val
         var sentimentsCanvasDiv = 'sentiments-canvas-card_' + stock_id
         var gaugeHTML = '<div>' +
-                            '<div>' +
+                            '<div style="display: flex; justify-content: center;">' +
                               '<canvas style="max-width: 100% !important;" id="' + sentimentsCanvasDiv + '"></canvas>' +
                             '</div>' +
-                            '<div>' +
+                            '<div style="justify-content: center;display: flex; flex-direction: column; align-items: center;">' +
                               '<div class="description" style="justify-content: center;">' + averageSentimentScore +
                               '</div>' +
                               '<div class="source" style="justify-content: center;">' + sentimentValue +
@@ -457,7 +458,6 @@
       var duration = $('.search_input_2').val();
       var risk = $('.search_input_3').val();
       let personalized_investment = "{% url 'personalized-investment' %}";
-
       // Get the CSRF token
       var csrftoken = getCookie('csrftoken');
 

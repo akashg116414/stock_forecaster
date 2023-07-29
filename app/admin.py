@@ -2,7 +2,7 @@
 
 from django.contrib import admin
 
-from .models import ListedStock, Indicator, NewsItem
+from .models import ListedStock, Indicator, NewsItem, RiskAnalysis
 
 @admin.register(ListedStock)
 class ListedStockAdmin(admin.ModelAdmin):
@@ -15,3 +15,7 @@ class IndicatorAdmin(admin.ModelAdmin):
 @admin.register(NewsItem)
 class NewsItemAdmin(admin.ModelAdmin):
     list_display = ('headline', 'url', 'description', 'source', 'timestamp', 'listed_stock', 'sentiment_score')
+
+@admin.register(RiskAnalysis)
+class RiskAnalysisAdmin(admin.ModelAdmin):
+    list_display = ('risk_category', 'time', 'stock_list')

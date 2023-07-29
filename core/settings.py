@@ -14,8 +14,6 @@ PROJECT_DIR = Path(__file__).parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY', default='S#perS3crEt_1122')
 
-#OpenAi key
-OPENAI_API_KEY = config('OPENAI_API_KEY', default='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')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False)
@@ -33,8 +31,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
+    'django_crontab',
+    'django_apscheduler',
     'app.app.AppConfig',  # Enable the inner app 
-    'django_apscheduler'
 ]
 
 MIDDLEWARE = [
@@ -143,14 +142,18 @@ APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 # Longer running jobs should probably be handed over to a background task processing library
 # that supports multiple background worker processes instead (e.g. Dramatiq, Celery, Django-RQ,
 # etc. See: https://djangopackages.org/grids/g/workers-queues-tasks/ for popular options).
-APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
+# APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
 
-SCHEDULER_CONFIG = {
-    "apscheduler.jobstores.default": {
-        "class": "django_apscheduler.jobstores:DjangoJobStore"
-    },
-    'apscheduler.executors.processpool': {
-        "type": "threadpool"
-    },
-}
+# SCHEDULER_CONFIG = {
+#     "apscheduler.jobstores.default": {
+#         "class": "django_apscheduler.jobstores:DjangoJobStore"
+#     },
+#     'apscheduler.executors.processpool': {
+#         "type": "threadpool"
+#     },
+# }
 SCHEDULER_AUTOSTART = True
+
+CRONJOBS = [
+    ('0 20 0 * * *', 'app.utils.stock_risk_calculated')
+]

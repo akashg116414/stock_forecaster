@@ -9,7 +9,7 @@ from django.shortcuts import render
 from django.template import loader
 
 from app import utils
-from .models import ListedStock, Indicator, NewsItem
+from .models import ListedStock, Indicator, NewsItem, RiskAnalysis
 from dateutil.relativedelta import relativedelta
 from .constant import crypto_currency
 import datetime
@@ -313,14 +313,29 @@ def personalized_investment(request):
         duration = int(request.POST.get('duration', 1))
         risk = request.POST.get('risk', 'Low')
         print(amount, duration, risk)
+        stock_list = RiskAnalysis.objects.filter(time=int(duration), risk_category=risk).values("stock_list").last().get('stock_list',[])
+        print(stock_list)
+        context = {}
+        count = 1
+        for rank in range(len(stock_list)):
+            print(rank)
+            stock_ticker = stock_list.get(str(rank))
+            stock_obj = ListedStock.objects.filter(ticker=stock_ticker).first()
+            stock = yf.Ticker(stock_ticker)
+            history = stock.history(period='1d') 
+            current_price = history['Close'][-1]
+            quantity = amount // current_price
+            if quantity > 0:
+                package_price = quantity * current_price
+                stock_info = {'id':stock_obj.id, 'name': stock_obj.name, 'Stock Price': round(current_price,2), 'number of stocks': quantity, 
+                            'package value': round(package_price,2), 'risk': risk}
+                context['rank'+str(count)] = stock_info
+                count+=1
+                if len(context)==6:
+                    break
 
-        
-        context = {'rank1': {'id':653, 'name': 'HDFC', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
-                   'rank2': {'id':767,'name': 'INFOSYS Limited', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
-                   'rank3': {'id':1352,'name': 'Reliance', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
-                   'rank4': {'id':1645,'name': 'Tata Motors Limited', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
-                   'rank5': {'id':36,'name': 'Adani Enterperies Limited', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}, 
-                   'rank6': {'id':980,'name': 'Mahindra & Mahindra', 'Stock Price': 2500, 'number of stocks': 4, 'package value': 10000, 'risk': 'Low'}}
+
+        print(context)
         x = threading.Thread(target=thread_function, args=(context,))
         x.start()
         return JsonResponse(context, safe=False)

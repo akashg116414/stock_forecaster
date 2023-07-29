@@ -53,8 +53,8 @@ class NewsItem(models.Model):
     
 class RiskAnalysis(models.Model):
     risk_category = models.CharField(max_length=100)
-    time = models.CharField(max_length=50)
-    stock_list = models.JSONField()
+    time = models.IntegerField()
+    stock_list = models.JSONField(null=True)
 
     def __str__(self):
         return f"{self.risk_category} - {self.time}"

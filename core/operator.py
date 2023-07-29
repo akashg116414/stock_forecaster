@@ -8,24 +8,34 @@ from app.tasks import (
     update_indian_indicator
 )
 
+from app.utils import (
+    stock_return_csv,
+    stock_risk_calculated
+)
+
 
 def start():
     scheduler = BackgroundScheduler()
     scheduler.add_jobstore(DjangoJobStore(), 'djangojobstore')
     register_events(scheduler)
 
-    @scheduler.scheduled_job('interval', seconds=60, name='update_gainer_losser_crypto')
-    def update_gainer_losser_crypto():
-        update_day_gainers()
-        update_day_losers()
-        update_top_crypto()
-    
-    @scheduler.scheduled_job('interval', seconds=30, name='update_global')
-    def update_global():
-        update_global_indicator()
+    @scheduler.scheduled_job('cron', hour=23, minute=44, name='update_stock_portfolio')
+    def update_stock_portfolio():
+        # stock_return_csv()
+        stock_risk_calculated()
 
-    @scheduler.scheduled_job('interval', seconds=10, name='update_indian')
-    def update_indian():
-        update_indian_indicator()
+    # @scheduler.scheduled_job('interval', seconds=60, name='update_gainer_losser_crypto')
+    # def update_gainer_losser_crypto():
+    #     update_day_gainers()
+    #     update_day_losers()
+    #     update_top_crypto()
+    
+    # @scheduler.scheduled_job('interval', seconds=30, name='update_global')
+    # def update_global():
+    #     update_global_indicator()
+
+    # @scheduler.scheduled_job('interval', seconds=10, name='update_indian')
+    # def update_indian():
+    #     update_indian_indicator()
 
     scheduler.start()

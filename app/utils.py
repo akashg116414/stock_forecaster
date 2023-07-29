@@ -1,4 +1,7 @@
 import pandas as pd
+import yfinance as yf
+import tqdm
+
 import time
 import string
 import requests
@@ -18,10 +21,11 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
 from .models import RiskAnalysis
 from langchain.chat_models import ChatOpenAI
 from app.open_ai import InvestinglyGPT
+from webdriver_manager.chrome import ChromeDriverManager
+
 
 # nltk.download('stopwords')
 # nltk.download('punkt')
@@ -359,22 +363,27 @@ def parse_hours_ago(timestamp):
 def extract_company_names(input_string):
     pattern = r'Company: (\S+)'
     company_names = re.findall(pattern, input_string)
-    return company_names
+    result = {key:value for key, value in enumerate(company_names)}
+    return result
 
-def conversation_setup(time_duration,risk_category):
-    # Read the CSV file
+def initialize_conversation():
     llm = ChatOpenAI(temperature=0.9)
-    df = pd.read_csv("test_2.csv")
-    
+    df = pd.read_csv("stock_return.csv")
+
     # Configure the agent
     config = dict(data=df)
-    human_input = "time is {} and risk is {}".format(time_duration, risk_category)
     investingly_agent = InvestinglyGPT.from_llm(llm, verbose=False, **config)
     investingly_agent.seed_agent()
-    
     # Perform the conversation steps
     investingly_agent.human_step("hello")
     investingly_agent.step()
+
+    return investingly_agent
+
+def conversation_setup(time_duration, risk_category, investingly_agent):
+    # Read the CSV file
+
+    human_input = "time is {} and risk is {}".format(time_duration, risk_category)
     
     # input to agent
     investingly_agent.human_step(human_input)
@@ -386,19 +395,85 @@ def conversation_setup(time_duration,risk_category):
         stock_list_str = investingly_agent.step()
         
     stock_list = extract_company_names(stock_list_str)
+    if not stock_list:
+        return conversation_setup(time_duration, risk_category, investingly_agent)
     return stock_list
 
 def stock_risk_calculated():
+    llm = ChatOpenAI(temperature=0.9)
+    df = pd.read_csv("stock_return.csv")
+
+    # Configure the agent
+    config = dict(data=df)
+    investingly_agent = InvestinglyGPT.from_llm(llm, verbose=False, **config)
+    investingly_agent.seed_agent()
+    # Perform the conversation steps
+    investingly_agent.human_step("hello")
+    investingly_agent.step()
     risk_categories = ["Low", "Medium", "High"]
-    # Loop through each risk category
     for risk_category in risk_categories:
-        # Loop through each time from 1 to 60 months
-        for time in range(1, 61):
-            # Call the function with the current risk category and time
-            time  = str(time) + "months"
-            print(risk_category, time)
-            result = conversation_setup(risk_category, time)
-            risk_analysis = RiskAnalysis(risk_category=risk_category,time=time,stock_list=result)
-            risk_analysis.save()
-            # print(result)
+        for time_val in range(1, 61):
+            try:
+                time_duration = "{} months".format(str(time_val))
+                print(risk_category, time_duration)
+                result = conversation_setup(risk_category, time_duration, investingly_agent)
+            except Exception as err:
+                print(str(err))
+                investingly_agent = initialize_conversation()
+                result = conversation_setup(risk_category, time_duration, investingly_agent)
+            risk_obj, _ = RiskAnalysis.objects.get_or_create(risk_category=risk_category, time=time_val)
+            risk_obj.stock_list=result
+            risk_obj.save()
+            print(result)
     logging.info("Successfull added")
+
+def stock_return_csv():
+    indian_stocks = pd.read_csv('EQUITY_L.csv')
+    symbols = indian_stocks['SYMBOL'].tolist()
+
+    data = []
+    for symbol in tqdm.tqdm(symbols, desc='Processing'):
+        stock = yf.Ticker(symbol)
+        history = stock.history(period='5y') 
+        
+        
+        one_year_return = None
+        two_year_return = None
+        three_year_return = None
+        four_year_return = None
+        five_year_return = None
+        
+        if len(history) >= 252:
+            current_price = history['Close'][-1]
+            one_year_ago_price = history['Close'][-252]
+            one_year_return = ((current_price - one_year_ago_price) / one_year_ago_price) * 100
+        
+        if len(history) >= 504:
+            two_year_ago_price = history['Close'][-504]
+            two_year_return = ((current_price - two_year_ago_price) / two_year_ago_price) * 100
+        
+        if len(history) >= 756:
+            three_year_ago_price = history['Close'][-756]
+            three_year_return = ((current_price - three_year_ago_price) / three_year_ago_price) * 100
+        
+        if len(history) >= 1008:
+            four_year_ago_price = history['Close'][-1008]
+            four_year_return = ((current_price - four_year_ago_price) / four_year_ago_price) * 100
+        
+        if len(history) >= 1234:
+            five_year_ago_price = history['Close'][-1234]
+            five_year_return = ((current_price - five_year_ago_price) / five_year_ago_price) * 100
+        
+        data.append({
+            'Symbol': symbol,
+            'Current Price': current_price,
+            '1-Year Return': one_year_return,
+            '2-Year Return': two_year_return,
+            '3-Year Return': three_year_return,
+            '4-Year Return': four_year_return,
+            '5-Year Return': five_year_return
+        })
+
+    df = pd.DataFrame(data)
+    df = df.sort_values(by='Symbol').reset_index(drop=True)
+    df.to_csv("stock_return.csv", index=False)
