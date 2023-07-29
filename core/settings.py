@@ -31,7 +31,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
-    'django_crontab',
     'django_apscheduler',
     'app.app.AppConfig',  # Enable the inner app 
 ]
@@ -153,7 +152,3 @@ APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 #     },
 # }
 SCHEDULER_AUTOSTART = True
-
-CRONJOBS = [
-    ('0 20 0 * * *', 'app.utils.stock_risk_calculated')
-]

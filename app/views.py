@@ -318,11 +318,12 @@ def personalized_investment(request):
         context = {}
         count = 1
         for rank in range(len(stock_list)):
-            print(rank)
             stock_ticker = stock_list.get(str(rank))
             stock_obj = ListedStock.objects.filter(ticker=stock_ticker).first()
             stock = yf.Ticker(stock_ticker)
-            history = stock.history(period='1d') 
+            history = stock.history(period='1d')
+            if history.empty:
+                continue
             current_price = history['Close'][-1]
             quantity = amount // current_price
             if quantity > 0:
@@ -333,9 +334,6 @@ def personalized_investment(request):
                 count+=1
                 if len(context)==6:
                     break
-
-
-        print(context)
         x = threading.Thread(target=thread_function, args=(context,))
         x.start()
         return JsonResponse(context, safe=False)

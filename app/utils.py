@@ -6,13 +6,11 @@ import time
 import string
 import requests
 from requests_html import HTMLSession
-from .models import ListedStock
+from .models import ListedStock, RiskAnalysis
 import re
 import logging
-import requests
-from requests_html import HTMLSession
-from .models import ListedStock
 
+import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
@@ -21,7 +19,6 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from .models import RiskAnalysis
 from langchain.chat_models import ChatOpenAI
 from app.open_ai import InvestinglyGPT
 from webdriver_manager.chrome import ChromeDriverManager
@@ -43,7 +40,7 @@ chrome_options.add_argument("--disable-gpu ") # Run Chrome in headless mode
 # driver = webdriver.Chrome(service=ChromeDriverManager().install(), options=chrome_options)
 
 # Set path to chromedriver executable
-webdriver_service = Service(ChromeDriverManager().install())
+webdriver_service = Service(ChromeDriverManager(version="114.0.5735.90").install())
 
 driver = webdriver.Chrome(service=webdriver_service, options=chrome_options)
 
@@ -477,3 +474,8 @@ def stock_return_csv():
     df = pd.DataFrame(data)
     df = df.sort_values(by='Symbol').reset_index(drop=True)
     df.to_csv("stock_return.csv", index=False)
+
+
+def nltk_install():
+    nltk.download('stopwords')
+    nltk.download('punkt')

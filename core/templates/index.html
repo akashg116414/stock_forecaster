@@ -458,6 +458,12 @@
       var duration = $('.search_input_2').val();
       var risk = $('.search_input_3').val();
       let personalized_investment = "{% url 'personalized-investment' %}";
+      var loaderHTML = `<div class="card card-small mt-4" style="min-height: 200px;min-width: -webkit-fill-available;">
+                        <div class="card-body pt-0">
+                          <div class="loader" style="display: flex; align-items: center; justify-content: center;"></div>
+                        </div>
+                      </div>`;
+      $('#card_row').html(loaderHTML);
       // Get the CSRF token
       var csrftoken = getCookie('csrftoken');
 

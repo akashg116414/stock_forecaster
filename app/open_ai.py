@@ -7,8 +7,6 @@ from langchain.chains.base import Chain
 from langchain.chat_models import ChatOpenAI
 import pandas as pd
 
-os.environ['OPENAI_API_KEY'] = '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'
-
 class StageAnalyzerChain(LLMChain):
     """Chain to analyze which conversation stage should the conversation move into."""
 
