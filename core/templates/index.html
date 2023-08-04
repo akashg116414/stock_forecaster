@@ -245,7 +245,7 @@
             {% csrf_token %}
             <div class="d-flex flex-lg-row flex-column align-items-start justify-content-lg-between justify-content-start">
               <div class="label">
-                <label for="amount_input">Invested Amount (₹)</label>
+                <label for="amount_input"><b>Invested Amount (₹)</b></label>
                 <input type="number" class="search_input search_input_1" placeholder="Amount" required="required" min="1000" max="1000000" style="width: 200px;">
               </div>
 
@@ -255,14 +255,14 @@
               </div>
 
               <div class="label">
-                <label for="priority_select">Risk</label>
+                <label for="priority_select"><b>Risk</b></label>
                 <select class="search_input search_input_3" required="required" style="width: 200px;">
                   <option value="Low">Low</option>
                   <option value="Medium">Medium</option>
                   <option value="High">High</option>
                 </select>
               </div>
-              <button class="home_search_button" id="submit_button">Search</button>
+              <button class="home_search_button" id="submit_button" style="margin-top: 25px;">Search</button>
             </div>
           </form>
         </div>
