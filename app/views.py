@@ -84,10 +84,13 @@ def add_stocks_into_db(request):
     if request.method == 'GET':
         print("enter")
         # ListedStock.objects.all().delete() # to delete all
-        df = pd.read_csv("./EQUITY_new.csv")
+        df = pd.read_csv("./stocks.csv")
         for index, row in df.iterrows():
-            stock = ListedStock(name=row['NAME OF COMPANY'], symbol=row['SYMBOL'],symbol1=row['SYMBOL1'],
-                                slug=row['NAME OF COMPANY'].lower(), ticker=row['SYMBOL'], exchange='NSI')
+            stock = ListedStock(name=row['NAME'], symbol=row['SYMBOL'],
+                                slug=row['SLUG'].lower(), ticker=row['TICKER'], exchange='NSI')
+            # stock = ListedStock(name=row['NAME OF COMPANY'], symbol=row['SYMBOL'],symbol1=row['SYMBOL1'],
+            #                     slug=row['NAME OF COMPANY'].lower(), ticker=row['SYMBOL'], exchange='NSI')
+            
             stock.save()
         return HttpResponse('Successfull added')
 
@@ -377,8 +380,7 @@ def thread_function(context):
         for news_item in df.to_dict(orient='records'):
             news_item['listed_stock'] = stock_obj
             timestamp = news_item.pop('timestamp')
-            news_obj, created = NewsItem.objects.get_or_create(**news_item)
-            if created:
-                news_obj.timestamp = timestamp
-                news_obj.save()
+            news_obj, _ = NewsItem.objects.get_or_create(**news_item)
+            news_obj.timestamp = timestamp
+            news_obj.save()
         logging.info("News Thread ends for %s", context_val['name'])

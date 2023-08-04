@@ -204,7 +204,7 @@ def get_top_indian_gainer():
 
     # Fetch stock names from ListedStocks model and add them to DataFrame
     listed_stocks = ListedStock.objects.all()  # Replace with your actual code to fetch the ListedStocks model
-    symbol_to_name = {stock.symbol1: stock.name for stock in listed_stocks}
+    symbol_to_name = {stock.symbol: stock.name for stock in listed_stocks}
 
     df_gainers_new["Name"] = df_gainers_new["Symbol"].map(symbol_to_name)
     df_gainers_new.dropna(subset=["Name"], inplace=True)
@@ -235,7 +235,7 @@ def get_top_indian_looser():
 
     # Fetch stock names from ListedStocks model and add them to DataFrame
     listed_stocks = ListedStock.objects.all()  # Replace with your actual code to fetch the ListedStocks model
-    symbol_to_name = {stock.symbol1: stock.name for stock in listed_stocks}
+    symbol_to_name = {stock.symbol: stock.name for stock in listed_stocks}
 
     df_losers_new["Name"] = df_losers_new["Symbol"].map(symbol_to_name)
     df_losers_new.dropna(subset=["Name"], inplace=True)
@@ -425,44 +425,45 @@ def stock_risk_calculated():
     logging.info("Successfull added")
 
 def stock_return_csv():
-    indian_stocks = pd.read_csv('EQUITY_L.csv')
+    indian_stocks = pd.read_csv('stocks.csv')
+    indian_stocks = indian_stocks[indian_stocks['SERIES']!='IN']
     symbols = indian_stocks['SYMBOL'].tolist()
+    slugs = indian_stocks['SLUG'].tolist()
 
     data = []
-    for symbol in tqdm.tqdm(symbols, desc='Processing'):
-        stock = yf.Ticker(symbol)
-        history = stock.history(period='5y') 
-        
+    for symbol, slug in tqdm.tqdm(zip(symbols, slugs), desc='Processing'):
+        stock = yf.Ticker(symbol+".NS")
+        history = stock.history(period='5y')
         
         one_year_return = None
         two_year_return = None
         three_year_return = None
         four_year_return = None
         five_year_return = None
-        
+
         if len(history) >= 252:
             current_price = history['Close'][-1]
             one_year_ago_price = history['Close'][-252]
             one_year_return = ((current_price - one_year_ago_price) / one_year_ago_price) * 100
-        
+
         if len(history) >= 504:
             two_year_ago_price = history['Close'][-504]
             two_year_return = ((current_price - two_year_ago_price) / two_year_ago_price) * 100
-        
+
         if len(history) >= 756:
             three_year_ago_price = history['Close'][-756]
             three_year_return = ((current_price - three_year_ago_price) / three_year_ago_price) * 100
-        
+
         if len(history) >= 1008:
             four_year_ago_price = history['Close'][-1008]
             four_year_return = ((current_price - four_year_ago_price) / four_year_ago_price) * 100
-        
+
         if len(history) >= 1234:
             five_year_ago_price = history['Close'][-1234]
             five_year_return = ((current_price - five_year_ago_price) / five_year_ago_price) * 100
         
         data.append({
-            'Symbol': symbol,
+            'Symbol': slug,
             'Current Price': current_price,
             '1-Year Return': one_year_return,
             '2-Year Return': two_year_return,
@@ -473,6 +474,8 @@ def stock_return_csv():
 
     df = pd.DataFrame(data)
     df = df.sort_values(by='Symbol').reset_index(drop=True)
+
+    # Save the DataFrame to the CSV file
     df.to_csv("stock_return.csv", index=False)
 
 

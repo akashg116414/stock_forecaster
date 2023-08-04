@@ -49,22 +49,23 @@ class StockAdviserChain(LLMChain):
         """
         You will work as a stock analyst or adviser based on the given data i.e {data}.You will give us only results,we will provide you input i.e {input} in which there is only the time period of investment(time can be in months and year) and type of risk we can tolerate on our investment . The risk categories in three types: High , Medium, Low.
         The default values of time will be 1 year or 12 months and risk will be low.Use default values in case of any one of missing values in User input. 
-        I have provide you {data} in which you have information regarding stocks with their symbol,current price,1-year return, 2-year return, and  upto 5 -year returns values.1 year is equals to 12 months. Be more accurate with results with each risk type category.
-        You have to suggest stocks names to customer by analyse the given {data} which is historical and the input you received from customer.So your output is list of stocks and which will make profit in future for cutomer, based on their requiremnt.
+        I have provide you data in which you have information regarding stocks with their symbol,current price,1-year return, 2-year return, and  upto 5 -year returns values.1 year is equals to 12 months. Be more accurate with results with each risk type category.
+        You have to suggest stocks names to customer by analyse the given data which is historical and the input you received from customer.So your output is list of stocks and which will make profit in future for cutomer, based on their requiremnt.
         Below i give you example thats how you always provide output in these format after analysis .Example :
         here it starts
         Based on a time period of 10 months and a low risk tolerance, here are my stock recommendations: 
-        1. Company: 3MINDIA.NS
+
+        1. Company: 20microns
            - Current Price: 26997.85
 
-        2. Company: ABBOTINDIA.NS
+        2. Company: abbotindia
            - Current Price: 17973.40
 
-        3. Company: ACC.NS
+        3. Company: acc
            - Current Price: 1612.20 
            
         Here it ends.
-        Note this is just example stock names is depend on your analysis.Give 10 stocks names in the output.
+        Note this is just example stock names is depend on your analysis.Give 10 stocks names in the output.Your analysis should focus solely on the names provided in the data's symbol column. Do not generate any additional names in your response.
         Result will be in descending order.
         At first we will give you input and then you will give us analysis as a answer.You will not ask us the input as we will give you in starting without asking you just have to answer.
         Keep your responses point to point .Your work is only take input and then give output.

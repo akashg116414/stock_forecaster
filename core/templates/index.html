@@ -226,6 +226,15 @@
 </div>
 
 <!-- Research Portfolio Investment -->
+<style>
+  /* Apply CSS to style the label and input containers */
+  .label {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px; /* Add some space between each input group */
+  }
+</style>
+
 <div class="home_search">
   <div class="row">
     <div class="col">
@@ -234,17 +243,25 @@
         <div class="home_search_content">
           <form action="." class="home_search_form" id="home_search_form" method="post">
             {% csrf_token %}
-            <div
-              class="d-flex flex-lg-row flex-column align-items-start justify-content-lg-between justify-content-start">
-              <input type="number" class="search_input search_input_1" placeholder="Amount" required="required"
-                min="1000" max="1000000">
-              <input type="number" class="search_input search_input_2" placeholder="Duration" required="required"
-                min="1" max="60">
-              <select class="search_input search_input_3" required="required">
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-              </select>
+            <div class="d-flex flex-lg-row flex-column align-items-start justify-content-lg-between justify-content-start">
+              <div class="label">
+                <label for="amount_input">Invested Amount (₹)</label>
+                <input type="number" class="search_input search_input_1" placeholder="Amount" required="required" min="1000" max="1000000" style="width: 200px;">
+              </div>
+
+              <div class="label">
+                <label for="duration_input"><b>Duration (months)</b></label>
+                <input type="number" class="search_input search_input_2" placeholder="Duration" required="required" min="1" max="60" style="width: 200px;">
+              </div>
+
+              <div class="label">
+                <label for="priority_select">Risk</label>
+                <select class="search_input search_input_3" required="required" style="width: 200px;">
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </div>
               <button class="home_search_button" id="submit_button">Search</button>
             </div>
           </form>
@@ -350,7 +367,41 @@
     });
   }
 
+  function inputChangedFunction(stock_id) {
+    const startDateInputRisk = document.getElementById('historical-start-date-risk_' + stock_id);
+    const endDateInputRisk = document.getElementById('historical-end-date-risk_' + stock_id );
+    const intervalInputRisk = document.getElementById('interval-risk_' + stock_id );
+
+    startDateInputRisk.addEventListener('change', function () {
+              var startDate = startDateInputRisk.value;
+              var endDate = endDateInputRisk.value;
+              var interval = intervalInputRisk.value;
+
+              // call the fetchValue function with updated values
+              fetchValueRisk(stock_id, startDate, endDate, interval);
+            });
+    endDateInputRisk.addEventListener('change', function () {
+              var startDate = startDateInputRisk.value;
+              var endDate = endDateInputRisk.value;
+              var interval = intervalInputRisk.value;
+
+              // call the fetchValue function with updated values
+              fetchValueRisk(stock_id, startDate, endDate, interval);
+            });
+
+    intervalInputRisk.addEventListener('change', function () {
+              var startDate = startDateInputRisk.value;
+              var endDate = endDateInputRisk.value;
+              var interval = intervalInputRisk.value;
+
+              // call the fetchValue function with updated values
+              fetchValueRisk(stock_id, startDate, endDate, interval);
+            });
+
+  }
+
   function fetchStockChartValues(stock_id) {
+    inputChangedFunction(stock_id)
 
     let url = "{% url 'historical-data' %}?";
     url += `stock_id=${stock_id}`;
@@ -368,7 +419,7 @@
         updateExpanderCardChart(data.chart_string, chartCanvas);
       })
       .catch(error => console.error(error));
-
+      
   }
 
   function fetchStocknews(stock_id) {
@@ -492,7 +543,7 @@
             var cardData = response[rank];
             var cardHtml = '<div class="my-card [ is-collapsed ] " id=' + cardData.id + '>' +
               '<div class="my-card__inner [ js-expander ]">' +
-              '<h4 class="my-card-title border-bottom">' + cardData.name + '</h4>' +
+              '<h6 class="my-card-title border-bottom"><strong>' + cardData.name + '</strong></h6>'+
               '<div class="my-card-body">' +
               '<p class="my-card-text"><i class="fas fa-coins"></i> Stock Price: ' + cardData['Stock Price'] + '</p>' +
               '<p class="my-card-text"><i class="fa fa-chart-bar"></i> Number of Stocks: ' + cardData['number of stocks'] + '</p>' +
@@ -501,13 +552,37 @@
               '</div>' +
               '</div>' +
               '<div class="my-card__expander">' +
-              '<div class="card-expander-row ml-2">' +
+            '<div class="card-expander-row ml-2">' +
               '<div class="col-lg-12 mb-3">' +
-              '<h6 class="mt-3 border-bottom">Growth Chart</h6>' +
+                '<h6 class="mt-3 border-bottom">Growth Chart</h6>' +
+      
+              '<div class="card-body pt-0">' +
+                '<div class="row border-bottom py-2 bg-light">' +
+                  '<div class="input-daterange input-group" id="datepicker">' +
+                    '<input type="date" class="input-sm form-control ml-3" id="historical-start-date-risk_' + cardData.id + '"' + 'name="start" placeholder="Start date">' +
+                    '<input type="date" class="input-sm form-control" id="historical-end-date-risk_' + cardData.id + '"' + 'name="end" placeholder="End date">' +
+                    '<div class="col-sm-3">' +
+                      '<select class="form-control" id="interval-risk_' + cardData.id + '"' + 'placeholder="Interval">' +
+                        '<option value="">Select an interval</option>' +
+                        '<option value="1m">1 min</option>' +
+                        '<option value="5m">5 min</option>' +
+                        '<option value="15m">15 min</option>' +
+                        '<option value="30m">30 min</option>' +
+                        '<option value="1h">1 hour</option>' +
+                        '<option value="1d">1 day</option>' +
+                        '<option value="1wk">1 week</option>' +
+                        '<option value="1mo">1 month</option>' +
+                        '<option value="3mo">3 month</option>' +
+                      '</select>' +
+                    '</div>' +
+                  '</div>' +
+                '</div>' +
+              '</div>'+
+
               '<div id="personalized-portfolio-expander-card_' + cardData.id + '">' +
-              '<div class="loader mt-20" style="display: flex; align-items: center; justify-content: center; top: revert;"></div>' +
-              '</div>' +
-              '</div>' +
+                    '<div class="loader mt-20" style="display: flex; align-items: center; justify-content: center; top: revert;"></div>' +
+                  '</div>' +
+                '</div>' +
               '</div>' +
               '<div class="card-expander-row ml-2">' +
               '<div class="card-expander-column">' +
@@ -706,7 +781,7 @@
   document.getElementById("historical-end-date").setAttribute("max", today);
   var stock_id = "{{stock_id}}";
 
-  function fetchValue(stock_id, startDate, endDate, interval) {
+  function fetchValueRisk(stock_id, startDate, endDate, interval) {
 
     // Validate that the start date is less than the end date
     if (startDate && endDate && startDate >= endDate) {
@@ -748,13 +823,63 @@
     fetch(url)
       .then(response => response.json())
       .then(data => {
-        updateChartData(data);
-        updateChart();
-        updateHTML(data);
+        updateChartDataExpander(data);
+        updateExpanderCardChart(data.chart_string, chartCanvas);
       })
       .catch(error => console.error(error));
 
   }
+
+  function fetchValue(stock_id, startDate, endDate, interval) {
+
+// Validate that the start date is less than the end date
+if (startDate && endDate && startDate >= endDate) {
+  alert('The start date must be less than the end date.');
+  return;
+  // your API call logic here
+}
+
+const newStartDate = new Date(startDate);
+const newEndDate = new Date(endDate);
+const diffDays = (newEndDate - newStartDate) / (1000 * 60 * 60 * 24);
+if (!interval) {
+  if (diffDays <= 1) {
+    interval = "5m";
+  } else if (diffDays > 1 && diffDays <= 5) {
+    interval = "30m";
+  } else if (diffDays > 5 && diffDays <= 20) {
+    interval = "1h";
+  } else if (diffDays > 20 && diffDays <= 90) {
+    interval = "1d";
+  } else if (diffDays > 90 && diffDays <= 730) {
+    interval = "1wk";
+  } else if (diffDays > 730 && diffDays < 3650) {
+    interval = "1mo";
+  } else {
+    interval = "3mo";
+  }
+}
+let url = "{% url 'historical-data' %}?";
+url += `stock_id=${stock_id}`;
+
+if (startDate && endDate) {
+  url += `&start_date=${startDate}&end_date=${endDate}`;
+}
+if (interval) {
+  url += `&interval=${interval}`;
+}
+
+fetch(url)
+  .then(response => response.json())
+  .then(data => {
+    updateChartData(data);
+    updateChart();
+    updateHTML(data);
+  })
+  .catch(error => console.error(error));
+
+}
+
 
   predCavasHtml = `<canvas height="130" style="max-width: 100% !important;" class="pred-data-graph"
           id="pred-data-graph"></canvas>`
