@@ -87,7 +87,7 @@ def add_stocks_into_db(request):
         df = pd.read_csv("./stocks.csv")
         for index, row in df.iterrows():
             stock = ListedStock(name=row['NAME'], symbol=row['SYMBOL'],
-                                slug=row['SLUG'].lower(), ticker=row['TICKER'], exchange='NSI')
+                                slug=row['SLUG'].lower(), ticker=row['TICKER'], exchange=row['SERIES'])
             # stock = ListedStock(name=row['NAME OF COMPANY'], symbol=row['SYMBOL'],symbol1=row['SYMBOL1'],
             #                     slug=row['NAME OF COMPANY'].lower(), ticker=row['SYMBOL'], exchange='NSI')
             
@@ -315,24 +315,23 @@ def personalized_investment(request):
         amount = int(request.POST.get('amount', 1000))
         duration = int(request.POST.get('duration', 1))
         risk = request.POST.get('risk', 'Low')
-        print(amount, duration, risk)
         stock_list = RiskAnalysis.objects.filter(time=int(duration), risk_category=risk).values("stock_list").last().get('stock_list',[])
-        print(stock_list)
         context = {}
         count = 1
         for rank in range(len(stock_list)):
             stock_ticker = stock_list.get(str(rank))
-            stock_obj = ListedStock.objects.filter(ticker=stock_ticker).first()
-            stock = yf.Ticker(stock_ticker)
-            history = stock.history(period='1d')
-            if history.empty:
+            stock_obj = ListedStock.objects.filter(slug=stock_ticker).first()
+            if not stock_obj:
                 continue
-            current_price = history['Close'][-1]
+            stock = yf.Ticker(stock_obj.ticker)
+            current_price, est_return = get_return_and_price(stock, duration)
+            if not current_price and not est_return:
+                continue
             quantity = amount // current_price
             if quantity > 0:
                 package_price = quantity * current_price
                 stock_info = {'id':stock_obj.id, 'name': stock_obj.name, 'Stock Price': round(current_price,2), 'number of stocks': quantity, 
-                            'package value': round(package_price,2), 'risk': risk}
+                            'package value': round(package_price,2),'est_return': round((est_return*package_price),2), 'risk': risk}
                 context['rank'+str(count)] = stock_info
                 count+=1
                 if len(context)==6:
@@ -375,12 +374,29 @@ def thread_function(context):
         stock_obj = ListedStock.objects.filter(id=context_val['id']).first()
         keyword = "-".join(stock_obj.name.split(" "))
         df = utils.get_stock_news(keyword)
-        df = utils.get_stock_news_sentiment(df)
-        # Save the news items in the database
-        for news_item in df.to_dict(orient='records'):
-            news_item['listed_stock'] = stock_obj
-            timestamp = news_item.pop('timestamp')
-            news_obj, _ = NewsItem.objects.get_or_create(**news_item)
-            news_obj.timestamp = timestamp
-            news_obj.save()
-        logging.info("News Thread ends for %s", context_val['name'])
+        if not df.empty:
+            df = utils.get_stock_news_sentiment(df)
+            # Save the news items in the database
+            for news_item in df.to_dict(orient='records'):
+                news_item['listed_stock'] = stock_obj
+                timestamp = news_item.pop('timestamp')
+                news_obj, _ = NewsItem.objects.get_or_create(**news_item)
+                news_obj.timestamp = timestamp
+                news_obj.save()
+            logging.info("News Thread ends for %s", context_val['name'])
+
+def get_return_and_price(stock, duration):
+    current_price = None
+    return_price = None
+    history = stock.history(period='5y')
+    number = duration * 21
+    if not history.empty:
+        if number > len(history):
+            final_price = history['Close'][-number]
+        elif len(history) !=0 and number <= len(history):
+            final_price = history['Close'][-len(history)]
+        current_price = history['Close'][-1]
+        return_price =  ((current_price - final_price)/final_price) *100
+
+    return current_price, return_price
+        

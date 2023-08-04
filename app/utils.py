@@ -287,6 +287,8 @@ def get_stock_news(keyword):
         timestamp_element = table.find('span', class_="grey")
         if timestamp_element:
             news_item['timestamp'] = timestamp_element.text.strip()
+        elif headline_element:
+            news_item['timestamp'] = None
 
         news_items.append(news_item)
     # Quit the driver
@@ -294,7 +296,9 @@ def get_stock_news(keyword):
     df = pd.DataFrame(news_items)
     df = df.dropna()
     df = df.reset_index(drop=True)
-    df['timestamp'] = df['timestamp'].apply(parse_hours_ago)
+    print(df)
+    if not df.empty:
+        df['timestamp'] = df['timestamp'].apply(parse_hours_ago)
     return df
 
 def preprocess_text(text):
