@@ -508,29 +508,31 @@
       var amount = $('.search_input_1').val();
       var duration = $('.search_input_2').val();
       var risk = $('.search_input_3').val();
-      let personalized_investment = "{% url 'personalized-investment' %}";
+      let personalized_investment = "{% url 'personalized-investment' %}?";
       var loaderHTML = `<div class="card card-small mt-4" style="min-height: 200px;min-width: -webkit-fill-available;">
                         <div class="card-body pt-0">
                           <div class="loader" style="display: flex; align-items: center; justify-content: center;"></div>
                         </div>
                       </div>`;
       $('#card_row').html(loaderHTML);
+      personalized_investment += `price=${amount}`;
+      personalized_investment += `&duration=${duration}&risk=${risk}`;
       // Get the CSRF token
-      var csrftoken = getCookie('csrftoken');
+      // var csrftoken = getCookie('csrftoken');
 
-      // Add the CSRF token to the request headers
-      $.ajaxSetup({
-        beforeSend: function (xhr, settings) {
-          if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-            xhr.setRequestHeader('X-CSRFToken', csrftoken);
-          }
-        }
-      });
+      // // Add the CSRF token to the request headers
+      // $.ajaxSetup({
+      //   beforeSend: function (xhr, settings) {
+      //     if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+      //       xhr.setRequestHeader('X-CSRFToken', csrftoken);
+      //     }
+      //   }
+      // });
 
       // Make the API call
       $.ajax({
         url: personalized_investment,
-        type: 'POST',
+        type: 'GET',
         data: {
           amount: amount,
           duration: duration,

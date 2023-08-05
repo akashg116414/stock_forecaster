@@ -311,35 +311,34 @@ def forecast_data(request):
 
 
 def personalized_investment(request):
-    if request.method == "POST":
-        amount = int(request.POST.get('amount', 1000))
-        duration = int(request.POST.get('duration', 1))
-        risk = request.POST.get('risk', 'Low')
-        stock_list = RiskAnalysis.objects.filter(time=int(duration), risk_category=risk).values("stock_list").last().get('stock_list',[])
-        context = {}
-        count = 1
-        for rank in range(len(stock_list)):
-            stock_ticker = stock_list.get(str(rank))
-            stock_obj = ListedStock.objects.filter(slug=stock_ticker).first()
-            if not stock_obj:
-                continue
-            stock = yf.Ticker(stock_obj.ticker)
-            current_price, est_return = get_return_and_price(stock, duration)
-            if not current_price and not est_return:
-                continue
-            quantity = amount // current_price
-            if quantity > 0:
-                package_price = quantity * current_price
-                stock_info = {'id':stock_obj.id, 'name': stock_obj.name, 'Stock Price': round(current_price,2), 'number of stocks': quantity, 
-                            'package value': round(package_price,2),'est_return': round((est_return*package_price),2), 'risk': risk}
-                context['rank'+str(count)] = stock_info
-                count+=1
-                if len(context)==6:
-                    break
-        x = threading.Thread(target=thread_function, args=(context,))
-        x.start()
-        return JsonResponse(context, safe=False)
-    
+    amount = int(request.GET.get('amount', 1000))
+    duration = int(request.GET.get('duration', 1))
+    risk = request.GET.get('risk', 'Low')
+    stock_list = RiskAnalysis.objects.filter(time=int(duration), risk_category=risk).values("stock_list").last().get('stock_list',[])
+    context = {}
+    count = 1
+    for rank in range(len(stock_list)):
+        stock_ticker = stock_list.get(str(rank))
+        stock_obj = ListedStock.objects.filter(slug=stock_ticker).first()
+        if not stock_obj:
+            continue
+        stock = yf.Ticker(stock_obj.ticker)
+        current_price, est_return = get_return_and_price(stock, duration)
+        if not current_price and not est_return:
+            continue
+        quantity = amount // current_price
+        if quantity > 0:
+            package_price = quantity * current_price
+            stock_info = {'id':stock_obj.id, 'name': stock_obj.name, 'Stock Price': round(current_price,2), 'number of stocks': quantity, 
+                        'package value': round(package_price,2),'est_return': round((est_return*package_price),2), 'risk': risk}
+            context['rank'+str(count)] = stock_info
+            count+=1
+            if len(context)==6:
+                break
+    x = threading.Thread(target=thread_function, args=(context,))
+    x.start()
+    return JsonResponse(context, safe=False)
+
 
 def stock_news(request):
     stock_id = request.GET.get('stock_id', None)
