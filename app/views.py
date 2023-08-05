@@ -328,10 +328,10 @@ def personalized_investment(request):
             if not current_price and not est_return:
                 continue
             quantity = amount // current_price
-            if quantity > 0:
+            if quantity > 0 and est_return>0:
                 package_price = quantity * current_price
                 stock_info = {'id':stock_obj.id, 'name': stock_obj.name, 'Stock Price': round(current_price,2), 'number of stocks': quantity, 
-                            'package value': round(package_price,2),'est_return': round((est_return*package_price),2), 'risk': risk}
+                            'package value': round(package_price,2),'est_return': round(((est_return*package_price)+package_price),2), 'risk': risk}
                 context['rank'+str(count)] = stock_info
                 count+=1
                 if len(context)==6:
@@ -341,7 +341,7 @@ def personalized_investment(request):
         return JsonResponse(context, safe=False)
     except Exception as err:
         return JsonResponse({"message":str(err)}, safe=False)
-
+    
 
 def stock_news(request):
     stock_id = request.GET.get('stock_id', None)
@@ -398,7 +398,7 @@ def get_return_and_price(stock, duration):
         elif len(history) !=0 and number <= len(history):
             final_price = history['Close'][-len(history)]
         current_price = history['Close'][-1]
-        return_price =  ((current_price - final_price)/final_price) *100
+        return_price =  ((current_price - final_price)/final_price)
 
     return current_price, return_price
         

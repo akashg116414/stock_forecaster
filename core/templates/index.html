@@ -438,18 +438,23 @@
         console.log(data)
         newsMainHTML = ""
         var newsData = data.news
-        for (var i = 0; i < newsData.length; i++) {
-          var truncatedDescription = newsData[i].description.slice(0, 100) + "...";
-          news = '<div class="news-container" id="' + newsDiv + '">' +
-            '<div class="headline">' +
-            '<a href="' + newsData[i].url + '">' + newsData[i].headline + '</a>' +
-            '</div>' +
-            '<div class="description">' + truncatedDescription +
-            '</div>' +
-            '<div class="source">Source: ' + newsData[i].source +
-            '</div>' +
-            '</div>';
-          newsMainHTML += news;
+        if (newsData.length === 0) {
+          // If there are no news items, show a message indicating that
+          newsMainHTML = '<div class="description">Recent news are not available for this stock.</div>';
+        } else {
+          for (var i = 0; i < newsData.length; i++) {
+            var truncatedDescription = newsData[i].description.slice(0, 100) + "...";
+            news = '<div class="news-container" id="' + newsDiv + '">' +
+              '<div class="headline">' +
+              '<a href="' + newsData[i].url + '">' + newsData[i].headline + '</a>' +
+              '</div>' +
+              '<div class="description">' + truncatedDescription +
+              '</div>' +
+              '<div class="source">Source: ' + newsData[i].source +
+              '</div>' +
+              '</div>';
+            newsMainHTML += news;
+          }
         }
         var newsExpanderContainer = document.getElementById(newsOutterDiv);
         newsExpanderContainer.innerHTML = newsMainHTML;
