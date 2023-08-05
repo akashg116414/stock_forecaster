@@ -515,7 +515,7 @@
                         </div>
                       </div>`;
       $('#card_row').html(loaderHTML);
-      personalized_investment += `price=${amount}`;
+      personalized_investment += `amount=${amount}`;
       personalized_investment += `&duration=${duration}&risk=${risk}`;
       // Get the CSRF token
       // var csrftoken = getCookie('csrftoken');
@@ -533,11 +533,6 @@
       $.ajax({
         url: personalized_investment,
         type: 'GET',
-        data: {
-          amount: amount,
-          duration: duration,
-          risk: risk
-        },
         success: function (response) {
           // Process the API response and generate the cards
           var cardsHtml = '';
