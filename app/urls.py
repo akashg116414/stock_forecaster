@@ -23,5 +23,6 @@ urlpatterns = [
     path('signal-data-graph', views.signal_data_graph, name='signal-data-graph'),
     path('personalized-investment', views.personalized_investment, name='personalized-investment'),
     path('stock-news', views.stock_news, name='stock-news'),
+    path('chat-bot', views.chat_bot, name='chat-bot'),
     
 ]

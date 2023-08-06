@@ -12,6 +12,7 @@ from app import utils
 from .models import ListedStock, Indicator, NewsItem, RiskAnalysis
 from dateutil.relativedelta import relativedelta
 from .constant import crypto_currency
+from app.open_ai import llm_news, chatgpt_call
 import datetime
 
 import logging
@@ -387,6 +388,24 @@ def thread_function(context):
                 news_obj.save()
             logging.info("News Thread ends for %s", context_val['name'])
 
+def temp():
+    for id_ in range(1,1800):
+        logging.info("News Thread starting for %s", str(id_))
+        stock_obj = ListedStock.objects.filter(id=id_).first()
+        keyword = "-".join(stock_obj.name.split(" "))
+        logging.info("keyword %s", str(keyword))
+        df = utils.get_stock_news(keyword)
+        if not df.empty:
+            df = utils.get_stock_news_sentiment(df)
+            # Save the news items in the database
+            for news_item in df.to_dict(orient='records'):
+                news_item['listed_stock'] = stock_obj
+                timestamp = news_item.pop('timestamp')
+                news_obj, _ = NewsItem.objects.get_or_create(**news_item)
+                news_obj.timestamp = timestamp
+                news_obj.save()
+            logging.info("News Thread ends for %s",  str(id_))
+
 def get_return_and_price(stock, duration):
     current_price = None
     return_price = None
@@ -401,4 +420,19 @@ def get_return_and_price(stock, duration):
         return_price =  ((current_price - final_price)/final_price)
 
     return current_price, return_price
-        
+
+db_chain = llm_news()      
+def chat_bot(request):
+    if request.method == "POST":
+        flag = True
+        val = request.POST.get('val', "hello")
+        for i in ['news', 'sentiments', 'sentiment']:
+            if i in val:
+                flag = False
+                break
+        if flag:
+            result = chatgpt_call(val)
+        else:
+            result = db_chain.run(val)
+        context = {'result': result}
+    return JsonResponse(context, safe=False)

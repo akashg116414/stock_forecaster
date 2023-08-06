@@ -5,7 +5,49 @@ from langchain.llms import BaseLLM
 from pydantic import BaseModel, Field
 from langchain.chains.base import Chain
 from langchain.chat_models import ChatOpenAI
+from langchain.llms import OpenAI
+from langchain import SQLDatabase, SQLDatabaseChain
+import openai
+openai.api_key=os.environ['OPENAI_API_KEY']
 import pandas as pd
+
+def chatgpt_call(prompt, model="gpt-3.5-turbo"):
+    response = openai.ChatCompletion.create(
+       model=model,
+       messages=[{"role": "user", "content": prompt}]
+   )
+    return response.choices[0].message["content"]
+
+def llm_news():
+    db = SQLDatabase.from_uri("sqlite:///db.sqlite3")
+    llm = OpenAI(temperature=0, verbose=True)
+
+    _DEFAULT_TEMPLATE = """Given an input question, if there are news keywords, sentiments, or information keywords in the input question, 
+    then parse the news table and search for the given stock using the stock_id, which is a foreign key of the listed_stock table. 
+    Additionally, the stock name may not be spelled correctly, so you can try using the 'like' operator on stock_name and stock_symbol or correct the spelling yourself if it is wrong. 
+    you have to pass only latest news or last entry row.
+    First, create a syntactically correct {dialect} query to run. Then, look at the results of the query and return the answer using the following format:
+
+    Question: "Question here"
+    SQLQuery: "SQL Query to run"
+    SQLResult: "Result of the SQLQuery"
+    Answer: "Final answer here"
+
+    Only use the following tables:
+
+    {table_info}
+
+    If someone asks for new for hdfc bank then search in the table news usig forign key on listed_stock_name as like operator and
+    return last entry row if it is there otherewise return "Recent News not available for HDFC Bank"
+
+    Question: {input}"""
+    PROMPT = PromptTemplate(
+        input_variables=["input", "table_info", "dialect"], template=_DEFAULT_TEMPLATE
+    )
+
+
+    db_chain = SQLDatabaseChain.from_llm(llm, db, prompt=PROMPT, verbose=True)
+    return db_chain
 
 class StageAnalyzerChain(LLMChain):
     """Chain to analyze which conversation stage should the conversation move into."""
