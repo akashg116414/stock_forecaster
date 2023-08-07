@@ -421,18 +421,19 @@ def get_return_and_price(stock, duration):
 
     return current_price, return_price
 
-db_chain = llm_news()      
+      
 def chat_bot(request):
     if request.method == "POST":
         flag = True
         val = request.POST.get('val', "hello")
-        for i in ['news', 'sentiments', 'sentiment']:
+        for i in ['news', 'sentiments', 'sentiment','News','Sentiments','Sentiment']:
             if i in val:
                 flag = False
                 break
         if flag:
             result = chatgpt_call(val)
         else:
+            db_chain = llm_news()
             result = db_chain.run(val)
         context = {'result': result}
     return JsonResponse(context, safe=False)
