@@ -380,11 +380,10 @@
 
 		function userMsg(msg) {
 			$('.Messages_list').append('<div class="msg user"><span class="avtr"><figure style="background-image: url(https://cdn3d.iconscout.com/3d/premium/thumb/young-man-5748694-4800737.png)"></figure></span><span class="responsText">' + mainval + '</span></div>');
+      // Show typing indicator
+			$('.Messages_list').append('<div class="msg typing"><span class="avtr"><figure style="background-image: url(https://mrseankumar25.github.io/Sandeep-Kumar-Frontend-Developer-UI-Specialist/images/avatar.png)"></figure></span><span class="responsText"></span></div>');
 		};
     function appendMsg(msg) {
-		// Show typing indicator
-			$('.Messages_list').append('<div class="msg typing"><span class="avtr"><figure style="background-image: url(https://mrseankumar25.github.io/Sandeep-Kumar-Frontend-Developer-UI-Specialist/images/avatar.png)"></figure></span><span class="responsText">Typing...</span></div>');
-			
 		// Simulate delay before displaying the actual user message
 			setTimeout(function() {
 		// Remove the typing indicator
@@ -1391,6 +1390,22 @@ fetch(url)
 
 
 <style>
+  @keyframes movingDots {
+    0%, 100% {
+        content: ".";
+    }
+    33% {
+        content: "..";
+    }
+    66% {
+        content: "...";
+    }
+}
+
+.typing .responsText::before {
+    content: "...";
+    animation: movingDots 1.5s infinite;
+}
   .Messages_list {
     display: flex;
     flex-direction: column;
