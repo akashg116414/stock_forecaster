@@ -332,14 +332,17 @@ def personalized_investment(request):
             if quantity > 0 and est_return>0:
                 package_price = quantity * current_price
                 stock_info = {'id':stock_obj.id, 'name': stock_obj.name, 'Stock Price': round(current_price,2), 'number of stocks': quantity, 
-                            'package value': round(package_price,2),'est_return': round(((est_return*package_price)+package_price),2), 'risk': risk}
+                            'package value': round(package_price,2),'est_percent':est_return ,'est_return': round(((est_return*package_price)+package_price),2), 'risk': risk}
                 context['rank'+str(count)] = stock_info
                 count+=1
                 if len(context)==6:
                     break
-        x = threading.Thread(target=thread_function, args=(context,))
+        if context:
+            sorted_data = sorted(context.items(), key=lambda item: item[1]['est_percent'], reverse=True)
+            ranked_result = {f'rank{i+1}': value for i, (key, value) in enumerate(sorted_data)}
+        x = threading.Thread(target=thread_function, args=(ranked_result,))
         x.start()
-        return JsonResponse(context, safe=False)
+        return JsonResponse(ranked_result, safe=False)
     except Exception as err:
         return JsonResponse({"message":str(err)}, safe=False)
     
@@ -349,7 +352,7 @@ def stock_news(request):
     if not stock_id:
         return JsonResponse({"error_message": "stock_id is required"}, safe=False)
     stock_obj = ListedStock.objects.filter(id=int(stock_id)).first()
-    news_list = list(NewsItem.objects.filter(listed_stock=stock_obj).order_by('-timestamp')[:5].values())
+    news_list = list(NewsItem.objects.filter(listed_stock=stock_obj).order_by('-timestamp')[:1].values())
     sentiment_sum = 0
     if len(news_list) > 0:
         for news in news_list:
