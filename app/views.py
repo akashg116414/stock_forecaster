@@ -14,7 +14,7 @@ from dateutil.relativedelta import relativedelta
 from .constant import crypto_currency
 from app.open_ai import llm_news, chatgpt_call
 import datetime
-
+from datetime import datetime
 import logging
 import threading
 import time
@@ -24,6 +24,12 @@ logging.basicConfig(format=format, level=logging.INFO,
                         datefmt="%H:%M:%S")
 
 def index(request):
+    # to clear sessions
+    request.session.pop("authenticated")
+    request.session.pop("visit_count_search")
+    if not 'authenticated' in request.session:
+        print("Unauthorised user")
+        request.session["authenticated"] = False
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
     stock_id = request.GET.get('stock_id', None)
@@ -97,14 +103,28 @@ def add_stocks_into_db(request):
 
 
 def search_items(request):
-    keyword = request.GET.get('q')
-    if keyword:
-        items = ListedStock.objects.filter(name__icontains=keyword)[:12]
-        data = [{'name': item.name, 'symbol': item.symbol,
-                 'stock_id': item.id} for item in items]
+    authenticated = request.session.get("authenticated", False)
+    visit_count = request.session.get("visit_count_search", 0)
+
+    # Check if the user is authenticated or visit count is less than 2
+    if authenticated or visit_count < 2:
+        print("authenticated",authenticated)
+        print("visit_count",visit_count)
+        # Increment the visit count if the user is not authenticated
+        if not authenticated:
+            ("not authenticate user search")
+            request.session["visit_count_search"] = visit_count + 1
+        keyword = request.GET.get('q')
+        if keyword:
+            items = ListedStock.objects.filter(name__icontains=keyword)[:12]
+            data = [{'name': item.name, 'symbol': item.symbol,
+                    'stock_id': item.id} for item in items]
+        else:
+            data = []
+        return JsonResponse(data, safe=False)
     else:
-        data = []
-    return JsonResponse(data, safe=False)
+        # return render(request, 'popup_template.html', {'popup_message': 'Please log in to perform the search.'})
+        return JsonResponse({'message': 'Please log in to perform the search.'})
 
 
 def historical_data(request):

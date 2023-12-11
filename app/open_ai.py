@@ -8,7 +8,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.llms import OpenAI
 from langchain import SQLDatabase, SQLDatabaseChain
 import openai
-openai.api_key=os.environ['OPENAI_API_KEY']
+openai.api_key=os.environ.get('OPENAI_API_KEY')
 import pandas as pd
 
 def chatgpt_call(prompt, model="gpt-3.5-turbo"):

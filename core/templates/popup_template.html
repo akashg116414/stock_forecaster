@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popup Example</title>
+    <style>
+        /* Style for the popup container */
+        .popup-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        /* Style for the popup box */
+        .popup-box {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Popup Container -->
+    <div class="popup-container">
+        <!-- Popup Box -->
+        <div class="popup-box">
+            <!-- Popup Message -->
+            <p>{{ popup_message }}</p>
+
+            <!-- Close Button (optional) -->
+            <button onclick="closePopup()">Close</button>
+            <button onclick="redirectToLogin()">Login</button>
+        </div>
+    </div>
+
+    <script>
+        // Function to close the popup
+        function closePopup() {
+            window.location.href = '';
+        }
+        function redirectToLogin() {
+    // Replace 'your-login-url' with the actual URL you want to redirect to
+    window.location.href = '/login';
+  }
+    </script>
+</body>
+</html>

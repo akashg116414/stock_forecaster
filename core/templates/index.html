@@ -792,36 +792,42 @@
   const searchResults = document.getElementById('search-results');
 
   searchInput.addEventListener('input', (event) => {
-    const keyword = event.target.value;
-    if (keyword) {
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', `/search/?q=${keyword}`);
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-          if (xhr.status === 200) {
-            const items = JSON.parse(xhr.responseText);
-            let html = '';
-            if (items.length > 0) {
-              html += '<p style="margin-bottom:auto;">';
-              for (const item of items) {
-                html += `<a href="#" onclick="changeAllGraph('${item.stock_id}')" class="search-result">${item.name}</a><br>`;
-              }
-              html += '</p>';
+            const keyword = event.target.value;
+            if (keyword) {
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', `/search/?q=${keyword}`);
+                xhr.onreadystatechange = () => {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            const response = JSON.parse(xhr.responseText);
+
+                            if ('message' in response) {
+                                // Display the popup or handle the message accordingly
+                                alert(response.message);
+                            } else {
+                                const items = response;
+                                let html = '';
+                                if (items.length > 0) {
+                                    html += '<p style="margin-bottom:auto;">';
+                                    for (const item of items) {
+                                        html += `<a href="#" onclick="changeAllGraph('${item.stock_id}')" class="search-result">${item.name}</a><br>`;
+                                    }
+                                    html += '</p>';
+                                } else {
+                                    html += '<p>No Stocks found.</p>';
+                                }
+                                searchResults.innerHTML = html;
+                            }
+                        } else {
+                            searchResults.innerHTML = 'Error';
+                        }
+                    }
+                };
+                xhr.send();
+            } else {
+                searchResults.innerHTML = '';
             }
-            else {
-              html += '<p>No Stocks found.</p>';
-            }
-            searchResults.innerHTML = html;
-          } else {
-            searchResults.innerHTML = 'Error';
-          }
-        }
-      };
-      xhr.send();
-    } else {
-      searchResults.innerHTML = '';
-    }
-  });
+        });
   function changeAllGraph(id) {
     // Your JavaScript code goes here
     console.log(id)
