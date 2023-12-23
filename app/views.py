@@ -25,8 +25,8 @@ logging.basicConfig(format=format, level=logging.INFO,
 
 def index(request):
     # to clear sessions
-    request.session.pop("authenticated")
-    request.session.pop("visit_count_search")
+    # request.session.pop("authenticated")
+    # request.session.pop("visit_count_search")
     if not 'authenticated' in request.session:
         print("Unauthorised user")
         request.session["authenticated"] = False
@@ -198,7 +198,7 @@ def signal_data_graph(request):
     signal_data = signal_data.loc[signal_data['SUPERT_20_2.0'] != 0].copy()
     signal_data.dropna(inplace=True)
 
-    today = datetime.datetime.now().strftime('%Y-%m-%d')
+    today = datetime.now().strftime('%Y-%m-%d')
     start_time = pd.Timestamp(today + ' 09:15:00+05:30')
     signal_data = signal_data.loc[start_time:]
 

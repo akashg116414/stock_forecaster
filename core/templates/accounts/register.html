@@ -11,22 +11,21 @@
       <!-- Page Header -->
       <div class="page-header row no-gutters py-4">
         <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
-          <h3 class="page-title">Register</h3>
+          <h3>Intelli<span>In</span>vestor</h3>
         </div>
       </div>
       <!-- End Page Header -->
       <!-- Default Light Table -->
-      <div class="row">
+      <div class="row mt-4" style="justify-content: center">
 
-        <div class="col-lg-8">
+        <div class="col-lg-6">
           <div class="card card-small mb-4">
             <div class="card-header border-bottom">
+              <h4 class="page-title">Register</h4>
               <h6 class="m-0">
                 
                 {% if msg %}
                   {{ msg | safe }}
-                {% else %}
-                Add your credentials or <a href={% url 'login' %} >authenticate</a> with an existing account.
                 {% endif %}  
 
               </h6>
@@ -96,6 +95,22 @@
       </div>
       <!-- End Default Light Table -->
     </div>
+
+    <style>
+      h3 {
+        font-family: "Inter";
+        font-size: 70px;
+        font-weight: 600;
+        margin: 0px;
+        color: Black;
+        user-select: none;
+        z-index: 0;
+      }
+    
+      h3 span {
+        color: #03c988;
+      }
+</style>
 
 {% endblock content %}
 

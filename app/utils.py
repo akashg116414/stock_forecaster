@@ -43,6 +43,7 @@ chrome_options.add_argument("--disable-gpu ") # Run Chrome in headless mode
 webdriver_service = Service(ChromeDriverManager(version="114.0.5735.90").install())
 
 driver = webdriver.Chrome(service=webdriver_service, options=chrome_options)
+driver.quit()
 
 base_url = "https://query1.finance.yahoo.com/v8/finance/chart/"
 
@@ -400,7 +401,7 @@ def conversation_setup(time_duration, risk_category, investingly_agent):
         return conversation_setup(time_duration, risk_category, investingly_agent)
     return stock_list
 
-def stock_risk_calculated():
+def stock_risk_calculated_low():
     llm = ChatOpenAI(temperature=0.9)
     df = pd.read_csv("stock_return.csv")
 
@@ -411,21 +412,74 @@ def stock_risk_calculated():
     # Perform the conversation steps
     investingly_agent.human_step("hello")
     investingly_agent.step()
-    risk_categories = ["Low", "Medium", "High"]
-    for risk_category in risk_categories:
-        for time_val in range(1, 61):
-            try:
-                time_duration = "{} months".format(str(time_val))
-                print(risk_category, time_duration)
-                result = conversation_setup(risk_category, time_duration, investingly_agent)
-            except Exception as err:
-                print(str(err))
-                investingly_agent = initialize_conversation()
-                result = conversation_setup(risk_category, time_duration, investingly_agent)
-            risk_obj, _ = RiskAnalysis.objects.get_or_create(risk_category=risk_category, time=time_val)
-            risk_obj.stock_list=result
-            risk_obj.save()
-            print(result)
+    risk_category = "Low"
+    for time_val in range(1, 61):
+        try:
+            time_duration = "{} months".format(str(time_val))
+            print(risk_category, time_duration)
+            result = conversation_setup(risk_category, time_duration, investingly_agent)
+        except Exception as err:
+            print(str(err))
+            investingly_agent = initialize_conversation()
+            result = conversation_setup(risk_category, time_duration, investingly_agent)
+        risk_obj, _ = RiskAnalysis.objects.get_or_create(risk_category=risk_category, time=time_val)
+        risk_obj.stock_list=result
+        risk_obj.save()
+        print(result)
+    logging.info("Successfull added")
+
+def stock_risk_calculated_medium():
+    llm = ChatOpenAI(temperature=0.9)
+    df = pd.read_csv("stock_return.csv")
+
+    # Configure the agent
+    config = dict(data=df)
+    investingly_agent = InvestinglyGPT.from_llm(llm, verbose=False, **config)
+    investingly_agent.seed_agent()
+    # Perform the conversation steps
+    investingly_agent.human_step("hello")
+    investingly_agent.step()
+    risk_category = "Medium"
+    for time_val in range(1, 61):
+        try:
+            time_duration = "{} months".format(str(time_val))
+            print(risk_category, time_duration)
+            result = conversation_setup(risk_category, time_duration, investingly_agent)
+        except Exception as err:
+            print(str(err))
+            investingly_agent = initialize_conversation()
+            result = conversation_setup(risk_category, time_duration, investingly_agent)
+        risk_obj, _ = RiskAnalysis.objects.get_or_create(risk_category=risk_category, time=time_val)
+        risk_obj.stock_list=result
+        risk_obj.save()
+        print(result)
+    logging.info("Successfull added")
+
+def stock_risk_calculated_high():
+    llm = ChatOpenAI(temperature=0.9)
+    df = pd.read_csv("stock_return.csv")
+
+    # Configure the agent
+    config = dict(data=df)
+    investingly_agent = InvestinglyGPT.from_llm(llm, verbose=False, **config)
+    investingly_agent.seed_agent()
+    # Perform the conversation steps
+    investingly_agent.human_step("hello")
+    investingly_agent.step()
+    risk_category = "High"
+    for time_val in range(1, 61):
+        try:
+            time_duration = "{} months".format(str(time_val))
+            print(risk_category, time_duration)
+            result = conversation_setup(risk_category, time_duration, investingly_agent)
+        except Exception as err:
+            print(str(err))
+            investingly_agent = initialize_conversation()
+            result = conversation_setup(risk_category, time_duration, investingly_agent)
+        risk_obj, _ = RiskAnalysis.objects.get_or_create(risk_category=risk_category, time=time_val)
+        risk_obj.stock_list=result
+        risk_obj.save()
+        print(result)
     logging.info("Successfull added")
 
 def stock_return_csv():
