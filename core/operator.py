@@ -10,7 +10,9 @@ from app.tasks import (
 
 from app.utils import (
     stock_return_csv,
-    stock_risk_calculated
+    stock_risk_calculated_low,
+    stock_risk_calculated_medium,
+    stock_risk_calculated_high
 )
 
 
@@ -22,7 +24,9 @@ def start():
     @scheduler.scheduled_job('cron', hour=16, minute=30, name='update_stock_portfolio', max_instances=1)
     def update_stock_portfolio():
         stock_return_csv()
-        stock_risk_calculated()
+        stock_risk_calculated_low()
+        stock_risk_calculated_medium()
+        stock_risk_calculated_high()
 
     @scheduler.scheduled_job('interval', seconds=60, name='update_gainer_losser_crypto')
     def update_gainer_losser_crypto():
