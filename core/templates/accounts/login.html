@@ -7,7 +7,7 @@
 
 {% block content %}
 
-    <div class="main-content-container container-fluid px-4">
+    <div class="main-content-container container-fluid px-4 mb-4 mt-2">
       <!-- Page Header -->
       <div class="page-header row no-gutters py-4">
         <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
@@ -16,52 +16,67 @@
       </div>
       <!-- End Page Header -->
       <!-- Default Light Table -->
-      <div class="row mt-4" style="justify-content: center">
-
-        <div class="col-lg-4" style="justify-content: center">
-          <div class="card card-small mb-4">
-            <div class="card-header border-bottom">
-              <h4>Login</h4>
-              <h6 class="m-0">
-                {% if msg %}
-                  {{ msg | safe }}
-                {% endif %}  
-
-              </h6>
-            </div>
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item p-3">
-                <div class="row">
-                  <div class="col">
-
-                    <form role="form" method="post" action="" class="pt-3">
+        <div class="flex w-3/4 mx-auto bg-white rounded-lg shadow-xl overflow-hidden">
+         <!-- Sign In Section -->
+         <div class="w-3/5 p-10">
+          <h2 class="text-4xl font-bold mb-10" style="color: #333333;">
+           SIGN IN
+          </h2>
+          <form role="form" method="post" action="" class="pt-3">
               
-                      {% csrf_token %} 
+            {% csrf_token %} 
 
-                      <div class="form-row">
-                        <div class="form-group col-md-6">
-                          <label for="feFirstName">Username</label>
-                          {{ form.username }}
-                        </div>
-                      </div>
-                      <div class="form-row">
-                        <div class="form-group col-md-6">
-                          <label for="feEmailAddress">Password</label>
-                          {{ form.password }}
-                        </div>
-                      </div>
-                      <button type="submit" name="login" class="btn btn-accent">Login</button>
-                       &nbsp; &nbsp; 
-                       Don't have an account? <a href={% url 'register' %} class="text-primary">Register</a>
-                    </form>
+            <div class="form-row">
+              <div class="form-group col-sm">
+                <!-- <label for="feFirstName">Username</label> -->
+                {{ form.username }}
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-sm">
+                <!-- <label for="feEmailAddress">Password</label> -->
+                {{ form.password }}
+              </div>
+            </div>
+            <button type="submit" class="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600">
+              Login
+          </button>
+          </form>
 
-                  </div>
-                </div>
-              </li>
-            </ul>
+          <div class="mt-4 flex items-center justify-between">
+           <span class="border-b w-1/5 lg:w-1/4">
+           </span>
+           <a class="text-xs text-center text-gray-500 uppercase" href="#">
+            or use your account
+           </a>
+           <span class="border-b w-1/5 lg:w-1/4">
+           </span>
           </div>
+          <div class="flex items-center justify-center mt-4">
+            <button class="flex items-center justify-center w-full bg-gray-500 text-white p-3 rounded-lg mb-4">
+              <i class="fab fa-google fa-1x mr-4"></i> Continue with Google
+          </button>                          
+          </div>
+         </div>
+         <!-- Image and Register Section -->
+         <div class="w-2/5 bg-blue-500 text-white p-10 relative" style="background-image: url('/static/assets/img/login.png');" >
+          <img alt="Abstract background with a mountain landscape and a teal overlay with patterns" class="absolute top-0 right-0 bottom-0 w-full h-full object-cover opacity-50" height="800" src="/static/assets/img/login.png" width="600"/>
+          <h2 class="text-3xl font-bold mb-2" style="color: #333333;">
+            Start your journey now
+        </h2>
+
+          <p class="mb-10">
+           If you don't have an account yet, join us and start your journey.
+          </p>
+
+         <a href="{% url 'register' %}" class="text-primary" style="position: absolute;z-index: 2;">
+        <button class="bg-white text-blue-500 px-4 py-2 rounded-lg hover:bg-gray-200">
+          Register
+        </button>
+        </a>
+
+         </div>
         </div>
-      </div>
       <!-- End Default Light Table -->
     </div>
 <style>
@@ -78,6 +93,17 @@
       h3 span {
         color: #03c988;
       }
+      .fa-google {
+        background: conic-gradient(from -45deg, #ea4335 110deg, #4285f4 90deg 180deg, #34a853 180deg 270deg, #fbbc05 270deg) 73% 55%/150% 150% no-repeat;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+      }
+      .myDiv {width: 600px; /* Set the width of the div */ 
+                 height: 800px; /* Set the height of the div */    
+                background-image: url('/static/assets/img/login.png'); /* Specify the path to your image */   
+         }
 </style>
 {% endblock content %}
 
