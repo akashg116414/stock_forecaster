@@ -23,6 +23,8 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 
+SITE_ID =1
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -31,6 +33,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
+   'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     'django_apscheduler',
     'app.app.AppConfig',  # Enable the inner app 
 ]
@@ -44,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    "allauth.account.middleware.AccountMiddleware"
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -152,3 +160,28 @@ APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 #     },
 # }
 SCHEDULER_AUTOSTART = True
+
+
+AUTHENTICATION_BACKENDS = [
+    # Default backend for Django authentication.
+    'django.contrib.auth.backends.ModelBackend',
+
+    # Allauth specific authentication methods, such as login by e-mail.
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# Setup allauth parameters
+SITE_ID = 2
+# LOGIN_REDIRECT_URL :- destination of login page in your urls.py
+LOGIN_REDIRECT_URL = '/'
+# ACCOUNT_LOGOUT_REDIRECT :- where to redirect when user logout
+ACCOUNT_LOGOUT_REDIRECT = '/'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+    }
+}
+
+SOCIALACCOUNT_LOGIN_ON_GET=True

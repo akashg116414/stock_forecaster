@@ -53,9 +53,10 @@
            </span>
           </div>
           <div class="flex items-center justify-center mt-4">
-            <button class="flex items-center justify-center w-full bg-gray-500 text-white p-3 rounded-lg mb-4">
+            {% load socialaccount %}
+            <a href="{% provider_login_url 'google' %}" class="button">
               <i class="fab fa-google fa-1x mr-4"></i> Continue with Google
-          </button>                          
+          </a>                      
           </div>
          </div>
          <!-- Image and Register Section -->
@@ -80,6 +81,18 @@
       <!-- End Default Light Table -->
     </div>
 <style>
+       .button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            background-color: #B0B0B0; /* Use the desired background color (gray in this case) */
+            color: white;
+            padding: 0.75rem; /* Adjust padding as needed */
+            border-radius: 0.5rem; /* Adjust border-radius as needed */
+            margin-bottom: 0.5rem; /* Adjust margin-bottom as needed */
+            text-decoration: none; 
+        }
       h3 {
         font-family: "Inter";
         font-size: 70px;
